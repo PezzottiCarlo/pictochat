@@ -1,4 +1,4 @@
-# Progetto semestre
+# Progetto semestre - SUPSI DTI
 
 - **Data**: 2024-22-04
 - **Versione**: 1.0
@@ -13,17 +13,17 @@
 
 ## Abstract
 
-The project aimed to develop an inclusive communication application, leveraging pictograms and personalized features to facilitate interactions for individuals with language difficulties or cognitive disabilities. Key features included a wide array of pictograms sourced from Araasac, customizable font sizes and colors, and speech-to-text and text-to-speech functionalities. Through React Native for the front-end and Flask for the back-end, the app provided an intuitive interface and efficient communication channels. Despite the complexities involved, the project team found great satisfaction in overcoming challenges and innovating to create a meaningful solution for its target users.
+The project aimed to develop an inclusive communication application, leveraging pictograms and personalized features to facilitate interactions for individuals with language difficulties or cognitive disabilities. Key features included a wide array of pictograms sourced from Araasac, customizable font sizes and colors, and speech-to-text and text-to-speech functionalities. The management of chats was facilitated through integration with Telegram. Through React Native for the front-end and Flask for the back-end, the app provided an intuitive interface and efficient communication channels. Despite the complexities involved, the project team found great satisfaction in overcoming challenges and innovating to create a meaningful solution for its target users
 
 <div style="page-break-after: always;"></div>
 
 ## Introduzione
 
 **Descrizione dell'idea:**  
-??? è un'applicazione di comunicazione progettata per facilitare la comunicazione tra ragazzi che possono avere difficoltà di linguaggio o disabilità cognitive. L'app offre una vasta gamma di pittogrammi e immagini tratti da Araasac, insieme alla possibilità di aggiungere immagini personalizzate e loghi.
+Pictochat è un'applicazione di comunicazione progettata per facilitare la comunicazione tra ragazzi che possono avere difficoltà di linguaggio o disabilità cognitive. L'app offre una vasta gamma di pittogrammi e immagini tratti da Araasac, insieme alla possibilità di aggiungere immagini personalizzate e loghi.
 
 **Obiettivo:**  
-L'obiettivo principale di ??? è rendere la comunicazione accessibile e inclusiva, permettendo ai ragazzi di esprimersi in modo chiaro tra di loro o ai genitori di comprendere meglio i loro bisogni e desideri.
+L'obiettivo principale di Pictochat è rendere la comunicazione accessibile e inclusiva, permettendo ai ragazzi di esprimersi in modo chiaro tra di loro o ai genitori di comprendere meglio i loro bisogni e desideri.
 
 **Caratteristiche principali:**
 
@@ -50,6 +50,66 @@ L'obiettivo principale di ??? è rendere la comunicazione accessibile e inclusiv
 
 **Target di utenza:**  
 Il target principale sono i ragazzi con difficoltà di linguaggio o disabilità cognitive, insieme ai ragazzi stessi che utilizzano l'app per comunicare con i loro amici, genitori, tutor o operatori scolastici.
+
+
+## Design
+
+### Mockup
+Il nostro mockup offre uno sguardo preliminare alla piattaforma della chat in fase di sviluppo. Illustra l'interfaccia di base della chat, evidenziando i messaggi, i controlli di accessibilità e le opzioni di personalizzazione.
+
+
+<center>
+  <img 
+    src="Personalizzazione_Utente.jpg" 
+    width="450" 
+    alt="Immagine che mostra come era l'idea di personalizzare l'utente"
+    style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+Nella fase iniziale dell'app, si richiede agli utenti di fornire informazioni fondamentali per personalizzare la loro esperienza. Queste informazioni includono il genere, l'anno di nascita (per calcolare l'età) e il colore dei capelli e della pelle. Questi dettagli consentono al sistema di creare un pittogramma rappresentativo dell'utente, dove possibile, migliorando così la comunicazione visiva e facilitando l'interazione tra gli utenti.
+
+<center>
+  <img src="Idea_Chat.jpg" width="450" alt="Immagine che mostra l'idea della chat e di come scrivere messaggi"
+    style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+L'immagine illustra l'interfaccia della lista delle chat nell'applicazione, mostrando le conversazioni attive degli utenti. Successivamente, viene presentata un'esemplificazione del processo di composizione di una frase mediante l'utilizzo di pittogrammi. Gli utenti possono selezionare tre pittogrammi, rappresentanti il soggetto, il verbo e il complemento oggetto, per comporre una frase. Utilizzando un'intelligenza artificiale, viene generata una frase completa che permette agli utenti di inviare messaggi senza la necessità di digitare manualmente sulla tastiera.
+
+<div style="page-break-after: always;"></div>
+
+### Final Product
+Questa sezione offre una panoramica concisa del prodotto completo, mostrando l'interfaccia utente finale e le principali funzionalità.
+
+<center>
+  <img src="Login.png" width="160" alt="Immagine che mostra il login con il numero di telefono e il codice"
+    style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+
+Il processo di accesso avviene tramite il numero di telefono, accompagnato dal prefisso corretto <br>
+(`+41` o `0041`). Dopo aver inserito il numero, l'utente riceverà un codice di verifica tramite Telegram. Questo codice dovrà essere inserito nell'applicazione per completare la procedura di accesso e accedere al proprio account.
+
+<center>
+  <img src="Lista_Chat.png" width="160" alt="Immagine che mostra la lista delle chat attive" style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+Nell'immagine sopra è visibile l'intera lista delle chat attive, con le immagini profilo degli utenti prese da Telegram.
+
+
+<center>
+  <img src="Lista_Risposte_Predefinite.png" width="160" alt="Immagine che mostra la lista di alcune frasi predefinite" style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+Nella sezione delle risposte/frasi predefinite, gli utenti possono selezionare alcune frasi preimpostate, senza la necessità di digitare manualmente sulla tastiera. Queste frasi sono utili per domande di uso quotidiano, offrendo un modo rapido e conveniente per interagire all'interno dell'applicazione.
+
+
+<center>
+  <img src="Risposta_Domanda.png" width="160" alt="Immagine che mostra la risposta a una domanda con pittogrammi" style="border: 1px solid black; border-radius: 10px;">
+</center>
+
+Nell'immagine mostrata, viene illustrato come gli utenti della nostra applicazione possono rispondere alle domande poste da altri utenti. Il sistema estrae la parola chiave più rilevante dalla domanda e genera un pittogramma corrispondente, se disponibile, che viene visualizzato insieme al testo della domanda. Gli utenti possono quindi scegliere tra diverse opzioni rappresentate sotto forma di pittogrammi, scorrendo lateralmente. Una volta selezionata un'opzione, questa viene automaticamente inserita nella chat sotto forma di testo, insieme al relativo pittogramma.
+
+<div style="page-break-after: always;"></div>
 
 ## Architettura Generale
 
@@ -187,7 +247,7 @@ Fortunatamente la autenticazione è gestita interamente da telegram e non è nec
 
 Il token viene generato al momento del login e memorizzato localmente sul dispositivo dell'utente. Questo token viene utilizzato per autenticare le richieste al server e garantire che solo gli utenti autorizzati possano accedere alle risorse protette.
 
-Esempio di token: `JdM9up89wlgg7bRTAEJtHRqfhOHfWpXS`
+Esempio di token: `CRlq3zAgbmhq2evjj4CE58upjh5zv8UW`
 
 ## Risorse Utili
 
@@ -201,12 +261,15 @@ requests: [https://docs.python-requests.org](https://docs.python-requests.org)
 
 ## Conclusioni
 
-Il progetto è stato davvero molto complicato, soprattutto perché richiedeva un'immersione totale nell'esperienza dell'utente. È stato necessario comprendere profondamente le esigenze e le sfide affrontate dai ragazzi con difficoltà di linguaggio o disabilità cognitive, per poter sviluppare un'applicazione che rispondesse in modo efficace e significativo alle loro esigenze.
+Il progetto ha richiesto un'immersione completa nell'esperienza degli utenti con difficoltà di linguaggio e cognitive per sviluppare un'app efficace e significativa. Abbiamo affrontato sfide significative per rendere la comunicazione più accessibile e inclusiva, trovando soluzioni innovative lungo il percorso. Nonostante le difficoltà, il lavoro è stato gratificante, migliorando costantemente l'applicazione per gli utenti finali. Questa esperienza ci ha arricchito sia tecnicamente che emotivamente, spingendoci a pensare in modo innovativo e centrato sull'utente, confermando l'importanza dell'inclusione nella progettazione software. Guardiamo al futuro con orgoglio e entusiasmo, consapevoli del positivo impatto che il nostro lavoro può avere sulla vita delle persone.
 
-È stata una vera sfida trovare soluzioni innovative e intuitive per rendere la comunicazione più accessibile e inclusiva possibile. Ogni passo del processo di sviluppo è stato un'opportunità per superare ostacoli e trovare nuove prospettive per migliorare l'applicazione.
+### Sviluppi futuri
 
-Nonostante le sfide incontrate lungo il percorso, posso dire che ci è piaciuto molto lavorare a questo progetto. È stato gratificante vedere come ogni piccolo miglioramento e ogni nuova funzionalità abbiano contribuito a rendere l'applicazione più utile e significativa per gli utenti finali. La consapevolezza di poter fare la differenza nella vita di queste persone è stata una fonte di motivazione costante.
-
-Guardando indietro, posso dire che abbiamo imparato molto da questa esperienza. Oltre alle competenze tecniche acquisite, abbiamo acquisito una maggiore sensibilità e comprensione delle sfide affrontate dalle persone con disabilità. Questo progetto ci ha spinti a pensare in modo innovativo e creativo, e ci ha fornito una preziosa lezione sull'importanza della progettazione centrata sull'utente e dell'inclusione in tutti gli aspetti dello sviluppo software.
-
-In definitiva, nonostante le difficoltà e le sfide, è stato un viaggio emozionante e gratificante. Siamo orgogliosi del lavoro svolto e guardiamo al futuro con entusiasmo, consapevoli del potenziale positivo che il nostro lavoro può avere nella vita delle persone.
+- Aggiunta opzione "Ascolta" nella lista delle frasi predefinite con emoji distintiva.
+- Sfondo della chat scuro e pittogrammi chiari per maggiore leggibilità.
+- Implementazione di foto personalizzate per l'uso dei pittogrammi.
+- Introduzione di conferma di invio al click sui pittogrammi.
+- Aggiunta di un'opzione rapida per disattivare il text-to-speech.
+- Associazione di un punto di domanda alle domande prive di pittogramma.
+- Implementazione della funzionalità pittogrammi-to-text (soggetto, verbo, oggetto) come mostrato nel mockup.
+- Integrazione con Intelligenza Artificiale per la generazione di immagini.

@@ -1,0 +1,9 @@
+Idee nuove:
+
+ - Nella lista della scelta delle frasi fatti aggiungere una poter ascoltare, aggiungere un emoji distintiva
+ - Sfondo Chat scuto e tutti i pittogrammi chiari
+ - Aggiungere le foto personalizzate piuttosto, per l'uso dei pittogrammi
+- Conferma di invio quando si schiacciano sui pittogrammi
+- Possibilità veloce di togliere il text to speech
+- Domande senza un pittogramma associare un punto di domanda
+- rendere le immagini belle grandi in modo da rendere facile il click (URGENTE PERSONALIZZABILE)

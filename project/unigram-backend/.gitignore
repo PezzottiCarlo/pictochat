@@ -1,0 +1,14 @@
+sessions/
+settings.json
+tmp/
+__pycache__/
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo

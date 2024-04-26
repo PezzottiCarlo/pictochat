@@ -1,0 +1,28 @@
+# Visual Studio Code
+.vscode/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+# Icone dei file nascosti
+._*
+
+# File di salvataggio automatico di TextEdit
+*~.txt
+
+# File temporanei creati da Mac OS
+__MACOSX/
+
+# Trash folder on Mac OS (if it exists)
+.Trash-*/
+
+# File .DS_Store in ogni cartella
+**/.DS_Store
+
+# File di configurazione per Spotlight
+.Spotlight-V100
+.Trashes
+

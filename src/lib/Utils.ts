@@ -1,4 +1,14 @@
+import { Dialog } from "telegram/tl/custom/dialog";
+
 class Utils {
+    static serializeDialog(dialog: Dialog): any {
+        return {
+            id: dialog.id,
+            name: dialog.name,
+            date: dialog.date,
+            entity: dialog.entity
+        }
+    }
     static formatDate(timestamp: number): string {
         const date = new Date(timestamp * 1000); // Telegram date is in seconds
         return date.toLocaleString();

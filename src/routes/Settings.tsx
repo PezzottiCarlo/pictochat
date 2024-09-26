@@ -6,6 +6,7 @@ import { HairColor, SkinColor } from '../lib/AAC';
 import { motion, useMotionValue } from 'framer-motion';
 import { themeConfig } from '..';
 import { CirculaCheckMark } from '../components/CircularCheckMark/CirculaCheckMark';
+import { router } from './AppRoutes';
 
 const { Option } = Select;
 
@@ -22,6 +23,9 @@ const SettingsPage: React.FC = () => {
     }, [fontSize]);
 
     const nextStep = () => setCurrentStep((prev) => prev + 1);
+    const nextPage = () =>{
+        router.navigate('/login');
+    }
     const handleFinish = () => {
         nextStep();
         console.log('Impostazioni finali:', { fontSize, hairColor, skinColor, theme });
@@ -135,7 +139,7 @@ const SettingsPage: React.FC = () => {
             <div className="ok-content">
                 <CirculaCheckMark duration={.7} />
                 <h2>Congratulazioni! Le tue impostazioni sono state salvate con successo.</h2>
-                <Button type="primary" style={{ marginTop: '20px' }}>
+                <Button type="primary" style={{ marginTop: '20px' }} onClick={nextPage}>
                     Ultimo passo
                 </Button>
             </div>

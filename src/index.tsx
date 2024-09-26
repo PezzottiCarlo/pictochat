@@ -24,8 +24,7 @@ root.render(
             fontSize: 18,
             fontFamily: "Arial",
           },
-        }}
-      >
+        }}>
         <RouterProvider router={router} />
       </ConfigProvider>
     </SessionProvider>

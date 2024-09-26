@@ -10,6 +10,10 @@ import { NewMessage, NewMessageEvent } from 'telegram/events';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
+if (window.matchMedia('(display-mode: standalone)').matches) {  
+  alert("App correctly installed")
+}
+
 export const themeConfig = {
   token: {
     colorPrimary: "#722ed1",

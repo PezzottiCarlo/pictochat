@@ -1,7 +1,6 @@
 import React from 'react';
 import { Avatar, Badge, Spin } from 'antd';
 import Utils from '../../lib/Utils';
-
 interface DialogAvatarProps {
     unreadedMessages: number;
     name: string;

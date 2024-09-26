@@ -1,3 +1,4 @@
+import "../styles/Login.css"
 import React, { useState } from 'react';
 import { Layout, Form, Input, Button, Typography, message } from 'antd';
 import { Controller } from '../lib/Controller';

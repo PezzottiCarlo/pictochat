@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, createHashRouter } from 'react-router-dom';
 import MyApp from '../MyApp';
 import Contacts from './Contacts';
 import Login from './Login';
@@ -7,7 +7,7 @@ import Settings from './Settings';
 import { ChatWrapper } from './Chat';
 import NotFound from './NotFound';
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: '',
     element: <MyApp />

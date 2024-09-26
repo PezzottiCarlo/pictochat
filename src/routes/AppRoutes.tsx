@@ -9,6 +9,10 @@ import NotFound from './NotFound';
 
 export const router = createBrowserRouter([
   {
+    path: '',
+    element: <MyApp />
+  },
+  {
     path: '/',
     element: <MyApp />,
     errorElement: <NotFound />,  // Gestisce rotte non trovate

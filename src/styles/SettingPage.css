@@ -1,6 +1,7 @@
 /* Stile generale per la pagina delle impostazioni */
 .settings-page {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -27,7 +28,6 @@ h2 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     text-align: center;
   }
   
@@ -41,6 +41,13 @@ h2 {
     align-items: center;
     margin-bottom: 20px;
     animation: popIn 0.5s ease-out; /* Animazione di apparizione */
+  }
+
+  .welcome-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   
   .checkmark {

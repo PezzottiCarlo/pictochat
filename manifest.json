@@ -1,0 +1,12 @@
+{
+  "name": "PictoChat",
+  "short_name": "PictoChat",
+  "description": "A simple and intuitive chat application",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "it-IT"
+}

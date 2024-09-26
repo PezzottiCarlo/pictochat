@@ -5,6 +5,8 @@ import { Dialog } from 'telegram/tl/custom/dialog';
 import DialogItem from '../components/DialogItem/DialogItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Controller } from '../lib/Controller';
+import { useSession } from '../context/SessionContext';
+import { router } from './AppRoutes';
 
 const { Search } = Input;
 
@@ -16,7 +18,14 @@ const Contacts: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [showGroups, setShowGroups] = useState<boolean>(true);
 
+    const session = useSession()
+
     useEffect(() => {
+
+        if(session.session === null){
+            router.navigate("/login");
+        }
+
         const fetchContacts = async () => {
             let dialogs = await Controller.getDialogs();
             dialogs.sort((a, b) => b.date - a.date);

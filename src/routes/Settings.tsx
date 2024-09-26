@@ -59,13 +59,12 @@ const SettingsPage: React.FC = () => {
             >
                 {Object.values(HairColor).map((color) => (
                     <Option key={color} value={color}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center"}}>
                             <img
                                 src={hair + color}
                                 alt={color}
-                                style={{ width: 30, height: 30, marginRight: 10 }}
+                                style={{ width: 100, height: 100 }}
                             />
-                            {color}
                         </div>
                     </Option>
                 ))}
@@ -87,13 +86,12 @@ const SettingsPage: React.FC = () => {
             >
                 {Object.values(SkinColor).map((color) => (
                     <Option key={color} value={color}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent:"center"}}>
                             <img
                                 src={face + color}
                                 alt={color}
-                                style={{ width: 30, height: 30, marginRight: 10 }}
+                                style={{ width: 100, height: 100 }}
                             />
-                            {color}
                         </div>
                     </Option>
                 ))}

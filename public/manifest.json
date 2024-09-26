@@ -2,11 +2,26 @@
   "name": "PictoChat",
   "short_name": "PictoChat",
   "description": "A simple and intuitive chat application",
-  "start_url": "/index.html",
+  "start_url": "/pictochat",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait",
   "scope": "/",
-  "lang": "it-IT"
+  "lang": "it-IT",
+  "icons": [
+    {
+      "src": "icon/logo48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icon/logo256.ico",
+      "sizes": "256x256"
+    },
+    {
+      "src": "icon/logo.svg",
+      "sizes": "any"
+    }
+  ]
 }

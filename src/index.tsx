@@ -10,6 +10,7 @@ import { router } from './routes/AppRoutes';
 import { NewMessage, NewMessageEvent } from 'telegram/events';
 
 
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 
@@ -20,9 +21,7 @@ root.render(
         theme={{
           token: {
             colorPrimary: "#722ed1",
-            colorInfo: "#722ed1",
-            fontSize: 18,
-            fontFamily: "Arial",
+            colorInfo: "#722ed1"
           },
         }}>
         <RouterProvider router={router} />

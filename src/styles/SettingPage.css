@@ -1,0 +1,86 @@
+/* Stile generale per la pagina delle impostazioni */
+.settings-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Altezza completa della pagina */
+    background-color: #f0f2f5;
+    /* Colore di sfondo chiaro */
+}
+
+.settings-content {
+    width: 90%;
+    /* Usare il 90% della larghezza dello schermo per contenere il contenuto */
+    max-width: 400px;
+    /* Limite massimo di larghezza */
+    text-align: center;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.ok-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+  }
+  
+  .checkmark-container {
+    width: 100px;
+    height: 100px;
+    background-color: #52c41a; /* Verde */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    animation: popIn 0.5s ease-out; /* Animazione di apparizione */
+  }
+  
+  .checkmark {
+    font-size: 60px;
+    color: white;
+    animation: scaleUp 0.3s ease-in-out; /* Animazione del simbolo */
+  }
+  
+  h2 {
+    font-size: 32px;
+    margin-top: 10px;
+  }
+  
+  p {
+    font-size: 18px;
+    color: #555;
+    margin-top: 10px;
+  }
+  
+  /* Animazione di apparizione */
+  @keyframes popIn {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Animazione di ingrandimento del segno di spunta */
+  @keyframes scaleUp {
+    0% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  

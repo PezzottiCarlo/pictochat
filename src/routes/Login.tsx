@@ -1,8 +1,9 @@
 import "../styles/Login.css"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Form, Input, Button, Typography, message } from 'antd';
 import { Controller } from '../lib/Controller';
 import { router } from './AppRoutes';
+import { useSession } from "../context/SessionContext";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -11,8 +12,16 @@ const Login: React.FC = () => {
     const [phone, setPhone] = useState<string>('');
     const [code, setCode] = useState<string>('');
     const [isCodeSent, setIsCodeSent] = useState<boolean>(false);
+    
 
     const [authResult, setAuthResult] = useState<{ phoneCodeHash: string, isCodeViaApp: boolean }>();
+    const session = useSession();
+
+    useEffect(()=>{
+        if(session.session !== null){
+            router.navigate("/contacts");
+        }
+    },[])
 
     const handleSendCode = async () => {
         if (phone) {

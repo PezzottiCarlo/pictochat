@@ -57,7 +57,7 @@ const styles = {
         justifyContent: 'space-between',
         height: '60px',
         borderBottom: '1px solid #e8e8e8', // Sottolineatura
-        padding: "3rem .6rem",
+        padding: "1.5rem .3rem",
     },
     backButton: {
         fontSize: '18px',

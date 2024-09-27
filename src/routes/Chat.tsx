@@ -104,15 +104,14 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const handleSend = async () => {
         if (!inputValue) return;
 
-        try {
-            await Controller.tgApi.sendMessage(chatId, inputValue);
-            setInputValue('');
-            const newMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
-            setMessages(newMessages.reverse());
-            scrollToBottom();
-        } catch (error) {
-            console.error('Failed to send message:', error);
-        }
+        const tempMessage: Api.Message = messages[0];
+        tempMessage.message = inputValue;
+        tempMessage.out = true;
+        tempMessage.date = new Date().getTime();
+        setMessages(prevMessages => [...prevMessages, tempMessage]);
+        scrollToBottom();
+        setInputValue('');
+        await Controller.tgApi.sendMessage(chatId, inputValue);
     };
 
     const handleHints = async (text: string) => {
@@ -173,7 +172,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 </InfiniteScroll>
             </Content>
 
-            <Footer style={{ padding: '0.5rem' }}>
+            <Footer style={{ padding: '0.5rem', paddingBottom: '1.5rem' }}>
                 <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>
                     {pictoHints.size === 0 ? (
                         <Popover

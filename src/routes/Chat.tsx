@@ -15,6 +15,7 @@ import hints from '../data/hints.json';
 import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import Icon from '@ant-design/pro-chat/es/Icon';
+import { Words } from '../lib/Words';
 
 const { Content, Footer } = Layout;
 

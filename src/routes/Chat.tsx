@@ -16,6 +16,7 @@ import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import Icon from '@ant-design/pro-chat/es/Icon';
 import { Words } from '../lib/Words';
+import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 
 const { Content, Footer } = Layout;
 
@@ -153,7 +154,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         <Layout style={{ height: '100vh' }}>
             <ChatHeader id={chatId} />
 
-            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll', overflowX:'hidden' }} ref={contentRef}>
+            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll', overflowX: 'hidden' }} ref={contentRef}>
                 <InfiniteScroll
                     dataLength={messages.length}
                     next={fetchMoreMessages}
@@ -205,7 +206,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                         <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
                     </Col>
                     <Col>
-                        <TranslationOutlined/>
+                        <ChatCustomMessage callback={handleCustomMessage} />
                     </Col>
                 </Row>
             </Footer>

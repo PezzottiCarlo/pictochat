@@ -49,7 +49,7 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
             <Flex align="center" justify='center' style={{ width: '100%'}} >
                 <List.Item.Meta
                     style={{alignItems:"center" }}
-                    avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true})}
+                    avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true,size:100})}
                     title={name}
                     description={formatDate(date)}
                 />

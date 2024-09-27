@@ -6,9 +6,10 @@ interface DialogAvatarProps {
     name: string;
     imageBuffer: any;
     badge: boolean;
+    size: number
 }
 
-const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, imageBuffer, badge }) => {
+const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, imageBuffer, badge,size }) => {
 
     const base64String = (imageBuffer) ? Buffer.from(imageBuffer).toString('base64') : null;
     const imageSrc = `data:image/png;base64,${base64String}`;
@@ -20,24 +21,24 @@ const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, ima
                     return (
                         (badge) ?
                             <Badge count={unreadedMessages} size="small">
-                                <Avatar style={{ backgroundColor: Utils.charToColor(name.charAt(0).toUpperCase()) }} size={100}>{name.charAt(0).toUpperCase()}</Avatar>
+                                <Avatar style={{ backgroundColor: Utils.charToColor(name.charAt(0).toUpperCase()) }} size={size}>{name.charAt(0).toUpperCase()}</Avatar>
                             </Badge>
                             :
-                            <Avatar style={{ backgroundColor: Utils.charToColor(name.charAt(0).toUpperCase()) }} size={100}>{name.charAt(0).toUpperCase()}</Avatar>
+                            <Avatar style={{ backgroundColor: Utils.charToColor(name.charAt(0).toUpperCase()) }} size={size}>{name.charAt(0).toUpperCase()}</Avatar>
                     );
             }
             return (
                 (badge) ?
                     <Badge count={unreadedMessages} size="small">
-                        <Avatar src={imageSrc} size={100} style={{ marginRight: '10px' }} />
+                        <Avatar src={imageSrc} size={size} style={{ marginRight: '10px' }} />
                     </Badge>
                     :
-                    <Avatar src={imageSrc} size={100} style={{ marginRight: '10px' }} />
+                    <Avatar src={imageSrc} size={size} style={{ marginRight: '10px' }} />
             )
         }
         return <Avatar src={
             <Spin />
-        } size={100} style={{ marginRight: '10px' }} />;
+        } size={size} style={{ marginRight: '10px' }} />;
     }
 
     return (

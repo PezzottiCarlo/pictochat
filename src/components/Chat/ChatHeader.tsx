@@ -44,7 +44,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ id }) => {
             </div>
 
             <div style={styles.avatarContainer}>
-                <DialogAvatar badge={false} imageBuffer={photo} name={dialog?.name as string} unreadedMessages={0} />
+                <DialogAvatar badge={false} imageBuffer={photo} name={dialog?.name as string} unreadedMessages={0} size={60} />
             </div>
         </div>
     );

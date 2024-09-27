@@ -153,7 +153,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         <Layout style={{ height: '100vh' }}>
             <ChatHeader id={chatId} />
 
-            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll' }} ref={contentRef}>
+            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll', overflowX:'hidden' }} ref={contentRef}>
                 <InfiniteScroll
                     dataLength={messages.length}
                     next={fetchMoreMessages}

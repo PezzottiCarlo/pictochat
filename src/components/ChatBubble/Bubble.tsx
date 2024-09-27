@@ -4,8 +4,8 @@ import { SendOutlined, UserOutlined } from '@ant-design/icons';
 import { Api } from 'telegram';
 import BubbleMedia from './BubbleMedia';
 import '../../styles/Bubble.css'
-import { Words } from '../../lib/Words';
 import { HairColor, Pictogram, SkinColor } from '../../lib/AAC';
+import { Words } from '../../lib/Words';
 
 interface ChatBubbleProps {
     message: Api.Message;
@@ -13,7 +13,7 @@ interface ChatBubbleProps {
 
 const formatDate = (timestamp: number): string => {
     const date = new Date(timestamp * 1000); // Telegram date is in seconds
-    return date.toLocaleString();
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {

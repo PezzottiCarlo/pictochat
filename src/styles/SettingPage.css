@@ -5,9 +5,6 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /* Altezza completa della pagina */
-    background-color: #f0f2f5;
-    /* Colore di sfondo chiaro */
 }
 
 .settings-content {

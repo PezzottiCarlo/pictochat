@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
 import { Layout, Input, Button, List, Skeleton, Popover, Row, Col } from 'antd';
-import { BulbFilled, SendOutlined, TranslationOutlined } from '@ant-design/icons';
+import { BulbFilled, SendOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
 import { motion } from 'framer-motion';
@@ -14,7 +14,6 @@ import { Pictogram, HairColor, SkinColor } from '../lib/AAC';
 import hints from '../data/hints.json';
 import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
-import Icon from '@ant-design/pro-chat/es/Icon';
 import { Words } from '../lib/Words';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 
@@ -107,7 +106,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         const tempMessage: Api.Message = messages[0];
         tempMessage.message = inputValue;
         tempMessage.out = true;
-        tempMessage.date = new Date().getTime();
+        tempMessage.date = (new Date().getTime())
         setMessages(prevMessages => [...prevMessages, tempMessage]);
         scrollToBottom();
         setInputValue('');

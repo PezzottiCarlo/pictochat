@@ -1,6 +1,6 @@
 .bubble {
     display: flex;
-    margin-bottom: .5rem;
+    margin-bottom: .2rem;
     flex-direction: column;
 }
 

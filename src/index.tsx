@@ -11,8 +11,7 @@ import { NewMessage, NewMessageEvent } from 'telegram/events';
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 if (window.matchMedia('(display-mode: standalone)').matches) {  
-  alert("App correctly installed")
-
+  //alert("App correctly installed")
   //do stuff if this on
 }
 

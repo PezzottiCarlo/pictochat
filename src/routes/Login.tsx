@@ -17,29 +17,32 @@ const Login: React.FC = () => {
     const [isCodeSent, setIsCodeSent] = useState<boolean>(false); // Stato invio codice
     const [authResult, setAuthResult] = useState<{ phoneCodeHash: string, isCodeViaApp: boolean }>();
 
-    const handleSendCode = async () => {
+    const handleSendCode = () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`; // Combina prefisso e numero di telefono
         if (phoneNumber) {
             setIsCodeSent(true);
-            let res = await Controller.tgApi.sendCode(fullPhoneNumber);
-            setAuthResult(res);
-            message.success('Codice inviato al tuo telefono!');
+            Controller.tgApi.sendCode(fullPhoneNumber).then((res)=>{
+                setAuthResult(res);
+                message.success('Codice inviato al tuo telefono!');
+            })
         } else {
             message.error('Inserisci un numero di telefono valido.');
         }
     };
 
-    const handleVerifyCode = async () => {
+    const handleVerifyCode = () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`;
         if (code) {
             try {
-                let stringSession = await Controller.tgApi.singIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string);
-                if (stringSession) {
-                    message.success('Login effettuato con successo!');
-                    localStorage.setItem('stringSession', stringSession);
-                    Controller.tgApi.setClient(stringSession);
-                    router.navigate('/contacts');
-                }
+                Controller.tgApi.singIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string).then((stringSession)=>{
+                    if (stringSession) {
+                        message.success('Login effettuato con successo!');
+                        Controller.tgApi.setClient(stringSession).then(()=>{
+                            localStorage.setItem('stringSession', stringSession);
+                            setTimeout(()=>window.location.reload(),500);
+                        })
+                    }
+                })
             } catch (e: any) {
                 message.error(e.message);
             }
@@ -64,7 +67,6 @@ const Login: React.FC = () => {
                         Inserisci il tuo numero di telefono per accedere.
                     </Text>
                     <Form layout="vertical">
-                        {/* Campo Prefisso e Numero di Telefono */}
                         <Form.Item label="Numero di Telefono">
                             <Row gutter={8}>
                                 <Col span={6}>
@@ -87,7 +89,6 @@ const Login: React.FC = () => {
                             </Row>
                         </Form.Item>
 
-                        {/* Campo Codice di Verifica */}
                         {isCodeSent && (
                             <Form.Item label="Codice di Verifica">
                                 <Input
@@ -99,7 +100,6 @@ const Login: React.FC = () => {
                             </Form.Item>
                         )}
 
-                        {/* Pulsanti Invia e Verifica */}
                         <Form.Item>
                             {!isCodeSent ? (
                                 <motion.div whileTap={{ scale: 0.95 }}>

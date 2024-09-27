@@ -1,26 +1,48 @@
 .bubble {
-    display: flex !important;
+    display: flex;
     margin-bottom: -1rem;
+    flex-direction: column;
 }
 
 .bubble-content {
-    max-width: 60%;
-    padding: 10px;
-    border-radius: 10px;
+    max-width: 80%; 
+    padding: 0.8rem; 
+    border-radius: 12px;
     text-align: left;
 }
 
 .outgoing {
     background-color: #1890ff;
     color: #fff;
-}
-.incoming{
-    background-color: #f0f0f0;
-    color: #000;
+    align-self: flex-end; 
 }
 
-.bubble .timestamp{
-    font-size: 0.8em;
-    margin-top: 5px;
+.incoming {
+    background-color: #f0f0f0;
+    color: #000;
+    align-self: flex-start; 
+}
+
+.bubble .timestamp {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
     text-align: right;
+}
+
+.motion-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.motion-div .anticon {
+    font-size: 2rem;
+}
+
+.pictogram-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
 }

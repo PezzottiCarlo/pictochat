@@ -1,3 +1,13 @@
-.chat-list .ant-list-item{
+
+.chat-list .ant-list-item {
     border: none !important;
+    padding: 0 0.5rem;
+}
+
+#scrollableDiv {
+    padding: 0.5rem;
+}
+
+footer {
+    padding: 10px 0;
 }

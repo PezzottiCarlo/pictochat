@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
-import { Layout, Input, Button, List, Skeleton, Popover } from 'antd';
+import { Layout, Input, Button, List, Skeleton, Popover, Row, Col } from 'antd';
 import { BulbFilled, SendOutlined, TranslationOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
@@ -73,7 +73,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             }
         };
         fetchMessages();
-        setInterval(fetchMessages,5000);
+        setInterval(fetchMessages, 5000);
     }, [chatId, fetchPictogramsHints]);
 
     useLayoutEffect(() => {
@@ -152,7 +152,8 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     return (
         <Layout style={{ height: '100vh' }}>
             <ChatHeader id={chatId} />
-            <Content id="scrollableDiv" style={{ padding: '1rem', overflowY: 'scroll' }} ref={contentRef}>
+
+            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll' }} ref={contentRef}>
                 <InfiniteScroll
                     dataLength={messages.length}
                     next={fetchMoreMessages}
@@ -161,14 +162,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                     loader={<Skeleton avatar paragraph={{ rows: 0 }} active />}
                     scrollableTarget="scrollableDiv"
                     style={{ display: 'flex', flexDirection: 'column-reverse' }}
-                    onScroll={() => {
-                        if (contentRef.current) {
-                            const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
-                            if (scrollTop === 0 && hasMore) {
-                                fetchMoreMessages();
-                            }
-                        }
-                    }}>
+                >
                     <List
                         itemLayout="horizontal"
                         dataSource={messages}
@@ -178,37 +172,42 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 </InfiniteScroll>
             </Content>
 
-
-            <Footer style={{ padding: '10px 0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: '1rem', height: '5rem' }}>
+            <Footer style={{ padding: '0.5rem' }}>
+                <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>
                     {pictoHints.size === 0 ? (
                         <Popover
                             open={showHints}
                             content={<ChatHints onHintClick={handleHints} hints={hints} />}
-                            placement="bottom"
+                            placement="top"
                             trigger="click"
                             onOpenChange={setShowHints}
                         >
-                            <motion.div whileTap={{ scale: 0.9 }}>
-                                <BulbFilled style={{ fontSize: 50, color: '#1890ff' }} />
+                            <motion.div whileTap={{ scale: 0.9 }} className="motion-div">
+                                <BulbFilled style={{ fontSize: '2rem', color: '#1890ff' }} />
                             </motion.div>
                         </Popover>
                     ) : (
                         <ChatHintsPicto pictos={Array.from(pictoHints.values())} onPictoClick={handleHintsPicto} />
                     )}
-                </div>
+                </Row>
 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                    <Input
-                        style={{ width: 'calc(100% - 100px)' }}
-                        value={inputValue}
-                        onChange={e => setInputValue(e.target.value)}
-                        onPressEnter={handleSend}
-                        placeholder="Type a message"
-                    />
-                    <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
-                    <TranslationOutlined />
-                </div>
+                <Row justify="space-between" align="middle" gutter={10}>
+                    <Col span={18}>
+                        <Input
+                            value={inputValue}
+                            onChange={e => setInputValue(e.target.value)}
+                            onPressEnter={handleSend}
+                            placeholder="Type a message"
+                            style={{ width: '100%' }}
+                        />
+                    </Col>
+                    <Col>
+                        <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
+                    </Col>
+                    <Col>
+                        <TranslationOutlined/>
+                    </Col>
+                </Row>
             </Footer>
         </Layout>
     );

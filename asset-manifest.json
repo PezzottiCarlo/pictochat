@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/pictochat/static/css/main.22116c65.css",
-    "main.js": "/pictochat/static/js/main.f9c85081.js",
+    "main.js": "/pictochat/static/js/main.952f88f2.js",
     "static/media/OpenDyslexicMono-Regular.otf": "/pictochat/static/media/OpenDyslexicMono-Regular.b58039f35ed3a18ef4cb.otf",
     "index.html": "/pictochat/index.html",
     "main.22116c65.css.map": "/pictochat/static/css/main.22116c65.css.map",
-    "main.f9c85081.js.map": "/pictochat/static/js/main.f9c85081.js.map"
+    "main.952f88f2.js.map": "/pictochat/static/js/main.952f88f2.js.map"
   },
   "entrypoints": [
     "static/css/main.22116c65.css",
-    "static/js/main.f9c85081.js"
+    "static/js/main.952f88f2.js"
   ]
 }

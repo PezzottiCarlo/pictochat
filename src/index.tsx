@@ -12,6 +12,8 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 if (window.matchMedia('(display-mode: standalone)').matches) {  
   alert("App correctly installed")
+
+  //do stuff if this on
 }
 
 export const themeConfig = {

@@ -12,6 +12,7 @@ const apiHash = "aac13796c816fee0e9557169aecbc071";
 export class TgApi {
     client: TelegramClient;
 
+    
     constructor(stringSession: StringSession) {
         this.client = new TelegramClient(stringSession, apiId, apiHash, {
             connectionRetries: 5,
@@ -19,7 +20,6 @@ export class TgApi {
             downloadRetries: 5,
             maxConcurrentDownloads: 5
         });
-        
     }
 
     async setClient(stringSession: StringSession | string) {

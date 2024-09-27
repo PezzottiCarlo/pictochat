@@ -35,3 +35,24 @@ export const useSession = (): SessionContextProps => {
     }
     return context;
 };
+
+export const useIsSetting = (): boolean => {
+    return true;
+}
+
+export const useIsAuthenticated = (): boolean => {
+    const { session } = useSession();
+    if (session === null) {
+      return false;
+    }
+  
+    const savedSession = localStorage.getItem('stringSession') as string;
+    try {
+      StringSession.decode(savedSession);
+      new StringSession(savedSession);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  };
+  

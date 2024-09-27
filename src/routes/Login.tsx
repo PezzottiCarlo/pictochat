@@ -16,13 +16,6 @@ const Login: React.FC = () => {
     const [code, setCode] = useState<string>(''); // Codice di verifica
     const [isCodeSent, setIsCodeSent] = useState<boolean>(false); // Stato invio codice
     const [authResult, setAuthResult] = useState<{ phoneCodeHash: string, isCodeViaApp: boolean }>();
-    const session = useSession();
-
-    useEffect(() => {
-        if (session.session !== null) {
-            router.navigate("/contacts");
-        }
-    }, [session]);
 
     const handleSendCode = async () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`; // Combina prefisso e numero di telefono

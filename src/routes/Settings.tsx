@@ -3,8 +3,6 @@ import { Button, Select, Radio, Slider, Image } from 'antd';
 import 'antd/dist/reset.css';
 import '../styles/SettingPage.css';
 import { HairColor, SkinColor } from '../lib/AAC';
-import { motion, useMotionValue } from 'framer-motion';
-import { themeConfig } from '..';
 import { CirculaCheckMark } from '../components/CircularCheckMark/CirculaCheckMark';
 import { router } from './AppRoutes';
 
@@ -15,12 +13,7 @@ const SettingsPage: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
     const [hairColor, setHairColor] = useState<HairColor | null>(null);
     const [skinColor, setSkinColor] = useState<SkinColor | null>(null);
-    const [theme, setTheme] = useState<string>('light'); // Default light theme
-    let progress = useMotionValue(90);
-
-    useEffect(() => {
-        document.body.style.fontSize = `${fontSize}px`;
-    }, [fontSize]);
+    const [theme, setTheme] = useState<string>('light');
 
     const nextStep = () => setCurrentStep((prev) => prev + 1);
     const nextPage = () =>{

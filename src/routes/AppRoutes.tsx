@@ -1,38 +1,44 @@
+// router.tsx
 import React from 'react';
-import { createBrowserRouter, createHashRouter } from 'react-router-dom';
+import { createHashRouter } from 'react-router-dom';
 import MyApp from '../MyApp';
 import Contacts from './Contacts';
 import Login from './Login';
 import Settings from './Settings';
 import { ChatWrapper } from './Chat';
 import NotFound from './NotFound';
+import ProtectedRoute from './ProtectedRoute';
 
 export const router = createHashRouter([
   {
-    path: '',
-    element: <MyApp />
-  },
-  {
     path: '/',
     element: <MyApp />,
-    errorElement: <NotFound />,  // Gestisce rotte non trovate
-  },
-  {
-    path: '/settings',
-    element: <Settings />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-  {
-    path: '/chat/:chatId',
-    element: <ChatWrapper />,
-  },
-  {
-    path: '/contacts',
-    element: <Contacts />,
+    errorElement: <NotFound />,
+    children: [
+      {
+        path: 'settings',
+        element: <Settings />,
+      },
+      {
+        path: 'login',
+        element: <Login />,
+      },
+      {
+        path: 'contacts',
+        element: (
+          <ProtectedRoute>
+            <Contacts />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'chat/:chatId',
+        element: (
+          <ProtectedRoute>
+            <ChatWrapper />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
 ]);
-
-

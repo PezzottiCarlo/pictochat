@@ -1,0 +1,836 @@
+[
+    {
+        "schematic": true,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "02610777-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 36480,
+        "keywords": [
+            {
+                "keyword": "essere",
+                "type": 3,
+                "hasLocution": true
+            }
+        ],
+        "created": "2019-12-20T15:23:18.674Z",
+        "lastUpdated": "2021-02-04T10:38:51.293Z",
+        "url": "https://static.arasaac.org/pictograms/36480/36480_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "essere"
+    },
+    {
+        "schematic": true,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "02209474-v",
+            "02208144-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 32761,
+        "created": "2018-04-08T00:07:40.000Z",
+        "lastUpdated": "2021-02-04T10:36:10.447Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "avere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "sostenere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "possedere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "reggere",
+                "hasLocution": false
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/32761/32761_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "avere"
+    },
+    {
+        "schematic": true,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "01622033-v",
+            "01657416-v",
+            "01716563-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 32751,
+        "created": "2018-04-07T23:53:47.000Z",
+        "lastUpdated": "2021-02-04T10:36:05.715Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "fare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/32751/32751_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "fare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "human response"
+        ],
+        "synsets": [
+            "00980581-v",
+            "01011267-v",
+            "00942415-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "psychology",
+            "human response"
+        ],
+        "_id": 9692,
+        "created": "2009-09-23T20:39:00.000Z",
+        "lastUpdated": "2021-05-31T09:18:09.483Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "dire",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "parlare",
+                "hasLocution": true
+            },
+            {
+                "keyword": "esprimere",
+                "hasLocution": true,
+                "type": 3
+            },
+            {
+                "keyword": "raccontare",
+                "type": 3,
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/9692/9692_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "dire"
+    },
+    {
+        "schematic": true,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 35949,
+        "created": "2019-10-31T21:50:26.000Z",
+        "lastUpdated": "2021-02-04T10:38:01.992Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "potere",
+                "hasLocution": true
+            },
+            {
+                "keyword": "essere capace",
+                "hasLocution": false,
+                "type": 3
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/35949/35949_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "potere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb"
+        ],
+        "synsets": [
+            "01839438-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb"
+        ],
+        "_id": 31758,
+        "created": "2017-12-04T12:07:01.000Z",
+        "lastUpdated": "2020-12-01T19:15:33.700Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "andare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/31758/31758_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "andare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "senses"
+        ],
+        "synsets": [
+            "02133754-v",
+            "02134989-v",
+            "02134765-v",
+            "02173796-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "human body",
+            "physiology",
+            "human physiology",
+            "senses"
+        ],
+        "_id": 2474,
+        "created": "2007-12-14T12:53:38.000Z",
+        "lastUpdated": "2020-11-27T11:07:43.219Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "vedere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "guardare",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "osservare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/2474/2474_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "vedere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb"
+        ],
+        "synsets": [
+            "01853188-v",
+            "02009962-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb"
+        ],
+        "_id": 11708,
+        "created": "2010-01-21T21:32:47.000Z",
+        "lastUpdated": "2021-05-19T19:59:32.215Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "venire",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "accorrere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "arrivare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/11708/11708_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "venire"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "02204104-v",
+            "02302103-v",
+            "02235554-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 28431,
+        "created": "2013-05-25T01:15:41.000Z",
+        "lastUpdated": "2021-02-22T20:26:49.283Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "dare",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "offrire",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/28431/28431_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "dare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "students"
+        ],
+        "synsets": [
+            "00596016-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "education",
+            "students"
+        ],
+        "_id": 9034,
+        "created": "2009-08-03T16:17:04.000Z",
+        "lastUpdated": "2021-03-20T06:59:03.741Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "sapere",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "alzare la mano",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/9034/9034_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "sapere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "01829179-v",
+            "01191258-v",
+            "00711034-v",
+            "00905166-v",
+            "00905052-v",
+            "01830126-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 5441,
+        "created": "2008-09-04T13:44:35.000Z",
+        "lastUpdated": "2021-02-04T10:28:00.821Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "desiderare",
+                "hasLocution": true
+            },
+            {
+                "type": 5,
+                "keyword": "io voglio",
+                "hasLocution": true
+            },
+            {
+                "type": 5,
+                "keyword": "voglio quello",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "chiedere",
+                "hasLocution": true
+            },
+            {
+                "type": 5,
+                "keyword": "voglio",
+                "hasLocution": true
+            },
+            {
+                "keyword": "volere",
+                "hasLocution": true,
+                "type": 3
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/5441/5441_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "volere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [],
+        "synsets": [
+            "01132241-n"
+        ],
+        "tags": [],
+        "_id": 15523,
+        "created": "2010-04-10T17:32:57.000Z",
+        "lastUpdated": "2021-05-03T19:51:02.510Z",
+        "keywords": [
+            {
+                "type": 2,
+                "keyword": "obbligo",
+                "hasLocution": false
+            },
+            {
+                "keyword": "dovere",
+                "hasLocution": true,
+                "type": 2
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/15523/15523_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "dovere"
+    },
+    {
+        "schematic": true,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "core vocabulary-communication"
+        ],
+        "synsets": [
+            "02661230-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "core vocabulary"
+        ],
+        "_id": 36392,
+        "keywords": [
+            {
+                "keyword": "stare",
+                "hasLocution": true,
+                "type": 3
+            }
+        ],
+        "created": "2019-12-15T15:59:40.183Z",
+        "lastUpdated": "2021-02-04T10:38:47.256Z",
+        "url": "https://static.arasaac.org/pictograms/36392/36392_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "stare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "food",
+            "basic needs"
+        ],
+        "synsets": [
+            "01170802-v",
+            "01159300-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "feeding",
+            "food",
+            "person",
+            "basic needs"
+        ],
+        "_id": 2349,
+        "created": "2007-12-13T11:01:55.000Z",
+        "lastUpdated": "2020-11-27T09:52:03.299Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "mangiare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/2349/2349_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "mangiare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "beverage",
+            "basic needs"
+        ],
+        "synsets": [
+            "01172332-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "feeding",
+            "food",
+            "beverage",
+            "person",
+            "basic needs"
+        ],
+        "_id": 2276,
+        "created": "2007-12-12T11:27:31.000Z",
+        "lastUpdated": "2020-11-27T09:53:44.716Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "bere",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/2276/2276_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "bere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "educational task",
+            "literature"
+        ],
+        "synsets": [
+            "00626756-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "education",
+            "educational task",
+            "literature"
+        ],
+        "_id": 31680,
+        "created": "2017-12-01T11:56:01.000Z",
+        "lastUpdated": "2020-12-19T10:54:33.176Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "leggere",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/31680/31680_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "leggere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": true,
+        "aacColor": false,
+        "skin": true,
+        "hair": false,
+        "downloads": 0,
+        "categories": [
+            "usual verbs",
+            "educational task",
+            "core vocabulary-communication",
+            "core vocabulary-education"
+        ],
+        "synsets": [
+            "01694952-v",
+            "00995046-v",
+            "06371284-n"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "usual verbs",
+            "education",
+            "educational task",
+            "core vocabulary"
+        ],
+        "_id": 2380,
+        "created": "2007-12-13T12:54:36.000Z",
+        "lastUpdated": "2021-02-04T08:59:36.919Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "scrivere",
+                "hasLocution": true
+            },
+            {
+                "type": 2,
+                "keyword": "scrittura",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/2380/2380_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "scrivere"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb",
+            "human response"
+        ],
+        "synsets": [
+            "00965602-v",
+            "01040538-v",
+            "00966726-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb",
+            "psychology",
+            "human response"
+        ],
+        "_id": 3345,
+        "created": "2008-02-01T13:42:20.000Z",
+        "lastUpdated": "2020-12-16T11:42:38.874Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "parlare",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "conversare",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "chiacchierare",
+                "hasLocution": true
+            },
+            {
+                "type": 3,
+                "keyword": "dialogare",
+                "hasLocution": true
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/3345/3345_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "parlare"
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+            "verb"
+        ],
+        "synsets": [
+            "02290474-v",
+            "00423043-v",
+            "02291049-v"
+        ],
+        "tags": [
+            "communication",
+            "language",
+            "verb"
+        ],
+        "_id": 5990,
+        "created": "2008-10-30T10:35:24.000Z",
+        "lastUpdated": "2020-12-18T16:35:15.497Z",
+        "keywords": [
+            {
+                "type": 3,
+                "keyword": "trovare la palla",
+                "hasLocution": false
+            }
+        ],
+        "desc": "",
+        "url": "https://static.arasaac.org/pictograms/5990/5990_hair-ED4120_skin-F5E5DE_500.png",
+        "word": "trovare"
+    }
+]

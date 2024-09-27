@@ -1,0 +1,26 @@
+.bubble {
+    display: flex !important;
+    margin-bottom: -1rem;
+}
+
+.bubble-content {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.outgoing {
+    background-color: #1890ff;
+    color: #fff;
+}
+.incoming{
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+.bubble .timestamp{
+    font-size: 0.8em;
+    margin-top: 5px;
+    text-align: right;
+}

@@ -6,7 +6,7 @@ module.exports = {
       "buffer": require.resolve("buffer/"),
       "stream": require.resolve("stream-browserify"),
       "util": require.resolve("util/"),
-      "path":false
+      "path": require.resolve("path-browserify")
     }
   },
   // Assicurati di avere anche altre configurazioni di webpack necessarie, ad esempio:

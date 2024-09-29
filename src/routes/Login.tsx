@@ -34,7 +34,7 @@ const Login: React.FC = () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`;
         if (code) {
             try {
-                Controller.tgApi.singIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string).then((stringSession)=>{
+                Controller.tgApi.signIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string).then((stringSession)=>{
                     if (stringSession) {
                         message.success('Login effettuato con successo!');
                         Controller.tgApi.setClient(stringSession).then(()=>{

@@ -65,7 +65,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 const fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
                 setMessages(fetchedMessages.reverse());
                 setLoading(false);
-                scrollToBottom();
+                //scrollToBottom();
                 fetchPictogramsHints(fetchedMessages);
             } catch (error) {
                 console.error('Failed to fetch messages:', error);
@@ -94,11 +94,11 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 return;
             }
             setMessages(prevMessages => [...moreMessages.reverse(), ...prevMessages]);
-            scrollToBottom();
         } catch (error) {
             console.error('Failed to fetch more messages:', error);
         }
     }, [messages, chatId]);
+    
 
     const handleSend = async () => {
         if (!inputValue) return;

@@ -23,6 +23,10 @@
     align-self: flex-start; 
 }
 
+.message {
+    text-wrap: wrap;
+}
+
 .bubble .timestamp {
     font-size: 0.75rem;
     margin-top: 0.5rem;

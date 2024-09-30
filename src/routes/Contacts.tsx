@@ -97,12 +97,12 @@ const Contacts: React.FC = () => {
                 }}
             >
                 {/* Title */}
-                <div style={{ padding: '20px 20px 0', textAlign: 'left' }}>
+                <div style={{ textAlign: 'left' }}>
                     <Title level={2}>Chats</Title>
                 </div>
 
                 {/* Search and Hide Group Button */}
-                <div style={{ padding: '0 20px 10px', display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Search
                         placeholder="Search contacts"
                         enterButton

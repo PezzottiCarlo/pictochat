@@ -54,7 +54,7 @@ const styles = {
     container: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: "space-between",
         height: '60px',
         borderBottom: '1px solid #e8e8e8', // Sottolineatura
         padding: "1.5rem .3rem",

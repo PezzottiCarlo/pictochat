@@ -45,7 +45,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         const lastMessage = messages[messages.length - 1];
         if (!lastMessage) return;
         let pictograms = WordsService.extractPictograms(lastMessage.message)
-        if (pictograms.length === 0) return;
+        if (pictograms.length === 0){
+            setPictoHints(new Map());
+            return;
+        }
         const pictoHints = new Map<number, Pictogram>();
         for (const picto of pictograms) {
             const pictoData = (await Controller.aac.searchKeyword(picto, false))[0];

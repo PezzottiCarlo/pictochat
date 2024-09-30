@@ -46,13 +46,7 @@ export class Controller {
                 await this.storage.addImage(id, photo);
             }
         }
-
-        this.tgApi.getProfilePhotos(id).then((photo) => {
-            if (photo) {
-                this.storage.updateImage(id.toString(), photo as Buffer);
-            }
-        });
-
+        
         return photo;
     }
 

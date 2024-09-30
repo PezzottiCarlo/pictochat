@@ -5,6 +5,8 @@ import { Dialog } from 'telegram/tl/custom/dialog';
 import DialogItem from '../components/DialogItem/DialogItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Controller } from '../lib/Controller';
+import { router } from './AppRoutes';
+import { CustomFooter } from '../components/CustomFooter/CustomFooter';
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -132,62 +134,10 @@ const Contacts: React.FC = () => {
                         loading={loading}
                     />
                 </InfiniteScroll>
-            </div>
 
-            <Tabs
-                defaultActiveKey="1"
-                centered
-                tabBarStyle={{
-                    position: 'fixed',
-                    paddingBottom:"1rem",
-                    bottom: -17,
-                    width: '100%',
-                    zIndex: 1000,
-                    borderTop: '1px solid #f0f0f0',
-                    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
-                    backdropFilter: 'blur(10px)' // Blur effect
-                }}
-                items={[
-                    {
-                        key: '1',
-                        label: (
-                            <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
-                                <MessageOutlined />
-                            </Space>
-                        ),
-                    },
-                    {
-                        key: '2',
-                        label: (
-                            <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
-                                <UserOutlined />
-                            </Space>
-                        ),
-                    },
-                    {
-                        key: '3',
-                        label: (
-                            <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
-                                <SettingOutlined />
-                            </Space>
-                        ),
-                    },
-                ]}
-                onTabClick={(key) => {
-                    switch (key) {
-                        case '1':
-                            break;
-                        case '2':
-                            console.log('Navigate to Profile');
-                            break;
-                        case '3':
-                            console.log('Navigate to Settings');
-                            break;
-                        default:
-                            break;
-                    }
-                }}
-            />
+                
+            </div>
+            <CustomFooter activeTab={1}/>
         </div>
     );
 };

@@ -1,52 +1,44 @@
 .bubble {
+    padding: 10px 15px;
+    margin-bottom: 10px;
     display: flex;
-    margin-bottom: .2rem;
-    flex-direction: column;
+    min-width: 100px;
+    align-items: flex-end;
 }
 
 .bubble-content {
-    max-width: 80%; 
-    padding: 0.8rem; 
-    border-radius: 12px;
-    text-align: left;
+    border-radius: 15px;
+    padding: 10px;
+    position: relative;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
-.outgoing {
-    background-color: #1890ff;
-    color: #fff;
-    align-self: flex-end; 
+.bubble-content.outgoing {
+    background-color: var(--ant-color-primary); /* Colore principale del tema */
+    color: var(--ant-color-text-light-solid);
+    border: 1px solid var(--ant-color-info); /* Colore del bordo */
+    align-self: flex-end;
+    margin-left: auto;
 }
 
-.incoming {
-    background-color: #f0f0f0;
-    color: #000;
-    align-self: flex-start; 
+.bubble-content.incoming {
+    background-color: var(--ant-color-bg-base);
+    color: var(--ant-color-text-base);
+    border: 1px solid var(--ant-border-color);
+    align-self: flex-start;
+    margin-right: auto;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: var(--ant-text-color-secondary); /* Colore secondario */
+    text-align: right;
+    margin-top: 5px;
 }
 
 .message {
-    text-wrap: wrap;
-}
-
-.bubble .timestamp {
-    font-size: 0.75rem;
-    margin-top: 0.5rem;
-    text-align: right;
-}
-
-.motion-div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.motion-div .anticon {
-    font-size: 2rem;
-}
-
-.pictogram-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }

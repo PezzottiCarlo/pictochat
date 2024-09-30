@@ -139,6 +139,7 @@ const Contacts: React.FC = () => {
                 centered
                 tabBarStyle={{
                     position: 'fixed',
+                    paddingBottom:"1rem",
                     bottom: -17,
                     width: '100%',
                     zIndex: 1000,

@@ -216,7 +216,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                             onOpenChange={setShowHints}
                         >
                             <motion.div whileTap={{ scale: 0.9 }} className="motion-div">
-                                <BulbFilled style={{ fontSize: '2rem', color: '#1890ff' }} />
+                                <BulbFilled style={{ fontSize: '2rem', color: 'var(--ant-color-primary)' }} />
                             </motion.div>
                         </Popover>
                     ) : (

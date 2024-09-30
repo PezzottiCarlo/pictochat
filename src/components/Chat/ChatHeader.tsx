@@ -61,7 +61,7 @@ const styles = {
     },
     backButton: {
         fontSize: '18px',
-        color: '#1890ff', // Colore del pulsante
+        color: "var(--ant-color-primary)", // Colore del testo del bottone
     },
     avatarContainer: {
         flex: '0 0 auto',

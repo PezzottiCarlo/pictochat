@@ -20,6 +20,7 @@ export const themeConfig = {
     colorInfo: "#722ed1",     
     fontSize: 14            
   },
+  cssVar:true
 };
 
 root.render(

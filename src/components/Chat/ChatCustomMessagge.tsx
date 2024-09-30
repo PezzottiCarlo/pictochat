@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Popover, Card, Image, Modal } from 'antd';
-import { TranslationOutlined } from '@ant-design/icons';
+import { DeleteOutlined, TranslationOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import '../../styles/ChatCustomMessage.css';
 import { Pictogram } from '../../lib/AAC';
-import { Words } from '../../lib/Words';
+import { WordsService } from '../../lib/WordsService';
 
 interface ChatCustomMessageProps {
     callback: (subjects: Pictogram[], verbs: Pictogram[], objects: Pictogram[]) => void;
@@ -64,15 +64,15 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
         let items: Pictogram[] = [];
         switch (currentSelection) {
             case 'subjects':
-                items = Words.getSubjects();
+                items = WordsService.getSubjects();
                 break;
             case 'verbs':
-                items = Words.getVerbs();
+                items = WordsService.getVerbs();
                 break;
             case 'objects':
                 const reversedVerbs = selectedPicto.verbs.slice().reverse();
                 reversedVerbs.forEach((verb) => {
-                    const objectsForVerb = Words.getObjects(verb.word);
+                    const objectsForVerb = WordsService.getObjects(verb.word);
                     items.push(...objectsForVerb); // Usa lo spread operator per inserire gli oggetti direttamente
                 });
                 break;
@@ -110,18 +110,32 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
 
     // Funzione per renderizzare più pittogrammi selezionati
     const renderPictoCards = (type: 'subjects' | 'verbs' | 'objects', defaultIndex: number) => (
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => handlePictoClick(type)}>
+
+        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Card className='custom-message-card' style={{ margin: '10px', padding: 0 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>        
                     {selectedPicto[type].map((picto, index) => (
-                        <Image
+                        <Card
                             key={index}
-                            src={picto.url}
-                            alt={`picto-${index}`}
-                            width={100}
-                            height={100}
-                            preview={false}
-                            style={{ margin: '5px' }}
+                            style={{ margin: '10px', padding: 0, cursor: 'pointer' }}
+                            cover={
+                                <Image
+                                    src={picto.url}
+                                    alt={picto.desc}
+                                    width={100}
+                                    height={100}
+                                    preview={false}
+                                    onClick={() => handlePictoClick(type)}
+                                />
+                            }
+                            actions={[
+                                <DeleteOutlined key="delete" onClick={() => setSelectedPicto((prevState) => ({
+                                    ...prevState,
+                                    [type]: prevState[type].filter((p) => p._id !== picto._id),
+                                }))} 
+                                style={{ fontSize: '1.5rem' }}
+                                />,
+                            ]}
                         />
                     ))}
                     {selectedPicto[type].length === 0 && (
@@ -131,6 +145,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                             width={100}
                             height={100}
                             preview={false}
+                            onClick={() => handlePictoClick(type)}
                         />
                     )}
                 </div>
@@ -169,7 +184,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                 title="Seleziona un pittogramma"
                 open={modalVisible}
                 onOk={handleModalOk}
-                onCancel={() => setModalVisible(false)}
+                onCancel={() => {setModalVisible(false);setVisible(true);}}
                 footer={null}
                 styles={{ mask: { background: 'rgba(0, 0, 0, .7)' }, content: { width: '80%', height: '100%' } }}
                 zIndex={5000}

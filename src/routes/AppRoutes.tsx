@@ -4,10 +4,12 @@ import { createHashRouter } from 'react-router-dom';
 import MyApp from '../MyApp';
 import Contacts from './Contacts';
 import Login from './Login';
-import Settings from './Settings';
+import WelcomePage from './Welcome';
 import { ChatWrapper } from './Chat';
 import NotFound from './NotFound';
 import ProtectedRoute from './ProtectedRoute';
+import Profile from './Profile';
+import Settings from './Settings';
 
 export const router = createHashRouter([
   {
@@ -16,8 +18,8 @@ export const router = createHashRouter([
     errorElement: <NotFound />,
     children: [
       {
-        path: 'settings',
-        element: <Settings />,
+        path: 'welcomePage',
+        element: <WelcomePage />,
       },
       {
         path: 'login',
@@ -36,6 +38,22 @@ export const router = createHashRouter([
         element: (
           <ProtectedRoute>
             <ChatWrapper />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'profile',
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         ),
       },

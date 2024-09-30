@@ -1,0 +1,138 @@
+[
+    {
+        "question": "Cosa vuoi per cena?",
+        "answers": ["Carne", "Pesce", "Pizza"]
+    },
+    {
+        "question": "Dove esci più tardi?",
+        "answers": ["Parco", "Cinema", "Bar"]
+    },
+    {
+        "question": "Dove sei?",
+        "answers": ["Casa", "Scuola", "Lavoro", "Palestra"]
+    },
+    {
+        "question": "Quando torni?",
+        "answers": ["Tra poco", "Domani", "Un'ora", "Non so"]
+    },
+    {
+        "question": "Come va?",
+        "answers": ["Bene", "Male", "Felice", "Triste"]
+    },
+    {
+        "question": "Come stai?",
+        "answers": ["Bene", "Male", "Felice", "Triste"]
+    },
+    {
+        "question": "Animale preferito?",
+        "answers": ["Cane", "Gatto", "Pappagallo", "Coniglio"]
+    },
+    {
+        "question": "Qual è il tuo film preferito?",
+        "answers": ["Commedia", "Drammatico", "Azione", "Fantascienza"]
+    },
+    {
+        "question": "Cosa fai nel tempo libero?",
+        "answers": ["Leggo", "Guardo la TV", "Vado in palestra", "Cucino"]
+    },
+    {
+        "question": "Hai piani per il weekend?",
+        "answers": ["Sì", "No"]
+    },
+    {
+        "question": "Che tempo fa oggi?",
+        "answers": ["Sole", "Pioggia", "Nuvoloso", "Temporale"]
+    },
+    {
+        "question": "Qual è il tuo hobby?",
+        "answers": ["Cucinare", "Disegnare", "Giocare a videogiochi", "Fare sport"]
+    },
+    {
+        "question": "Qual è il tuo colore preferito?",
+        "answers": ["Rosso", "Blu", "Verde", "Giallo"]
+    },
+    {
+        "question": "Dove vorresti andare in vacanza?",
+        "answers": ["Mare", "Montagna", "Città d'arte", "Camping"]
+    },
+    {
+        "question": "Cosa hai fatto ieri sera?",
+        "answers": ["Uscito con gli amici", "Guardato un film", "Letto un libro", "Cenato fuori"]
+    },
+    {
+        "question": "Qual è stato il momento più bello della tua giornata?",
+        "answers": ["Una bella passeggiata", "Una chiacchierata con un amico", "Una buona notizia", "Una risata"]
+    },
+    {
+        "question": "Qual è il tuo piatto preferito?",
+        "answers": ["Pizza", "Sushi", "Lasagne", "Hamburger"]
+    },
+    {
+        "question": "Hai un animale domestico?",
+        "answers": ["Sì", "No"]
+    },
+    {
+        "question": "Come trascorri il Natale?",
+        "answers": ["In famiglia", "Con gli amici", "In viaggio", "A casa"]
+    },
+    {
+        "question": "Cosa ti piace fare di più nel weekend?",
+        "answers": ["Rilassarmi", "Uscire", "Viaggiare", "Sperimentare nuove attività"]
+    },
+    {
+        "question": "Qual è il tuo sogno nel cassetto?",
+        "answers": ["Viaggiare per il mondo", "Aprire un'attività", "Imparare una nuova lingua", "Scrivere un libro"]
+    },
+    {
+        "question": "Ti piace cucinare?",
+        "answers": ["Sì", "No"]
+    },
+    {
+        "question": "Qual è la tua canzone preferita?",
+        "answers": ["Pop", "Rock", "Hip hop", "Classica"]
+    },
+    {
+        "question": "Cosa ti fa ridere?",
+        "answers": ["Commedie", "Battute", "Situazioni divertenti", "Umorismo surreale"]
+    },
+    {
+        "question": "Hai fratelli o sorelle?",
+        "answers": ["Sì", "No"]
+    },
+    {
+        "question": "Qual è il tuo piatto forte in cucina?",
+        "answers": ["Pasta al pesto", "Tortellini fatti in casa", "Pollo alla griglia", "Tiramisù"]
+    },
+    {
+        "question": "Cosa ti piace di più del tuo lavoro?",
+        "answers": ["La sfida", "L'ambiente", "I colleghi", "La creatività"]
+    },
+    {
+        "question": "Qual è stata la tua ultima vacanza?",
+        "answers": ["Al mare", "In montagna", "In città", "All'estero"]
+    },
+    {
+        "question": "Se potessi avere un superpotere, quale sceglieresti?",
+        "answers": ["Volare", "Invisibilità", "Superforza", "Teletrasporto"]
+    },
+    {
+        "question": "Ti piace leggere?",
+        "answers": ["Sì", "No"]
+    },
+    {
+        "question": "Qual è il tuo libro preferito?",
+        "answers": ["Fantasy", "Romanzo storico", "Thriller", "Biografia"]
+    },
+    {
+        "question": "Cosa ti piace di più della tua città?",
+        "answers": ["La cultura", "Il cibo", "I parchi", "Le attività culturali"]
+    },
+    {
+        "question": "Hai un obiettivo per quest'anno?",
+        "answers": ["Viaggiare più spesso", "Migliorare nella carriera", "Imparare una nuova abilità", "Avere più tempo libero"]
+    },
+    {
+        "question": "Hai paura di qualcosa?",
+        "answers": ["Sì", "No"]
+    }
+]

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
-import { Layout, Input, Button, List, Skeleton, Popover, Row, Col } from 'antd';
+import { Layout, Input, Button, List, Skeleton, Popover, Row, Col, Empty } from 'antd';
 import { BulbFilled, SendOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
@@ -31,9 +31,10 @@ export const ChatWrapper: React.FC = () => {
 export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [messages, setMessages] = useState<Api.Message[]>([]);
     const [inputValue, setInputValue] = useState<string>('');
-    const [hasMore, setHasMore] = useState<boolean>(true);
     const [showHints, setShowHints] = useState<boolean>(false);
     const [pictoHints, setPictoHints] = useState<Map<number, Pictogram>>(new Map());
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const [prevScrollTop, setPrevScrollTop] = useState(0);
 
@@ -57,18 +58,22 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
-                setMessages(fetchedMessages.reverse());
-                fetchPictogramsHints(fetchedMessages);
+                let fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
+                fetchedMessages = fetchedMessages.filter((message) => message.className === "Message");
 
+                if (fetchedMessages.length < messageBatchSize) {
+                    setHasMore(false);
+                }
+                setMessages(fetchedMessages.reverse());
+                setLoading(false);
+                fetchPictogramsHints(fetchedMessages);
             } catch (error) {
                 console.error('Failed to fetch messages:', error);
             }
         };
 
         fetchMessages().then(scrollToBottom);
-        //const intervalId = setInterval(fetchMessages, 5000); // Aggiornamento ogni 5 secondi
-        //return () => clearInterval(intervalId); // Clear interval on component unmount
+        setInterval(fetchMessages, 5000);
     }, [chatId, fetchPictogramsHints]);
 
 
@@ -81,11 +86,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         const lastMessageId = messages[0]?.id;
         try {
             const moreMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize, max_id: lastMessageId });
-            if (moreMessages.length === 0) {
-                setHasMore(false);
-                return;
-            }
-
             setMessages(prevMessages => [...moreMessages.reverse(), ...prevMessages]);
 
             // Usiamo un timeout per assicurarci che la UI abbia renderizzato i nuovi messaggi prima di modificare lo scroll
@@ -162,23 +162,45 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         <Layout style={{ height: '100vh' }}>
             <ChatHeader id={chatId} />
 
-            <Content id="scrollableDiv" style={{ padding: '0.5rem', overflowY: 'scroll', overflowX: 'hidden', display: 'flex', flexDirection: 'column-reverse' }} ref={contentRef}>
+            <Content
+                id="scrollableDiv"
+                style={{
+                    padding: '0.5rem',
+                    overflowY: 'scroll',
+                    overflowX: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column-reverse',
+                }}
+                ref={contentRef}
+            >
                 <InfiniteScroll
                     dataLength={messages.length}
                     next={fetchMoreMessages}
                     hasMore={hasMore}
                     inverse={true}
-                    loader={<Skeleton paragraph={{ rows: 0 }} active round />}
+                    loader={
+                        !loading &&
+                        <Skeleton paragraph={{ rows: 0 }} active round />
+                    }
                     scrollableTarget="scrollableDiv"
-                    style={{ display: 'flex', flexDirection: 'column-reverse' }}>
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column-reverse',
+                    }}
+                >
                     <List
+                        loading={loading}
                         itemLayout="horizontal"
+                        locale={{
+                            emptyText: <Empty description={null} image={null} />
+                        }}
                         dataSource={messages}
                         renderItem={item => <ChatBubble message={item} />}
                         className='chat-list'
                     />
                 </InfiniteScroll>
             </Content>
+
 
             <Footer style={{ padding: '0.5rem', paddingBottom: '1.5rem' }}>
                 <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>

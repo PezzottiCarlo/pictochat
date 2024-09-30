@@ -26,7 +26,7 @@ export class TgApi {
             autoReconnect: true,
             downloadRetries: 5,
             maxConcurrentDownloads: 5,
-            baseLogger: new Logger(LogLevel.WARN)
+            baseLogger: new Logger(LogLevel.WARN),
         });
     }
 
@@ -36,19 +36,17 @@ export class TgApi {
             stringSession = new StringSession(stringSession);
         }
         this.session = stringSession;
-        this.client = this.createClient(this.session);
-        await this.connect();
+        this.client = this.createClient(stringSession);
     }
 
     // Metodo per connettersi, assicurandosi che la connessione sia stabilita una sola volta
     async connect() {
-        if (!this.client.connected) {
-            try {
-                await this.client.connect();
-                console.log("Connesso a Telegram");
-            } catch (error) {
-                console.error("Errore nella connessione a Telegram:", error);
-            }
+        if (this.client.connected) return;
+        try {
+            await this.client.connect();
+            console.log("Connesso a Telegram");
+        } catch (error) {
+            console.error("Errore nella connessione a Telegram:", error);
         }
     }
 

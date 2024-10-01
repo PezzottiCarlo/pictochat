@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
 import { Layout, Input, Button, List, Skeleton, Popover, Row, Col, Empty } from 'antd';
 import { BulbFilled, SendOutlined } from '@ant-design/icons';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
 import { motion } from 'framer-motion';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -16,6 +16,8 @@ import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 import { WordsService } from '../lib/WordsService';
+import { router } from './AppRoutes';
+import { Dialog } from 'telegram/tl/custom/dialog';
 
 const { Content, Footer } = Layout;
 
@@ -29,23 +31,25 @@ export const ChatWrapper: React.FC = () => {
 };
 
 export const Chat: React.FC<ChatProps> = ({ chatId }) => {
+    const location = useLocation();
+    const dialog = location.state as Dialog;
+    const contentRef = useRef<HTMLDivElement>(null);
+    const messageBatchSize = 20;
+
     const [messages, setMessages] = useState<Api.Message[]>([]);
     const [inputValue, setInputValue] = useState<string>('');
     const [showHints, setShowHints] = useState<boolean>(false);
     const [pictoHints, setPictoHints] = useState<Map<number, Pictogram>>(new Map());
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(true);
-
     const [prevScrollTop, setPrevScrollTop] = useState(0);
 
-    const contentRef = useRef<HTMLDivElement>(null);
-    const messageBatchSize = 20;
 
     const fetchPictogramsHints = useCallback(async (messages: Api.Message[]) => {
         const lastMessage = messages[messages.length - 1];
         if (!lastMessage) return;
         let pictograms = WordsService.extractPictograms(lastMessage.message)
-        if (pictograms.length === 0){
+        if (pictograms.length === 0) {
             setPictoHints(new Map());
             return;
         }
@@ -160,6 +164,14 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             }
         }, 0);
     };
+    
+
+    async function getName(message: Api.Message): Promise<string | undefined> {
+        if(!(dialog.entity?.className === "Channel")) return Promise.resolve(undefined);
+        let id = (message.fromId as any).userId
+        //let tempName = (await Controller.getDialog(id))?.name;
+        return id.toString();
+    }
 
     return (
         <Layout style={{ height: '100vh' }}>
@@ -198,7 +210,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                             emptyText: <Empty description={null} image={null} />
                         }}
                         dataSource={messages}
-                        renderItem={item => <ChatBubble message={item} />}
+                        renderItem={item => <ChatBubble message={item} name={getName(item)} />}
                         className='chat-list'
                     />
                 </InfiniteScroll>

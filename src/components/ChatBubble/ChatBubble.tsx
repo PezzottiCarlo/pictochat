@@ -8,6 +8,7 @@ import { WordsService } from '../../lib/WordsService';
 
 interface ChatBubbleProps {
     message: Api.Message;
+    name?: Promise<string|undefined>;
 }
 
 const formatDate = (timestamp: number): string => {
@@ -15,10 +16,19 @@ const formatDate = (timestamp: number): string => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
+const ChatBubble: React.FC<ChatBubbleProps> = ({ message,name }) => {
     const bubbleClass = message.out ? 'outgoing' : 'incoming';
-
     const [pictoSuggestions, setPictoSuggestions] = useState<Pictogram[] | null>(null);
+    const [iName, setIName] = useState<string | undefined>(undefined);
+
+    //when name is resolved, update the component
+    useEffect(() => {
+        name?.then((name) => {
+            if (name) {
+                setIName(name);
+            }
+        });
+    }, [name]);
 
     useEffect(() => {
         if (!message) return;
@@ -32,6 +42,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
         <List.Item className={`bubble`} onClick={() => WordsService.textToSpeech(message.message)}>
             <Flex align="center" justify={message.out ? "flex-end" : "flex-start"} style={{ width: '100%' }}>
                 <div className={`bubble-content ${bubbleClass}`}>
+                    {name && <div className="name">{iName}</div>}
                     <div className="message">{message.message}</div>
                     {message.media && <BubbleMedia media={message.media} />}
                     {pictoSuggestions && (

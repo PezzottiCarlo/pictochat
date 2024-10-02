@@ -9,7 +9,6 @@ import { ChatWrapper } from './Chat';
 import NotFound from './NotFound';
 import ProtectedRoute from './ProtectedRoute';
 import Profile from './Profile';
-import Settings from './Settings';
 
 export const router = createHashRouter([
   {
@@ -48,15 +47,7 @@ export const router = createHashRouter([
             <Profile />
           </ProtectedRoute>
         ),
-      },
-      {
-        path: 'settings',
-        element: (
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        ),
-      },
+      }
     ],
   },
 ]);

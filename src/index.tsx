@@ -9,7 +9,7 @@ import { router } from './routes/AppRoutes';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
-if (window.matchMedia('(display-mode: standalone)').matches) {  
+if (window.matchMedia('(display-mode: standalone)').matches) {
   //alert("App correctly installed")
   //do stuff if this on
 }
@@ -17,18 +17,16 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
 export const themeConfig = {
   token: {
     colorPrimary: "#722ed1",
-    colorInfo: "#722ed1",     
-    fontSize: 14            
+    colorInfo: "#722ed1",
+    fontSize: 14
   },
-  cssVar:true
+  cssVar: true
 };
 
 root.render(
-  <React.StrictMode>
-    <SessionProvider>
-      <ConfigProvider theme={themeConfig}>
-        <RouterProvider router={router} />
-      </ConfigProvider>
-    </SessionProvider>
-  </React.StrictMode>
+  <SessionProvider>
+    <ConfigProvider theme={themeConfig}>
+      <RouterProvider router={router} />
+    </ConfigProvider>
+  </SessionProvider>
 );

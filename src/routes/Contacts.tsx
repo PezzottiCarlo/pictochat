@@ -7,6 +7,8 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { Controller } from '../lib/Controller';
 import { router } from './AppRoutes';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
+import { updateManager } from '../MyApp';
+import { Api } from 'telegram/tl/api';
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -19,8 +21,17 @@ const Contacts: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [showGroups, setShowGroups] = useState<boolean>(true);
 
-    // Fetch dialogs when the component mounts
     useEffect(() => {
+        updateManager.set("contacts", (update) => {
+            let shortMess = update.originalUpdate as Api.UpdateShortMessage;
+            let fromID = shortMess.userId;
+            //WORKAROUND: This is a workaround to get the dialog from the update
+            Controller.tgApi.getDialogs().then((dialogs) => {
+                console.log('updateManager', dialogs);
+                setContactsData(dialogs);
+                setFilteredContacts(dialogs);
+            });
+        });
         let isMounted = true;
 
         const fetchContacts = async () => {
@@ -135,9 +146,9 @@ const Contacts: React.FC = () => {
                     />
                 </InfiniteScroll>
 
-                
+
             </div>
-            <CustomFooter activeTab={1}/>
+            <CustomFooter activeTab={1} />
         </div>
     );
 };

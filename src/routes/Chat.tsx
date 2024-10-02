@@ -18,6 +18,7 @@ import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 import { WordsService } from '../lib/WordsService';
 import { router } from './AppRoutes';
 import { Dialog } from 'telegram/tl/custom/dialog';
+import { updateManager } from '../MyApp';
 
 const { Content, Footer } = Layout;
 
@@ -44,6 +45,12 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [prevScrollTop, setPrevScrollTop] = useState(0);
 
+    useEffect(() => {
+        updateManager.set("chat", (update) => {
+            let mes = update.message as Api.Message;
+            setMessages((prevMessages) => [...prevMessages, mes]);
+        });
+    }, []);
 
     const fetchPictogramsHints = useCallback(async (messages: Api.Message[]) => {
         const lastMessage = messages[messages.length - 1];
@@ -62,6 +69,8 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         setPictoHints(pictoHints);
     }, []);
 
+    
+
     useEffect(() => {
         const fetchMessages = async () => {
             try {
@@ -78,9 +87,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 console.error('Failed to fetch messages:', error);
             }
         };
-
         fetchMessages().then(scrollToBottom);
-        setInterval(fetchMessages, 5000);
     }, [chatId, fetchPictogramsHints]);
 
 

@@ -15,6 +15,10 @@ export class Controller {
         return dialog;
     }
 
+    static async markAsReadLocal(id: bigInt.BigInteger): Promise<void> {
+        await this.storage.markAsRead(id.toString());
+    }
+
     static async getDialogs() : Promise<Dialog[]>{
         let storedDialogs = await this.storage.getDialogs();
         

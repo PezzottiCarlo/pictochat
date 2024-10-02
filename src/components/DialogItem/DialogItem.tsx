@@ -26,6 +26,7 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
 
     const handleClick = (id: bigInt.BigInteger|undefined) => {
         if (!id) return;
+        Controller.markAsReadLocal(id);
         router.navigate(`/chat/${id}`,{state:Utils.serializeDialog(dialog)});
     };
 

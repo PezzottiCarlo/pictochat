@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List, Input, Skeleton, Button, Space, Tabs, Typography } from 'antd';
+import { List, Input, Skeleton, Button, Space, Tabs, Typography, message } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, MessageOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import DialogItem from '../components/DialogItem/DialogItem';
@@ -25,15 +25,25 @@ const Contacts: React.FC = () => {
         updateManager.set("contacts", (update) => {
             let shortMess = update.originalUpdate as Api.UpdateShortMessage;
             let fromID = shortMess.userId;
-            //WORKAROUND: This is a workaround to get the dialog from the update
+        
+            // WORKAROUND: Recupero tutti i dialoghi per poi trovare quello specifico
             Controller.tgApi.getDialogs().then((dialogs) => {
-                console.log('updateManager', dialogs);
-                setContactsData(dialogs);
-                setFilteredContacts(dialogs);
+                let dialog = dialogs.find((d) => d.id?.equals(fromID));
+                if (dialog) {
+                    setContactsData((prevContacts) => {
+                        const filteredContacts = prevContacts.filter((d) => !d.id?.equals(fromID));
+                        return [dialog!, ...filteredContacts];
+                    });
+        
+                    message.info('New message from ' + dialog!.name);
+                }
+            }).catch((error) => {
+                console.error("Errore nel recupero dei dialoghi:", error);
             });
         });
-        let isMounted = true;
+        
 
+        let isMounted = true;
         const fetchContacts = async () => {
             try {
                 setLoading(true);

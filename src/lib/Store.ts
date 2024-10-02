@@ -8,6 +8,7 @@ import { parse } from 'flatted';
 export type SerializableDialog = Omit<Dialog, 'id'> & { id: string };
 
 export class Store {
+    
     private db: Database;
 
     constructor(dbName: string, version: number) {
@@ -79,5 +80,13 @@ export class Store {
 
     public async updateMessage(message: Api.Message): Promise<void> {
         await this.db.updateObject<Api.Message>('messages', message);
+    }
+
+    public async markAsRead(id: string): Promise<void> {
+        const dialog = await this.getDialog(id);
+        if (dialog) {
+            dialog.unreadCount = 0;
+            await this.updateDialog(dialog);
+        }
     }
 }

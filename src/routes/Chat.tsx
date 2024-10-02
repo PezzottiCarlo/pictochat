@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
 import { Layout, Input, Button, List, Skeleton, Popover, Row, Col, Empty } from 'antd';
-import { BulbFilled, SendOutlined } from '@ant-design/icons';
+import { BulbFilled, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useLocation, useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
 import { motion } from 'framer-motion';
@@ -48,7 +48,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     useEffect(() => {
         updateManager.set("chat", (update) => {
             let mes = update.message as Api.Message;
-            setMessages((prevMessages) => [...prevMessages, mes]);
+            if (!mes.fromId) return;
+            if (((mes.fromId as any).userId as bigInt.BigInteger).equals(dialog.id as bigInt.BigInteger)) {
+                setMessages((prevMessages) => [...prevMessages, mes]);
+            }
         });
     }, []);
 
@@ -69,7 +72,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         setPictoHints(pictoHints);
     }, []);
 
-    
+
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -171,10 +174,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             }
         }, 0);
     };
-    
+
 
     async function getName(message: Api.Message): Promise<string | undefined> {
-        if(!(dialog.entity?.className === "Channel")) return Promise.resolve(undefined);
+        if (!(dialog.entity?.className === "Channel")) return Promise.resolve(undefined);
         let id = (message.fromId as any).userId
         //let tempName = (await Controller.getDialog(id))?.name;
         return id.toString();
@@ -255,6 +258,9 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                     </Col>
                     <Col>
                         <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
+                    </Col>
+                    <Col>
+                        <Button type="primary" icon={<PlusOutlined />} />
                     </Col>
                     <Col>
                         <ChatCustomMessage callback={handleCustomMessage} />

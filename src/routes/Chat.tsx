@@ -19,6 +19,7 @@ import { WordsService } from '../lib/WordsService';
 import { getActivePage, router } from './AppRoutes';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
+import { ChatSendMedia } from '../components/Chat/ChatSendMedia';
 
 const { Content, Footer } = Layout;
 
@@ -44,6 +45,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(true);
     const [prevScrollTop, setPrevScrollTop] = useState(0);
+    const [media, setMedia] = useState<File>();
 
     useEffect(() => {
         updateManager.set("chat", (update) => {
@@ -53,6 +55,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 setMessages((prevMessages) => [...prevMessages, mes]);
             }
         });
+
     }, []);
 
     const fetchPictogramsHints = useCallback(async (messages: Api.Message[]) => {
@@ -72,27 +75,25 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         setPictoHints(pictoHints);
     }, []);
 
-
-
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                let fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
-                fetchedMessages = fetchedMessages.filter((message) => message.className === "Message");
-
-                if (fetchedMessages.length < messageBatchSize) {
-                    setHasMore(false);
-                }
-                setMessages(fetchedMessages.reverse());
-                setLoading(false);
-                fetchPictogramsHints(fetchedMessages);
-            } catch (error) {
-                console.error('Failed to fetch messages:', error);
-            }
-        };
         fetchMessages().then(scrollToBottom);
     }, [chatId, fetchPictogramsHints]);
 
+    const fetchMessages = async () => {
+        try {
+            let fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
+            fetchedMessages = fetchedMessages.filter((message) => message.className === "Message");
+
+            if (fetchedMessages.length < messageBatchSize) {
+                setHasMore(false);
+            }
+            setMessages(fetchedMessages.reverse());
+            setLoading(false);
+            fetchPictogramsHints(fetchedMessages);
+        } catch (error) {
+            console.error('Failed to fetch messages:', error);
+        }
+    };
 
     const fetchMoreMessages = useCallback(async () => {
         if (!messages.length || !contentRef.current) return;
@@ -117,8 +118,16 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         }
     }, [messages, chatId, prevScrollTop]);
 
+
+
     const handleSend = async () => {
         if (!inputValue.trim()) return;
+
+        if (media) {
+            Controller.sendMedia(chatId, media, inputValue).then((update) => {
+                fetchMessages();
+            });
+        }
 
         const tempMessage: Api.Message = {
             id: Math.random(), // ID temporaneo
@@ -127,11 +136,17 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             out: true,
             fromId: { userId: 1 }, // Valore temporaneo
             peerId: { channelId: 1 }, // Valore temporaneo
+
         } as unknown as Api.Message;
 
         setMessages(prevMessages => [...prevMessages, tempMessage]);
         scrollToBottom();
         setInputValue('');
+
+        if (media) {
+            setMedia(undefined)
+            return;
+        }
 
         try {
             await Controller.tgApi.sendMessage(chatId, inputValue);
@@ -247,22 +262,22 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 </Row>
 
                 <Row justify="space-between" align="middle" gutter={10}>
-                    <Col span={18}>
-                        <Input
-                            value={inputValue}
-                            onChange={e => setInputValue(e.target.value)}
-                            onPressEnter={handleSend}
-                            placeholder="Type a message"
-                            style={{ width: '100%' }}
-                        />
+                    <Col span={20}>
+                        <Input.Group compact>
+                            <Input
+                                style={{ width: 'calc(100% - 35px)' }}
+                                value={inputValue}
+                                onChange={e => setInputValue(e.target.value)}
+                                onPressEnter={handleSend}
+                                placeholder="Type a message"
+                            />
+                            <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
+                        </Input.Group>
                     </Col>
-                    <Col>
-                        <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
+                    <Col span={2}>
+                        <ChatSendMedia media={media} setMedia={setMedia} />
                     </Col>
-                    <Col>
-                        <Button type="primary" icon={<PlusOutlined />} />
-                    </Col>
-                    <Col>
+                    <Col span={2}>
                         <ChatCustomMessage callback={handleCustomMessage} />
                     </Col>
                 </Row>

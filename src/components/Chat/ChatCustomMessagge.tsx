@@ -177,7 +177,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                     motionDeadline: 500,
                 }}
             >
-                <Button onClick={handleButton} icon={<TranslationOutlined />} />
+                <Button type='primary' onClick={handleButton} icon={<TranslationOutlined />} />
             </Popover>
 
             <Modal

@@ -6,6 +6,9 @@ import { Entity } from "telegram/define";
 import { EventBuilder } from "telegram/events/common";
 import { Buffer } from "buffer";
 import { LogLevel } from "telegram/extensions/Logger";
+import { ParseInterface } from "telegram/client/messageParse";
+import bigInt from "big-integer";
+import { CustomFile } from "telegram/client/uploads";
 
 const apiId = 27988472;
 const apiHash = "aac13796c816fee0e9557169aecbc071";
@@ -86,8 +89,10 @@ export class TgApi {
 
     // Scarica media specifico
     async downloadMedia(media: Api.TypeMessageMedia, quality: number): Promise<any> {
-        await this.connect();
-        return await this.client.downloadMedia(media, { thumb: quality });
+        try {
+            await this.connect();
+            return await this.client.downloadMedia(media, { thumb: quality });
+        } catch (error){return}
     }
 
     // Ottiene tutti i dialoghi (filtrati per gruppi e utenti)
@@ -136,4 +141,34 @@ export class TgApi {
         );
         return this.client.session.save() as unknown as string;
     }
+
+    async sendMedia(chatId: bigInt.BigInteger, file: File, isPhoto: boolean, options?: { caption?: string; parseMode?: ParseInterface }): Promise<Api.TypeUpdates> {
+        await this.connect();
+        let entities = undefined;
+        const { caption, parseMode } = options || {};
+        const message = await this.client.invoke(
+            new Api.messages.SendMedia({
+                peer: chatId,
+                media: (isPhoto ? new Api.InputMediaUploadedPhoto({
+                    file: await this.client.uploadFile({
+                        file: file,
+                        workers: 1,
+                    }),
+                }) : new Api.InputMediaUploadedDocument({
+                    file: await this.client.uploadFile({
+                        file: file,
+                        workers: 1,
+                    }),
+                    mimeType: file.type,
+                    attributes: [new Api.DocumentAttributeFilename({ fileName: file.name })],
+                })),
+                message: caption,
+                entities: entities,
+                randomId: bigInt.randBetween(0, 1000000000),
+                invertMedia: isPhoto
+            })
+        );
+        return message;
+    }
+
 }

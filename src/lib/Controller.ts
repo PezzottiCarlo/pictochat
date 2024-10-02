@@ -15,13 +15,20 @@ export class Controller {
         return dialog;
     }
 
+    static async sendMedia(chatId: bigInt.BigInteger, media: File, caption: string): Promise<Api.TypeUpdates> {
+        let isPhoto = media.type.startsWith('image');
+        return await this.tgApi.sendMedia(chatId, media,isPhoto, {
+            caption: caption
+        });
+    }
+
     static async markAsReadLocal(id: bigInt.BigInteger): Promise<void> {
         await this.storage.markAsRead(id.toString());
     }
 
-    static async getDialogs() : Promise<Dialog[]>{
+    static async getDialogs(): Promise<Dialog[]> {
         let storedDialogs = await this.storage.getDialogs();
-        
+
         if (storedDialogs.length === 0) {
             storedDialogs = await this.tgApi.getDialogs();
             for (const dialog of storedDialogs) {
@@ -34,7 +41,7 @@ export class Controller {
                 if (storedDialogs.find((d) => d.id?.equals(dialog.id as bigInt.BigInteger))) {
                     console.log('updating dialog');
                     this.storage.updateDialog(dialog);
-                }else{
+                } else {
                     this.storage.addDialog(dialog);
                 }
             }
@@ -50,7 +57,7 @@ export class Controller {
                 await this.storage.addImage(id, photo);
             }
         }
-        
+
         return photo;
     }
 

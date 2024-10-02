@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Api } from 'telegram';
 import { Image, Card } from 'antd';
 import { Controller } from '../../lib/Controller';
+import { FileOutlined, FilePdfFilled } from '@ant-design/icons';
 
 interface MediaProps {
     media: Api.TypeMessageMedia | null;
@@ -12,9 +13,9 @@ const BubbleMedia: React.FC<MediaProps> = ({ media }) => {
 
     useEffect(() => {
         const fetchMedia = async () => {
-            if(media === null) return;
-            const result = await Controller.tgApi.downloadMedia(media,0);
-            setImageSrc(`data:image/png;base64,${(result)?Buffer.from(result).toString('base64'):null}`);
+            if (media === null) return;
+            const result = await Controller.tgApi.downloadMedia(media, 1);
+            setImageSrc(`data:image/png;base64,${(result) ? Buffer.from(result).toString('base64') : null}`);
         };
         fetchMedia();
     }, [media]);
@@ -29,14 +30,19 @@ const BubbleMedia: React.FC<MediaProps> = ({ media }) => {
         );
     } else if (media instanceof Api.MessageMediaDocument) {
         const document = media.document as Api.Document;
-        const fileName = ""
-        const fileUrl = ""
-
-        return (
-            <Card title={fileName} extra={<a href={fileUrl}>Download</a>} style={{ width: 300 }}>
-                <p>Document ID: {document.id.toString()}</p>
-            </Card>
-        );
+        if (document.mimeType === 'application/pdf') {
+            return (
+                <div>
+                    <FilePdfFilled type='text' style={{ fontSize: '3rem' }} />
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <FileOutlined type='text' style={{ fontSize: '3rem' }} />
+                </div>
+            );
+        }
     } else if (media instanceof Api.MessageMediaGeo) {
         const geo = media.geo as Api.GeoPoint;
         return (

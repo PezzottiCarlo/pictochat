@@ -38,15 +38,7 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                             <UserOutlined />
                         </Space>
                     ),
-                },
-                {
-                    key: '3',
-                    label: (
-                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
-                            <SettingOutlined />
-                        </Space>
-                    ),
-                },
+                }
             ]}
             onTabClick={(key) => {
                 switch (key) {
@@ -57,10 +49,6 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                     case '2':
                         if (activeTab === 2) return;
                         router.navigate('/profile');
-                        break;
-                    case '3':
-                        if (activeTab === 3) return;
-                        router.navigate('/settings');
                         break;
                     default:
                         break;

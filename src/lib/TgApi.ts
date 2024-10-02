@@ -96,9 +96,8 @@ export class TgApi {
         const dialogs = await this.client.getDialogs({ archived: false });
         return dialogs.filter(dialog => dialog.isGroup || !dialog.isChannel || dialog.isUser);
     }
-
     // Ottiene i dettagli di un singolo dialog
-    async getDialog(chatId: bigInt.BigInteger): Promise<Entity> {
+    async getEntity(chatId: bigInt.BigInteger): Promise<Entity> {
         await this.connect();
         return await this.client.getEntity(chatId);
     }

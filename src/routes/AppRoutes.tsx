@@ -10,6 +10,15 @@ import NotFound from './NotFound';
 import ProtectedRoute from './ProtectedRoute';
 import Profile from './Profile';
 
+
+export const getActivePage = ():string => {
+  let hash = window.location.hash;
+  let page = hash.split('/');
+  if (page.length > 1)
+    return page[1];
+  return page[0];
+}
+
 export const router = createHashRouter([
   {
     path: '/',

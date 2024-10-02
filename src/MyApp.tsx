@@ -1,10 +1,11 @@
 // MyApp.tsx
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { App } from "antd";
-import { useSession, useIsAuthenticated, useIsSetting } from "./context/SessionContext";
+import { useIsAuthenticated, useIsSetting } from "./context/SessionContext";
 import { useNavigate, Outlet } from "react-router-dom";
 import { Controller } from "./lib/Controller";
 import { NewMessage } from "telegram/events";
+import { getActivePage } from "./routes/AppRoutes";
 
 export const updateManager = new Map<string, (update: any) => void>();
 
@@ -15,9 +16,7 @@ function MyApp() {
 
   useEffect(() => {
     Controller.tgApi.handleUpdates((update) => {
-      updateManager.forEach((callback) => {
-        callback(update);
-      });
+      updateManager.get(getActivePage())?.(update);
     },new NewMessage());
   }, []);
 

@@ -16,7 +16,7 @@ import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 import { WordsService } from '../lib/WordsService';
-import { router } from './AppRoutes';
+import { getActivePage, router } from './AppRoutes';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
 

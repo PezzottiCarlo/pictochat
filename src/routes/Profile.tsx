@@ -81,7 +81,7 @@ const Profile: React.FC = () => {
                         </div>
                         <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
                             <Row gutter={24}>
-                                <Col style={{ display: 'flex', justifyContent: 'space-between',width:"100%" }}>
+                                <Col style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center", width: "100%" }}>
                                     {avatar}
                                     <DialogAvatar
                                         imageBuffer={null}
@@ -107,69 +107,65 @@ const Profile: React.FC = () => {
                                 </Col>
                             </Row>
                             <Divider />
+                            <Title level={3}>Impostazioni</Title>
 
-                            {/* Impostazioni Aggiuntive */}
-                            <div style={{ marginTop: '40px' }}>
-                                <Title level={3}>Impostazioni</Title>
+                            <h3>Dimensione del Font</h3>
+                            <Slider
+                                min={12}
+                                max={24}
+                                value={fontSize}
+                                onChange={(value) => setFontSize(value)}
+                                tooltip={{ open: true }}
+                            />
 
-                                <h3>Dimensione del Font</h3>
-                                <Slider
-                                    min={12}
-                                    max={24}
-                                    value={fontSize}
-                                    onChange={(value) => setFontSize(value)}
-                                    tooltip={{ open: true }}
-                                />
+                            <h3>Colore dei Capelli</h3>
+                            <Select
+                                value={hairColor}
+                                onChange={(value) => setHairColor(value as HairColor)}
+                                style={{ width: '100%' }}
+                                placeholder="Seleziona un colore"
+                            >
+                                {Object.values(HairColor).map((color) => (
+                                    <Option key={color} value={color}>
+                                        {color}
+                                    </Option>
+                                ))}
+                            </Select>
 
-                                <h3>Colore dei Capelli</h3>
-                                <Select
-                                    value={hairColor}
-                                    onChange={(value) => setHairColor(value as HairColor)}
-                                    style={{ width: '100%' }}
-                                    placeholder="Seleziona un colore"
-                                >
-                                    {Object.values(HairColor).map((color) => (
-                                        <Option key={color} value={color}>
-                                            {color}
-                                        </Option>
-                                    ))}
-                                </Select>
+                            <h3>Colore della Pelle</h3>
+                            <Select
+                                value={skinColor}
+                                onChange={(value) => setSkinColor(value as SkinColor)}
+                                style={{ width: '100%' }}
+                                placeholder="Seleziona un colore"
+                            >
+                                {Object.values(SkinColor).map((color) => (
+                                    <Option key={color} value={color}>
+                                        {color}
+                                    </Option>
+                                ))}
+                            </Select>
 
-                                <h3>Colore della Pelle</h3>
-                                <Select
-                                    value={skinColor}
-                                    onChange={(value) => setSkinColor(value as SkinColor)}
-                                    style={{ width: '100%' }}
-                                    placeholder="Seleziona un colore"
-                                >
-                                    {Object.values(SkinColor).map((color) => (
-                                        <Option key={color} value={color}>
-                                            {color}
-                                        </Option>
-                                    ))}
-                                </Select>
+                            <h3>Tema</h3>
+                            <Radio.Group
+                                onChange={(e) => setTheme(e.target.value)}
+                                value={theme}
+                                style={{ width: '100%' }}
+                            >
+                                <Radio.Button value="light" style={{ width: '100%', textAlign: 'center' }}>
+                                    Light
+                                </Radio.Button>
+                                <Radio.Button value="dark" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
+                                    Dark
+                                </Radio.Button>
+                                <Radio.Button value="high-contrast" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
+                                    High Contrast
+                                </Radio.Button>
+                            </Radio.Group>
 
-                                <h3>Tema</h3>
-                                <Radio.Group
-                                    onChange={(e) => setTheme(e.target.value)}
-                                    value={theme}
-                                    style={{ width: '100%' }}
-                                >
-                                    <Radio.Button value="light" style={{ width: '100%', textAlign: 'center' }}>
-                                        Light
-                                    </Radio.Button>
-                                    <Radio.Button value="dark" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
-                                        Dark
-                                    </Radio.Button>
-                                    <Radio.Button value="high-contrast" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
-                                        High Contrast
-                                    </Radio.Button>
-                                </Radio.Group>
-
-                                <Button type="primary" block onClick={handleFinish} style={{ marginTop: '20px' }}>
-                                    Conferma Impostazioni
-                                </Button>
-                            </div>
+                            <Button type="primary" block onClick={handleFinish} style={{ marginTop: '20px' }}>
+                                Conferma Impostazioni
+                            </Button>
                         </Space>
                     </div>
                 )}

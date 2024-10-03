@@ -25,21 +25,13 @@ const Contacts: React.FC = () => {
         updateManager.set("contacts", (update) => {
             let shortMess = update.originalUpdate as Api.UpdateShortMessage;
             let fromID = shortMess.userId;
-        
-            // WORKAROUND: Recupero tutti i dialoghi per poi trovare quello specifico
-            Controller.tgApi.getDialogs().then((dialogs) => {
-                let dialog = dialogs.find((d) => d.id?.equals(fromID));
-                if (dialog) {
-                    setContactsData((prevContacts) => {
-                        const filteredContacts = prevContacts.filter((d) => !d.id?.equals(fromID));
-                        return [dialog!, ...filteredContacts];
-                    });
-        
-                    message.info('New message from ' + dialog!.name);
-                }
-            }).catch((error) => {
-                console.error("Errore nel recupero dei dialoghi:", error);
-            });
+            let dialog = contactsData.find(dialog => dialog.id?.equals(fromID));
+            console.log('Dialog:', shortMess);
+            if (dialog) {
+                dialog.message = shortMess as any as Api.Message;
+                setContactsData([...contactsData]);
+                message.info(`${dialog.name}: ${dialog.message.message}`);
+            }
         });
         
 

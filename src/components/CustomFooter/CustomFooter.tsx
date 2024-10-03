@@ -18,8 +18,6 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                 bottom: -17,
                 width: '100%',
                 zIndex: 1000,
-                borderTop: '1px solid #f0f0f0',
-                backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
                 backdropFilter: 'blur(10px)' // Blur effect
             }}
             items={[

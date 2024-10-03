@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio } from 'antd';
+import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio, Layout } from 'antd';
 import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
@@ -60,13 +60,12 @@ const Profile: React.FC = () => {
     };
 
     return (
-        <>
+        <Layout>
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: '100vh',
                 padding: '20px',
-                backgroundColor: '#f0f2f5',
                 paddingBottom: '100px',
             }}>
                 {loading ? (
@@ -172,7 +171,7 @@ const Profile: React.FC = () => {
             </div>
 
             <CustomFooter activeTab={2} />
-        </>
+        </Layout>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List, Input, Skeleton, Button, Space, Tabs, Typography, message } from 'antd';
+import { List, Input, Skeleton, Button, Space, Tabs, Typography, message, Flex, Layout } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, MessageOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import DialogItem from '../components/DialogItem/DialogItem';
@@ -33,7 +33,7 @@ const Contacts: React.FC = () => {
                 message.info(`${dialog.name}: ${dialog.message.message}`);
             }
         });
-        
+
 
         let isMounted = true;
         const fetchContacts = async () => {
@@ -99,8 +99,7 @@ const Contacts: React.FC = () => {
     };
 
     return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            {/* Contact List */}
+        <Layout style={{ height: '100vh', display:"flex", flexDirection: 'column' }}>
             <div
                 id="scrollableDiv"
                 style={{
@@ -151,7 +150,7 @@ const Contacts: React.FC = () => {
 
             </div>
             <CustomFooter activeTab={1} />
-        </div>
+        </Layout >
     );
 };
 

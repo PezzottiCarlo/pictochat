@@ -1,4 +1,4 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Popover } from "antd";
 import { useEffect, useState } from "react";
 
@@ -37,7 +37,8 @@ export const ChatSendMedia: React.FC<ChatSendMediaProps> = ({ media, setMedia })
     };
 
     const popoverContent = (
-        <div>
+        <div style={{ display: "flex", alignItems: "center",flexDirection:"column" }}>
+            <DeleteOutlined onClick={() => setMedia(undefined)} style={{ cursor: "pointer" }} />
             {fileName?.match(/\.(jpeg|jpg|png|gif)$/) && media ? (
                 <img src={URL.createObjectURL(media)} alt={fileName} style={{ width: "60px" }} />
             ) : (
@@ -52,7 +53,7 @@ export const ChatSendMedia: React.FC<ChatSendMediaProps> = ({ media, setMedia })
                 content={popoverContent}
                 visible={showFile}
                 placement="top"
-            >
+                >
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleSendMedia} />
             </Popover>
             <input

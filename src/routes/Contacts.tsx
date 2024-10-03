@@ -21,20 +21,25 @@ const Contacts: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [showGroups, setShowGroups] = useState<boolean>(true);
 
+
     useEffect(() => {
         updateManager.set("contacts", (update) => {
             let shortMess = update.originalUpdate as Api.UpdateShortMessage;
             let fromID = shortMess.userId;
-            let dialog = contactsData.find(dialog => dialog.id?.equals(fromID));
-            console.log('Dialog:', dialog);
-            if (dialog) {
-                dialog.message = shortMess as any as Api.Message;
-                setContactsData([...contactsData]);
-                message.info(`${dialog.name}: ${dialog.message.message}`);
+            for (let dialog of contactsData) {
+                console.log(dialog.id?.toString(), fromID.toString());
+                if (dialog.id?.toString() === fromID.toString()) {
+                    dialog.message = shortMess as any as Api.Message;
+                    dialog.unreadCount++;
+                    setContactsData([...contactsData]);
+                    message.info(`${dialog.name}: ${dialog.message.message}`);
+                    break;
+                }
             }
         });
+    }, [contactsData]);
 
-
+    useEffect(() => {
         let isMounted = true;
         const fetchContacts = async () => {
             try {
@@ -99,7 +104,7 @@ const Contacts: React.FC = () => {
     };
 
     return (
-        <Layout style={{ height: '100vh', display:"flex", flexDirection: 'column' }}>
+        <Layout style={{ height: '100vh', display: "flex", flexDirection: 'column' }}>
             <div
                 id="scrollableDiv"
                 style={{

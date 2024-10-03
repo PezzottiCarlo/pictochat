@@ -4,7 +4,6 @@
   "description": "A simple and intuitive chat application",
   "start_url": "/pictochat",
   "display": "standalone",
-  "background_color": "#f0f2f5;",
   "theme_color": "#000000",
   "orientation": "portrait",
   "scope": "/",

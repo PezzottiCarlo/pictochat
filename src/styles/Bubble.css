@@ -10,7 +10,6 @@
     border-radius: 15px;
     padding: 10px;
     position: relative;
-    font-size: 14px;
     line-height: 1.5;
     word-break: break-word;
 }
@@ -32,7 +31,6 @@
 }
 
 .timestamp {
-    font-size: 12px;
     color: var(--ant-text-color-secondary); /* Colore secondario */
     text-align: right;
     margin-top: 5px;

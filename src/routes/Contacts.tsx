@@ -26,7 +26,7 @@ const Contacts: React.FC = () => {
             let shortMess = update.originalUpdate as Api.UpdateShortMessage;
             let fromID = shortMess.userId;
             let dialog = contactsData.find(dialog => dialog.id?.equals(fromID));
-            console.log('Dialog:', shortMess);
+            console.log('Dialog:', dialog);
             if (dialog) {
                 dialog.message = shortMess as any as Api.Message;
                 setContactsData([...contactsData]);

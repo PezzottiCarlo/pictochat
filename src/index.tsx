@@ -15,19 +15,23 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
   //do stuff if this on
 }
 
-export const themeConfig : ThemeConfig = {
+export const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: "#722ed1",
-    colorInfo: "#722ed1",
-    fontSize: 14
+    colorPrimary: "#2f54eb",
+    colorInfo: "#2f54eb",
+    fontSize: 22,
+    sizeStep: 4,
+    sizeUnit: 4,
+    wireframe: false,
+    colorSuccess: "#a0d911"
   },
   cssVar: true,
-  algorithm:theme.darkAlgorithm
+  algorithm: theme.darkAlgorithm
 };
 
 root.render(
   <SessionProvider>
-    <ConfigProvider  theme={themeConfig}>
+    <ConfigProvider theme={themeConfig}>
       <RouterProvider router={router} />
     </ConfigProvider>
   </SessionProvider>

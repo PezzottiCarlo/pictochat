@@ -31,8 +31,9 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
     };
 
     const formatDate = (date: number) => {
-        const dateObj = new Date(date * 1000);
-        return dateObj.toLocaleString();
+        const d = new Date(date * 1000);
+        //return hh:mm with two digits
+        return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     };
 
     const shortMessage = (message: Api.Message | undefined) => {
@@ -52,9 +53,9 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
                     style={{alignItems:"center" }}
                     avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true,size:100})}
                     title={name}
-                    description={formatDate(date)}
+                    description={shortMessage(message)}
                 />
-                <span>{shortMessage(message)}</span>
+                <span>{formatDate(date)}</span>
             </Flex>
         </List.Item>
     );

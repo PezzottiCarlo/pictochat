@@ -15,7 +15,7 @@
 }
 
 .bubble-content.outgoing {
-    background-color: var(--ant-color-primary); /* Colore principale del tema */
+    background-color: var(--ant-blue-8); /* Colore principale del tema */
     color: var(--ant-color-text-light-solid);
     border: 1px solid var(--ant-color-info); /* Colore del bordo */
     align-self: flex-end;
@@ -23,7 +23,7 @@
 }
 
 .bubble-content.incoming {
-    background-color: var(--ant-color-bg-base);
+    background-color: var(--ant-blue-2);
     color: var(--ant-color-text-base);
     border: 1px solid var(--ant-border-color);
     align-self: flex-start;

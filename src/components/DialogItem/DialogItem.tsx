@@ -14,7 +14,8 @@ interface DialogItemProps {
 const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
 
     const [photo, setPhoto] = React.useState<Buffer>();
-    const { id, name, date, message } = dialog;
+    const { id, name, date, message,entity } = dialog;
+    const status = (entity as any).status;
     useEffect(() => {
         const fetchProfilePic = async () => {
             if (!id) return;
@@ -22,6 +23,7 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
             setPhoto(photo);
         };
         fetchProfilePic();
+        console.log('status',status);
     }, [id]);
 
     const handleClick = (id: bigInt.BigInteger|undefined) => {
@@ -51,7 +53,7 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
             <Flex align="center" justify='center' style={{ width: '100%'}} >
                 <List.Item.Meta
                     style={{alignItems:"center" }}
-                    avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true,size:100})}
+                    avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true,size:100,isOnline:status === 'UserStatusOnline' })}
                     title={name}
                     description={shortMessage(message)}
                 />

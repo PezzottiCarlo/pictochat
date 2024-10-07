@@ -17,16 +17,38 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
 
 export const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: "#2f54eb",
-    colorInfo: "#2f54eb",
-    fontSize: 22,
-    sizeStep: 4,
-    sizeUnit: 4,
-    wireframe: false,
-    colorSuccess: "#a0d911"
+    colorPrimary: "#2f54eb", // Colore principale per bottoni, link, etc.
+    colorInfo: "#2f54eb", // Colore delle informazioni (alert, badge, etc.)
+    colorSuccess: "#a0d911", // Colore per gli stati di successo
+    fontSize: 22, // Dimensione del font globale
+    sizeUnit: 4, // Unità base per le dimensioni
+    sizeStep: 4, // Incremento per le dimensioni in scala
+    wireframe: false, // Disabilita lo stile wireframe
   },
-  cssVar: true,
-  algorithm: theme.darkAlgorithm
+  components: {
+    // Personalizzazioni per ogni componente
+    Input: {
+      paddingBlock: 10, // Padding verticale per gli input
+      fontSize: 22, // Dimensione del font per gli input coerente con il font globale
+    },
+    Button: {
+      fontSize: 22, // Dimensione del font per i bottoni
+    },
+    Avatar: {
+      sizeStep: 8, 
+    },
+    Badge: {
+      fontSize: 18,
+    },
+    Typography: {
+      fontSizeHeading1: 28,
+      fontSizeHeading2: 26,
+      fontSizeHeading3: 24,
+      fontSizeHeading4: 22, 
+    }
+  },
+  cssVar: true, // Usa le variabili CSS
+  algorithm: theme.darkAlgorithm, // Usa il tema scuro di Ant Design
 };
 
 root.render(

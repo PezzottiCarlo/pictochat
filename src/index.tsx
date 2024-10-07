@@ -7,6 +7,7 @@ import { ConfigProvider, ThemeConfig } from 'antd';
 import { SessionProvider } from './context/SessionContext';
 import { router } from './routes/AppRoutes';
 import { theme } from 'antd';
+import themes from "./data/themes.json" 
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -15,43 +16,14 @@ if (window.matchMedia('(display-mode: standalone)').matches) {
   //do stuff if this on
 }
 
+let themeNumber = 4;
+
 export const themeConfig: ThemeConfig = {
-  token: {
-    colorPrimary: "#2f54eb", // Colore principale per bottoni, link, etc.
-    colorInfo: "#2f54eb", // Colore delle informazioni (alert, badge, etc.)
-    colorSuccess: "#a0d911", // Colore per gli stati di successo
-    fontSize: 22, // Dimensione del font globale
-    sizeUnit: 4, // Unità base per le dimensioni
-    sizeStep: 4, // Incremento per le dimensioni in scala
-    wireframe: false, // Disabilita lo stile wireframe
-  },
-  components: {
-    // Personalizzazioni per ogni componente
-    Input: {
-      paddingBlock: 10, // Padding verticale per gli input
-      fontSize: 22, // Dimensione del font per gli input coerente con il font globale
-    },
-    Button: {
-      fontSize: 22,
-      controlHeight: 52,
-    },
-    Avatar: {
-      sizeStep: 8, 
-    },
-    Badge: {
-      fontSize: 18,
-    },
-    Typography: {
-      fontSizeHeading1: 28,
-      fontSizeHeading2: 26,
-      fontSizeHeading3: 24,
-      fontSizeHeading4: 22, 
-    },
-    
-  },
-  cssVar: true, // Usa le variabili CSS
-  algorithm: theme.darkAlgorithm, // Usa il tema scuro di Ant Design
-};
+  components: themes[themeNumber].components,
+  cssVar: themes[themeNumber].cssVar,
+  token: themes[themeNumber].token,
+  algorithm: (themes[themeNumber].algorithm === "dark")?theme.darkAlgorithm:theme.defaultAlgorithm
+}
 
 root.render(
   <SessionProvider>

@@ -1,0 +1,178 @@
+[
+    {
+        "name": "Soft Blue",
+        "token": {
+            "colorPrimary": "#82caff",
+            "colorInfo": "#82caff",
+            "colorSuccess": "#c3f9c3",
+            "fontSize": 22,
+            "sizeUnit": 4,
+            "sizeStep": 4,
+            "wireframe": false
+        },
+        "components": {
+            "Input": {
+                "paddingBlock": 10,
+                "fontSize": 22
+            },
+            "Button": {
+                "fontSize": 22,
+                "controlHeight": 52
+            },
+            "Avatar": {
+                "sizeStep": 8
+            },
+            "Badge": {
+                "fontSize": 18
+            },
+            "Typography": {
+                "fontSizeHeading1": 28,
+                "fontSizeHeading2": 26,
+                "fontSizeHeading3": 24,
+                "fontSizeHeading4": 22
+            }
+        },
+        "cssVar": true
+    },
+    {
+        "name": "Sunset Orange",
+        "token": {
+            "colorPrimary": "#ff6f61",
+            "colorInfo": "#ff6f61",
+            "colorSuccess": "#ffd700",
+            "fontSize": 22,
+            "sizeUnit": 4,
+            "sizeStep": 4,
+            "wireframe": false
+        },
+        "components": {
+            "Input": {
+                "paddingBlock": 10,
+                "fontSize": 22
+            },
+            "Button": {
+                "fontSize": 22,
+                "controlHeight": 52
+            },
+            "Avatar": {
+                "sizeStep": 8
+            },
+            "Badge": {
+                "fontSize": 18
+            },
+            "Typography": {
+                "fontSizeHeading1": 28,
+                "fontSizeHeading2": 26,
+                "fontSizeHeading3": 24,
+                "fontSizeHeading4": 22
+            }
+        },
+        "cssVar": true
+    },
+    {
+        "name": "Mint Green",
+        "token": {
+            "colorPrimary": "#98ff98",
+            "colorInfo": "#98ff98",
+            "colorSuccess": "#6ab04c",
+            "fontSize": 22,
+            "sizeUnit": 4,
+            "sizeStep": 4,
+            "wireframe": false
+        },
+        "components": {
+            "Input": {
+                "paddingBlock": 10,
+                "fontSize": 22
+            },
+            "Button": {
+                "fontSize": 22,
+                "controlHeight": 52
+            },
+            "Avatar": {
+                "sizeStep": 8
+            },
+            "Badge": {
+                "fontSize": 18
+            },
+            "Typography": {
+                "fontSizeHeading1": 28,
+                "fontSizeHeading2": 26,
+                "fontSizeHeading3": 24,
+                "fontSizeHeading4": 22
+            }
+        },
+        "cssVar": true
+    },
+    {
+        "name": "Lavender Bliss",
+        "token": {
+            "colorPrimary": "#c79efc",
+            "colorInfo": "#c79efc",
+            "colorSuccess": "#a0e7e5",
+            "fontSize": 22,
+            "sizeUnit": 4,
+            "sizeStep": 4,
+            "wireframe": false
+        },
+        "components": {
+            "Input": {
+                "paddingBlock": 10,
+                "fontSize": 22
+            },
+            "Button": {
+                "fontSize": 22,
+                "controlHeight": 52
+            },
+            "Avatar": {
+                "sizeStep": 8
+            },
+            "Badge": {
+                "fontSize": 18
+            },
+            "Typography": {
+                "fontSizeHeading1": 28,
+                "fontSizeHeading2": 26,
+                "fontSizeHeading3": 24,
+                "fontSizeHeading4": 22
+            }
+        },
+        "cssVar": true
+    },
+    {
+        "name": "Midnight Blue",
+        "token": {
+            "colorPrimary": "#0d3b66",
+            "colorInfo": "#0d3b66",
+            "colorSuccess": "#1c7c54",
+            "fontSize": 22,
+            "sizeUnit": 4,
+            "sizeStep": 4,
+            "wireframe": false
+        },
+        "components": {
+            "Input": {
+                "paddingBlock": 10,
+                "fontSize": 22
+            },
+            "Button": {
+                "fontSize": 22,
+                "controlHeight": 52
+            },
+            "Avatar": {
+                "sizeStep": 8
+            },
+            "Badge": {
+                "fontSize": 18
+            },
+            "Typography": {
+                "fontSizeHeading1": 28,
+                "fontSizeHeading2": 26,
+                "fontSizeHeading3": 24,
+                "fontSizeHeading4": 22
+            }
+        },
+        "cssVar": true,
+        "algorithm": "dark"
+    }
+]

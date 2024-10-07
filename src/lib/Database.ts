@@ -116,4 +116,12 @@ export class Database {
             request.onerror = () => reject(request.error);
         });
     }
+
+    public async dropDB(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.deleteDatabase(this.dbName);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
 }

@@ -21,7 +21,7 @@ const Login: React.FC = () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`; // Combina prefisso e numero di telefono
         if (phoneNumber) {
             setIsCodeSent(true);
-            Controller.tgApi.sendCode(fullPhoneNumber).then((res)=>{
+            Controller.tgApi.sendCode(fullPhoneNumber).then((res) => {
                 setAuthResult(res);
                 message.success('Codice inviato al tuo telefono!');
             })
@@ -33,19 +33,23 @@ const Login: React.FC = () => {
     const handleVerifyCode = () => {
         const fullPhoneNumber = `${phonePrefix}${phoneNumber}`;
         if (code) {
-            try {
-                Controller.tgApi.signIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string).then((stringSession)=>{
-                    if (stringSession) {
-                        message.success('Login effettuato con successo!');
-                        Controller.tgApi.setClient(stringSession).then(()=>{
-                            localStorage.setItem('stringSession', stringSession);
-                            setTimeout(()=>window.location.reload(),500);
-                        })
-                    }
-                })
-            } catch (e: any) {
-                message.error(e.message);
-            }
+            Controller.tgApi.signIn(fullPhoneNumber, code, authResult?.phoneCodeHash as string).then((stringSession) => {
+                if (stringSession) {
+                    message.success('Login effettuato con successo!');
+                    Controller.tgApi.setClient(stringSession).then(() => {
+                        localStorage.setItem('stringSession', stringSession);
+                        setTimeout(() => window.location.reload(), 500);
+                    })
+                }
+            }).catch((err) => {
+                switch (err.code) {
+                    case 400:
+                        message.error('Codice di verifica non valido.');
+                        break;
+                    default:
+                        message.error('Errore, riprova più tardi.');
+                }
+            });
         } else {
             message.error('Inserisci il codice di verifica.');
         }

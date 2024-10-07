@@ -64,4 +64,8 @@ export class Controller {
     static async getMessages(chatId: bigInt.BigInteger, limit: number): Promise<Api.Message[] | any> {
         //chache messages
     }
+
+    static async dropDatabase(): Promise<void> {
+        await this.storage.dropDatabase();
+    }
 }

@@ -48,7 +48,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [media, setMedia] = useState<File>();
 
     useEffect(() => {
-        updateManager.set("chat", (update) => {
+        updateManager.set("chat", (update, type) => {
             let mes = update.message as Api.Message;
             if (!mes.fromId) return;
             if (((mes.fromId as any).userId as bigInt.BigInteger).equals(dialog.id as bigInt.BigInteger)) {
@@ -240,7 +240,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                     />
                 </InfiniteScroll>
             </Content>
-
 
             <Footer style={{ padding: '0.5rem', paddingBottom: '1.5rem' }}>
                 <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>

@@ -89,4 +89,8 @@ export class Store {
             await this.updateDialog(dialog);
         }
     }
+
+    public async dropDatabase(): Promise<void> {
+        await this.db.dropDB();
+    }
 }

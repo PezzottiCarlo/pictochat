@@ -9,6 +9,7 @@ import { ChatWrapper } from './Chat';
 import NotFound from './NotFound';
 import ProtectedRoute from './ProtectedRoute';
 import Profile from './Profile';
+import { Logout } from './Logout';
 
 
 export const getActivePage = ():string => {
@@ -56,6 +57,10 @@ export const router = createHashRouter([
             <Profile />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: 'logout',
+        element: <Logout />,
       }
     ],
   },

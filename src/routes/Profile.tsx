@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio, Layout } from 'antd';
-import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, PhoneOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
 import { Controller } from '../lib/Controller';
@@ -75,8 +75,13 @@ const Profile: React.FC = () => {
                         <div style={{
                             textAlign: 'left',
                             marginBottom: '20px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
                         }}>
                             <Title level={2} style={{ margin: 0 }}>Profilo</Title>
+                            <LogoutOutlined
+                                style={{ fontSize: '24px', cursor: 'pointer' }}
+                                onClick={() => navigate('/logout')} />
                         </div>
                         <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
                             <Row gutter={24}>

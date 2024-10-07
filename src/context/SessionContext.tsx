@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { StringSession } from 'telegram/sessions';
+import { Controller } from '../lib/Controller';
 
 // Tipi del contesto
 interface SessionContextProps {
     session: StringSession | null;
     setSession: (session: StringSession | null) => void;
+    logout: () => void;  // Aggiunta del logout
 }
 
 // Creazione del contesto
@@ -20,8 +22,15 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     }, []);
 
+    // Funzione di logout
+    const logout = async () => {
+        setSession(null); // Imposta la sessione a null
+        await Controller.dropDatabase();
+        localStorage.removeItem('stringSession'); // Rimuovi la sessione dal localStorage
+    };
+
     return (
-        <SessionContext.Provider value={{ session, setSession }}>
+        <SessionContext.Provider value={{ session, setSession, logout }}>
             {children}
         </SessionContext.Provider>
     );
@@ -36,10 +45,12 @@ export const useSession = (): SessionContextProps => {
     return context;
 };
 
+// Verifica se è in fase di configurazione
 export const useIsSetting = (): boolean => {
     return true;
-}
+};
 
+// Verifica se l'utente è autenticato
 export const useIsAuthenticated = (): boolean => {
     const { session } = useSession();
     if (session === null) {
@@ -55,4 +66,3 @@ export const useIsAuthenticated = (): boolean => {
     }
     return true;
   };
-  

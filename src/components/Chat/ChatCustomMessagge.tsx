@@ -154,7 +154,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
     );
 
     return (
-        <div>
+        <>
             <Popover
                 content={
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -191,7 +191,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
             >
                 {renderModalContent()}
             </Modal>
-        </div>
+        </>
     );
 };
 

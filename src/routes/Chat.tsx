@@ -260,9 +260,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                     )}
                 </Row>
 
-                <Row justify="space-between" align="middle" gutter={10}>
-                    <Col span={20}>
+                <Row justify="space-between" align="middle" gutter={2} style={{ whiteSpace: 'nowrap', flexWrap: 'nowrap' }}>
+                    <Col span={16} style={{ marginRight: '2px' }}>
                         <Input.Group compact>
+                            <ChatCustomMessage callback={handleCustomMessage} />
                             <Input
                                 style={{ width: 'calc(100% - 35px)' }}
                                 value={inputValue}
@@ -273,11 +274,8 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                             <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
                         </Input.Group>
                     </Col>
-                    <Col span={2}>
+                    <Col span={3} style={{ marginRight: '.5rem' }}>
                         <ChatSendMedia media={media} setMedia={setMedia} />
-                    </Col>
-                    <Col span={2}>
-                        <ChatCustomMessage callback={handleCustomMessage} />
                     </Col>
                 </Row>
             </Footer>

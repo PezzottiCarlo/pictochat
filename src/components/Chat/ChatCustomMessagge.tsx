@@ -94,6 +94,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                             width={200}
                             height={200}
                             preview={false}
+                            style={{ backgroundColor: 'white' }}
                         />
                     </Card>
                 ))}
@@ -113,7 +114,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
 
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Card className='custom-message-card' style={{ margin: '10px', padding: 0 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap' }}>        
+                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {selectedPicto[type].map((picto, index) => (
                         <Card
                             key={index}
@@ -126,14 +127,15 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                                     height={100}
                                     preview={false}
                                     onClick={() => handlePictoClick(type)}
+                                    style={{ backgroundColor: 'white' }}
                                 />
                             }
                             actions={[
                                 <DeleteOutlined key="delete" onClick={() => setSelectedPicto((prevState) => ({
                                     ...prevState,
                                     [type]: prevState[type].filter((p) => p._id !== picto._id),
-                                }))} 
-                                style={{ fontSize: '1.5rem' }}
+                                }))}
+                                    style={{ fontSize: '1.5rem' }}
                                 />,
                             ]}
                         />
@@ -146,6 +148,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                             height={100}
                             preview={false}
                             onClick={() => handlePictoClick(type)}
+                            style={{ backgroundColor: 'white' }}
                         />
                     )}
                 </div>
@@ -184,7 +187,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                 title="Seleziona un pittogramma"
                 open={modalVisible}
                 onOk={handleModalOk}
-                onCancel={() => {setModalVisible(false);setVisible(true);}}
+                onCancel={() => { setModalVisible(false); setVisible(true); }}
                 footer={null}
                 styles={{ mask: { background: 'rgba(0, 0, 0, .7)' }, content: { width: '80%', height: '100%' } }}
                 zIndex={5000}

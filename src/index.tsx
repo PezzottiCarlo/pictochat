@@ -32,7 +32,8 @@ export const themeConfig: ThemeConfig = {
       fontSize: 22, // Dimensione del font per gli input coerente con il font globale
     },
     Button: {
-      fontSize: 22, // Dimensione del font per i bottoni
+      fontSize: 22,
+      controlHeight: 52,
     },
     Avatar: {
       sizeStep: 8, 
@@ -45,7 +46,8 @@ export const themeConfig: ThemeConfig = {
       fontSizeHeading2: 26,
       fontSizeHeading3: 24,
       fontSizeHeading4: 22, 
-    }
+    },
+    
   },
   cssVar: true, // Usa le variabili CSS
   algorithm: theme.darkAlgorithm, // Usa il tema scuro di Ant Design

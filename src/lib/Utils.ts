@@ -1,4 +1,6 @@
 import { Dialog } from "telegram/tl/custom/dialog";
+import { Pictogram } from "./AAC";
+import { Controller } from "./Controller";
 
 class Utils {
     static serializeDialog(dialog: Dialog): any {

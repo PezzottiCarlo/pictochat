@@ -23,7 +23,6 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
             setPhoto(photo);
         };
         fetchProfilePic();
-        console.log('status',status);
     }, [id]);
 
     const handleClick = (id: bigInt.BigInteger|undefined) => {

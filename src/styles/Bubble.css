@@ -40,3 +40,8 @@
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
+.bubble-picto{
+    display: flex;
+    flex-direction: row;
+}

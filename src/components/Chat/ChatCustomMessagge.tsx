@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import '../../styles/ChatCustomMessage.css';
 import { Pictogram } from '../../lib/AAC';
 import { WordsService } from '../../lib/WordsService';
+import { PictogramImage } from '../Other/PictogramImage';
 
 interface ChatCustomMessageProps {
     callback: (subjects: Pictogram[], verbs: Pictogram[], objects: Pictogram[]) => void;
@@ -88,14 +89,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                         key={picto._id}
                         onClick={() => handlePictoSelect(picto)}
                         style={{ margin: '10px', padding: 0, cursor: 'pointer' }}>
-                        <Image
-                            src={picto.url}
-                            alt={picto.desc}
-                            width={200}
-                            height={200}
-                            preview={false}
-                            style={{ backgroundColor: 'white' }}
-                        />
+                        <PictogramImage picto={picto} style={{ backgroundColor: 'white' }}/>
                     </Card>
                 ))}
             </div>
@@ -120,15 +114,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                             key={index}
                             style={{ margin: '10px', padding: 0, cursor: 'pointer' }}
                             cover={
-                                <Image
-                                    src={picto.url}
-                                    alt={picto.desc}
-                                    width={100}
-                                    height={100}
-                                    preview={false}
-                                    onClick={() => handlePictoClick(type)}
-                                    style={{ backgroundColor: 'white' }}
-                                />
+                                <PictogramImage picto={picto} style={{ backgroundColor: 'white' }} onClick={() => handlePictoClick(type)} height={100} width={100} />
                             }
                             actions={[
                                 <DeleteOutlined key="delete" onClick={() => setSelectedPicto((prevState) => ({

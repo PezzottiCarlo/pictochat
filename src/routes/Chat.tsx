@@ -157,8 +157,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
 
     const handleHints = async (text: string) => {
         try {
-            await Controller.tgApi.sendMessage(chatId, text);
-            setInputValue('');
+            setInputValue(text);
             setShowHints(false);
         } catch (error) {
             console.error('Failed to send hint message:', error);

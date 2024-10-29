@@ -5,10 +5,11 @@ import BubbleMedia from './ChatBubbleMedia';
 import '../../styles/Bubble.css';
 import { Pictogram } from '../../lib/AAC';
 import { WordsService } from '../../lib/WordsService';
+import { PictogramImage } from '../Other/PictogramImage';
 
 interface ChatBubbleProps {
     message: Api.Message;
-    name?: Promise<string|undefined>;
+    name?: Promise<string | undefined>;
 }
 
 const formatDate = (timestamp: number): string => {
@@ -16,7 +17,7 @@ const formatDate = (timestamp: number): string => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ message,name }) => {
+const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name }) => {
     const bubbleClass = message.out ? 'outgoing' : 'incoming';
     const [pictoSuggestions, setPictoSuggestions] = useState<Pictogram[] | null>(null);
     const [iName, setIName] = useState<string | undefined>(undefined);
@@ -48,12 +49,11 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message,name }) => {
                     {pictoSuggestions && (
                         <div className="bubble-picto">
                             {pictoSuggestions.map((picto, index) => (
-                                <Image
+                                <PictogramImage
                                     key={index}
-                                    src={picto.url}
-                                    alt={`Pictogram ${index}`}
+                                    picto={picto}
                                     width={70}
-                                />
+                                    height={70} />
                             ))}
                         </div>
                     )}

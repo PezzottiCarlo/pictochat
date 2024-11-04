@@ -1,42 +1,26 @@
 [
     {
-        "text": "Ciao, come stai?",
+        "text": "Ciao, tutto ok?",
         "emoji": "👋"
     },
     {
-        "text": "Che fai di bello?",
+        "text": "Che fai?",
         "emoji": "🤔"
     },
     {
-        "text": "Come è andata la tua giornata?",
+        "text": "Com'è andata?",
         "emoji": "😊"
     },
     {
-        "text": "Stasera ho voglia di uscire!",
+        "text": "Usciamo stasera?",
         "emoji": "🎉"
     },
     {
-        "text": "Mi sto annoiando!",
+        "text": "Mi annoio!",
         "emoji": "😴"
     },
     {
-        "text": "Hai visto l'ultimo episodio di quella serie?",
-        "emoji": "📺"
-    },
-    {
-        "text": "Dai, andiamo al cinema!",
-        "emoji": "🎥"
-    },
-    {
-        "text": "Ho trovato un posto fantastico dove mangiare!",
-        "emoji": "🍽️"
-    },
-    {
-        "text": "Mi sento così fortunato ad averti!",
-        "emoji": "🍀"
-    },
-    {
-        "text": "Non vedo l'ora di vederti di nuovo!",
+        "text": "Non vedo l'ora di rivederti!",
         "emoji": "❤️"
     }
 ]

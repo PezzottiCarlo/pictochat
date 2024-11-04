@@ -1,72 +1,68 @@
-# Tesi: Pictochat
-
-## Informazioni di Base
-- **Nome dell’app**: Pictochat
-- **Studente**: Carlo Pezzotti
-
-## Introduzione
-L’obiettivo di questa tesi è evolvere un'applicazione di chat sviluppata durante il progetto di semestre, Pictochat, rendendola un’applicazione esclusivamente **frontend** con funzionalità avanzate per la comunicazione rapida tramite pittogrammi. Lo scopo finale è rendere Pictochat uno strumento efficace e user-friendly per rispondere rapidamente a domande generiche attraverso suggerimenti di pittogrammi, supportati da un sistema di **Intelligenza Artificiale (AI)**.
-
-Il progetto si concentrerà su modifiche strutturali, miglioramenti dell’interfaccia e usabilità, e soprattutto sull’integrazione di un sistema di AI capace di suggerire pittogrammi pertinenti in risposta a frasi comuni come "Come stai?", "Cosa vuoi per cena?", e simili.
-
-<div class="page"/>
----
-
-## Obiettivi della Tesi
-
-### 1. Rimozione del Backend
-- **Descrizione**: Eliminare completamente la parte di backend presente nel progetto originale, trasformando l’applicazione in una soluzione **completamente frontend**.
-- **Motivazione**: La scelta di un’app senza backend riduce la complessità e i costi di manutenzione, migliorando anche la rapidità e la semplicità d’uso per l’utente. Un'app frontend è inoltre più facilmente distribuita e aggiornata.
-- **Risultato Atteso**: Un'applicazione completamente autonoma, che funzioni solo lato client, con dati gestiti in locale.
-
-### 2. Miglioramento della Gestione dei Messaggi
-- **Descrizione**: Ottimizzare l’interfaccia e il flusso di gestione dei messaggi, assicurando che la presentazione e la sequenza dei messaggi risultino chiari e intuitivi.
-- **Motivazione**: Una gestione dei messaggi ottimizzata migliora l’esperienza utente, riducendo ambiguità e rendendo più facile e rapido rispondere o visualizzare le risposte.
-- **Risultato Atteso**: Interfaccia dei messaggi chiara e reattiva, con una sequenza e visualizzazione coerente anche in conversazioni più complesse.
-
-### 3. Gestione delle Immagini Profilo
-- **Descrizione**: Integrare la possibilità di caricare e visualizzare immagini profilo, permettendo all’utente di personalizzare il proprio profilo e migliorare la riconoscibilità nelle conversazioni.
-- **Motivazione**: La presenza delle immagini profilo rende l’esperienza di utilizzo più personale e permette un’identificazione visiva immediata.
-- **Risultato Atteso**: Una sezione per caricare e modificare l’immagine del profilo, con immagini che vengono visualizzate accanto a ciascun messaggio.
-
-### 4. Implementazione di AI per Suggerimenti di Pittogrammi
-- **Descrizione**: Sviluppare e integrare un sistema di **Intelligenza Artificiale** capace di analizzare le domande o i prompt dell’utente e suggerire una serie di pittogrammi adeguati come risposta.
-    - **Esempi di prompt**: "Come stai?", "Cosa vuoi per cena?", "Cosa hai fatto ieri?".
-    - **Funzionalità**: L’AI dovrebbe essere in grado di elaborare input generici e proporre una selezione di pittogrammi contestuali che possano rappresentare risposte rapide e intuitive.
-- **Motivazione**: L’introduzione di suggerimenti basati su AI permette all’utente di rispondere rapidamente senza digitare o cercare manualmente i pittogrammi, rendendo Pictochat un’applicazione più intuitiva e accessibile.
-- **Risultato Atteso**: Un sistema AI integrato, in grado di suggerire pittogrammi pertinenti a domande o frasi comuni, con una precisione e una varietà che permettano all'utente di rispondere in modo naturale.
+### Abstract
+Pictochat is a messaging application designed specifically to support adolescents with communication challenges. Originally assigned as a semester project, the app was created as a React-based web application and relies on Telegram’s infrastructure via a python server for message sending, receiving, and storage. The core mission of Pictochat is to streamline social interactions between young people or between young people and their families by offering an intuitive **AI-powered response suggestion tool**. This tool simplifies conversation by suggesting suitable replies in the form of pictograms. Additionally, Pictochat features a message creation tool using pictograms and an automatic text-to-pictogram conversion, ensuring that users can understand any incoming message in a visually supportive format.
 
 <div class="page"/>
 
-### 5. Gestione delle Notifiche
-- **Descrizione**: Implementare un sistema di notifiche che avvisi l’utente in tempo reale su nuovi messaggi o aggiornamenti rilevanti.
-- **Motivazione**: Le notifiche migliorano l’interattività dell’app, assicurando che l’utente sia sempre aggiornato senza dover controllare l’app costantemente.
-- **Risultato Atteso**: Sistema di notifiche integrato e configurabile, con possibilità di ricevere avvisi sonori e visivi per ogni nuovo messaggio.
+### Pictochat Thesis Concept
 
-### 6. Feedback Auditivo
-- **Descrizione**: Aggiungere effetti sonori per accompagnare specifiche azioni all'interno dell'app, come la ricezione di un messaggio, l'invio di una risposta, o la ricezione di una notifica.
-- **Motivazione**: Il feedback auditivo contribuisce a migliorare l’interazione utente, garantendo risposte sensoriali che migliorano l’esperienza e aiutano a non perdere notifiche importanti.
-- **Risultato Atteso**: Suoni piacevoli e non invasivi che accompagnano l’uso dell’applicazione, integrati in modo da non risultare fastidiosi per l’utente.
+## Basic Information
+- **App Name**: Pictochat
+- **Developer**: Carlo Pezzotti
 
-### 7. Personalizzazione dei Pittogrammi Personali
-- **Descrizione**: Consentire all'utente di caricare, modificare e personalizzare i propri pittogrammi, in modo che possano rappresentare al meglio preferenze e risposte frequenti.
-- **Motivazione**: La personalizzazione dei pittogrammi permette all’utente di avere un set di simboli e immagini rappresentativi delle proprie necessità e del proprio stile comunicativo.
-- **Risultato Atteso**: Funzionalità per la creazione e gestione di pittogrammi personalizzati, accessibili dall’utente e integrabili nel flusso di messaggistica.
+## Introduction
+Pictochat is a communication app specifically designed to aid young people with communication difficulties, facilitating their ability to engage socially with peers, family, or caregivers. Initially developed in React as a semester project, the application leverages **Telegram’s backend** for its messaging capabilities, managing message storage, delivery, and security. This integration with Telegram enables Pictochat to provide a reliable and familiar messaging experience while allowing the app’s core features to focus on accessibility and ease of use for adolescents with unique communication needs.
+
+The app’s primary goal is to make social interactions as simple as possible by:
+1. **Providing AI-suggested responses** in pictogram format, helping users quickly and easily reply in a way that suits their abilities.
+2. **Offering a pictogram-based message creation tool** to support users in building messages visually.
+3. **Converting incoming text messages to pictograms** so that all content can be presented in a visually accessible format.
+
+Pictochat aims to be an effective tool for both individual and family communication, leveraging intuitive design, artificial intelligence, and pictograms to improve communication experiences.
+
+## Thesis Objectives
+
+### 1. AI-Powered Pictogram Suggestions
+   - **Description**: Develop an **AI-driven system** capable of analyzing incoming prompts or questions and suggesting relevant pictogram-based responses. This AI system uses **Natural Language Processing (NLP)** to interpret input, identify key phrases, and map them to pictograms based on a set of commonly used words and phrases, drawing from **ARASAAC** (Aragonese Portal for Augmentative and Alternative Communication) to ensure each response has a visual counterpart.
+   - **Approach**:
+     - **Data Integration with ARASAAC**: The AI will source a range of standard responses from ARASAAC’s pictogram library, ensuring that each suggested response has an associated pictogram for clear communication.
+     - **NLP Model Implementation**: An NLP model will parse common questions and statements, identify keywords, and generate a selection of appropriate pictograms. The system will prioritize light, efficient processing to enable real-time responsiveness within a frontend framework.
+   - **Expected Outcome**: The AI system will provide highly relevant pictogram suggestions for a range of common conversational prompts, enhancing the speed and ease with which users can reply.
 
 <div class="page"/>
 
-## Focus della Tesi: Realizzazione dell’Intelligenza Artificiale
-Il focus principale del lavoro sarà lo sviluppo del modulo di AI per i **suggerimenti di pittogrammi**, che rappresenta il vero valore aggiunto di Pictochat. L’AI dovrà essere in grado di analizzare il testo inserito, identificare le parole chiave e generare una selezione di pittogrammi appropriati. Verranno esplorate tecniche di elaborazione del linguaggio naturale (NLP) e tecnologie di machine learning per realizzare un sistema che permetta risposte rapide e intuitive, ottimizzando la user experience.
+### 2. Pictogram-Based Message Creation Tool
+   - **Objective**: Develop a tool that allows users to create their own messages using pictograms, offering a library of symbols from which they can select to form complete thoughts visually.
+   - **Expected Outcome**: A user-friendly interface for composing pictogram-based messages, helping users communicate more expressively without needing to type.
+
+### 3. Text-to-Pictogram Conversion for Incoming Messages
+   - **Objective**: Integrate an automated system that converts text-based messages into pictograms, ensuring that every message users receive is accessible in a visual, easily interpretable format.
+   - **Expected Outcome**: A reliable conversion system that translates text into pictograms for full message comprehension, using ARASAAC’s library as a standardized reference.
+
+### 4. Frontend Development Focused on User Accessibility
+   - **Objective**: Refine the app’s frontend to be fully self-sufficient, relying solely on Telegram’s backend for messaging infrastructure but ensuring all AI and accessibility tools are integrated within the client-side framework.
+   - **Expected Outcome**: A seamless, frontend-only app that enhances user accessibility without requiring extensive backend resources.
+
+### 5. Additional Accessibility and Usability Features
+   - **Profile Image Personalization**: Enable users to upload profile images, making interactions more personal and identifiable.
+   - **Real-Time Notifications**: Develop a notification system for incoming messages, with configurable alerts.
+   - **Auditory Feedback**: Add sound effects for key actions, such as sending or receiving a message, to enhance user engagement and signal important updates.
 
 ---
 
-## Struttura e Metodo
-La realizzazione della tesi sarà divisa in diverse fasi di lavoro:
-1. **Studio delle tecnologie di frontend** e trasformazione dell'app in una versione solo client.
-2. **Sviluppo della gestione dei messaggi** e altre funzionalità dell'interfaccia, inclusa la gestione delle immagini profilo e notifiche.
-3. **Integrazione dell’AI** con test di suggerimento e ottimizzazione dei pittogrammi suggeriti.
-4. **Test e Validazione**: Assicurare che tutte le funzionalità dell'app siano fluide, rapide e prive di errori, con un focus particolare sulla precisione dell’AI.
-5. **Documentazione e Conclusioni**: Documentare i risultati ottenuti e analizzare i potenziali miglioramenti futuri.
+## Thesis Focus: Developing AI for Pictogram Suggestions
+The primary focus of this thesis will be the development of the **AI module for pictogram-based response suggestions**. This component is critical to Pictochat’s mission, as it provides quick, meaningful response options for users. The AI will leverage NLP to detect keywords in user input, identifying appropriate pictograms from the ARASAAC database that correspond with typical conversational themes. This system will not only streamline communication but also offer an inclusive way for adolescents with communication challenges to participate in conversations more naturally and intuitively.
 
-## Conclusione
-Il completamento di Pictochat rappresenta un progetto ambizioso e innovativo, che combina frontend avanzato e AI per migliorare la comunicazione con pittogrammi. La sua realizzazione offrirà un'applicazione intuitiva e veloce, con un'interfaccia semplice e funzionalità intelligenti che permetteranno agli utenti di rispondere facilmente e rapidamente a domande comuni.
+<div class="page"/>
+
+## Project Structure and Methodology
+The thesis project will be completed through a series of structured phases:
+1. **Frontend Development and Telegram Integration**: Establish the core messaging functionality using Telegram’s backend while focusing on client-side capabilities.
+2. **User Interface and Feature Enhancements**: Implement tools for pictogram-based message creation, text-to-pictogram conversion, and profile customization.
+3. **AI Integration and Testing**: Build, test, and refine the AI model for suggesting pictograms, ensuring high relevance and accuracy.
+4. **User Testing and Validation**: Conduct usability tests, focusing on AI performance and user experience for accessibility.
+5. **Documentation and Analysis**: Document findings, evaluate the AI’s impact, and suggest potential improvements.
+
+---
+
+## Conclusion
+Pictochat represents a meaningful advancement in accessible communication technology, combining frontend development and AI to offer an intuitive messaging experience for users with unique communication needs. By transforming text into pictograms and suggesting visual responses, the app enables users to communicate naturally and easily, supporting more inclusive and effective social interactions.

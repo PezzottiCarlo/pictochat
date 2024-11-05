@@ -31,6 +31,8 @@ const Contacts: React.FC = () => {
                     if (dialog.id?.toString() === fromID.toString()) {
                         dialog.message = shortMess as any as Api.Message;
                         dialog.unreadCount++;
+                        contactsData.splice(contactsData.indexOf(dialog), 1);
+                        contactsData.unshift(dialog);
                         setContactsData([...contactsData]);
                         message.info(`${dialog.name}: ${dialog.message.message}`);
                         break;

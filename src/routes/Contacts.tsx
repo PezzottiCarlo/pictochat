@@ -28,7 +28,6 @@ const Contacts: React.FC = () => {
                 let shortMess = update.originalUpdate as Api.UpdateShortMessage;
                 let fromID = shortMess.userId;
                 for (let dialog of contactsData) {
-                    console.log(dialog.id?.toString(), fromID.toString());
                     if (dialog.id?.toString() === fromID.toString()) {
                         dialog.message = shortMess as any as Api.Message;
                         dialog.unreadCount++;
@@ -37,14 +36,13 @@ const Contacts: React.FC = () => {
                         break;
                     }
                 }
-            }else if (type === 1) {
+            } else if (type === 1) {
                 let userStatus = update as Api.UpdateUserStatus;
                 let fromID = userStatus.userId;
                 for (let dialog of contactsData) {
                     if (dialog.id?.toString() === fromID.toString()) {
-                        if(dialog.entity){
+                        if (dialog.entity) {
                             (dialog.entity as any).status = userStatus.status.className;
-                            console.log('status',userStatus.status);
                         }
                         setContactsData([...contactsData]);
                     }
@@ -57,8 +55,12 @@ const Contacts: React.FC = () => {
         let isMounted = true;
         const fetchContacts = async () => {
             try {
+
                 setLoading(true);
-                let dialogs = await Controller.getDialogs();
+                let dialogs = await Controller.getDialogs((dialogs) => {
+                    setContactsData(dialogs);
+                    setFilteredContacts(dialogs.slice(0, 10));
+                });
                 dialogs.sort((a, b) => b.date - a.date); // Sorting dialogs by date
                 if (isMounted) {
                     setContactsData(dialogs);
@@ -165,8 +167,6 @@ const Contacts: React.FC = () => {
                         loading={loading}
                     />
                 </InfiniteScroll>
-
-
             </div>
             <CustomFooter activeTab={1} />
         </Layout >

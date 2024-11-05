@@ -26,7 +26,7 @@ export class Controller {
         await this.storage.markAsRead(id.toString());
     }
 
-    static async getDialogs(): Promise<Dialog[]> {
+    static async getDialogs(onUpdate: (dialogs: Dialog[]) => void): Promise<Dialog[]> {
         let storedDialogs = await this.storage.getDialogs();
 
         if (storedDialogs.length === 0) {
@@ -45,6 +45,7 @@ export class Controller {
                     this.storage.addDialog(dialog);
                 }
             }
+            onUpdate(dialogs);
         });
         return storedDialogs;
     }

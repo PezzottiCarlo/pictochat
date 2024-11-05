@@ -53,6 +53,44 @@ export class AAC {
         this.language = language;
     }
 
+    static hairColorToHex = (color: HairColor): string => {
+        switch (color) {
+            case HairColor.BLONDE:
+                return "FDD700";
+            case HairColor.BROWN:
+                return "A65E26";
+            case HairColor.DARK_BROWN:
+                return "6A2703";
+            case HairColor.GRAY:
+                return "EFEFEF";
+            case HairColor.DARK_DRAY:
+                return "AAABAB";
+            case HairColor.RED:
+                return "ED4120";
+            case HairColor.BLACK:
+                return "020100";
+            default:
+                return "#FDD700";
+        }
+    }
+
+    static skinColorToHex = (color: SkinColor): string => {
+        switch (color) {
+            case SkinColor.WHITE:
+                return "F5E5DE";
+            case SkinColor.BLACK:
+                return "A65C17";
+            case SkinColor.ASSIAN:
+                return "F4ECAD";
+            case SkinColor.MULATTO:
+                return "E3AB72";
+            case SkinColor.AZTEC:
+                return "CF9D7C";
+            default:
+                return "CF9D7C";
+        }
+    }
+
     getKeywords: () => Promise<Keyword[]> = async () => {
         let res = await fetch(`https://api.arasaac.org/api/keywords/${this.language}`, {
             headers: {

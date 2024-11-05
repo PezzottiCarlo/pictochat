@@ -6,6 +6,7 @@ import '../../styles/ChatCustomMessage.css';
 import { Pictogram } from '../../lib/AAC';
 import { WordsService } from '../../lib/WordsService';
 import { PictogramImage } from '../Other/PictogramImage';
+import { Controller } from '../../lib/Controller';
 
 interface ChatCustomMessageProps {
     callback: (subjects: Pictogram[], verbs: Pictogram[], objects: Pictogram[]) => void;

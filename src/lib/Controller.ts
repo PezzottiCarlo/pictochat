@@ -4,6 +4,7 @@ import { Store } from "./Store";
 import { TgApi } from "./TgApi";
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Api } from "telegram";
+import { Settings } from "../routes/Profile";
 
 export class Controller {
     static tgApi = new TgApi(localStorage.getItem('stringSession') ? new StringSession(localStorage.getItem('stringSession') as string) : new StringSession(''));
@@ -68,5 +69,14 @@ export class Controller {
 
     static async dropDatabase(): Promise<void> {
         await this.storage.dropDatabase();
+    }
+
+    static setSettings(settings: Settings): void {
+        localStorage.setItem('settings', JSON.stringify(settings));
+    }
+
+    static getSettings(): Settings {
+        let settings = localStorage.getItem('settings');
+        return settings ? JSON.parse(settings) : {};
     }
 }

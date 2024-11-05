@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio, Layout } from 'antd';
+import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio, Layout, message } from 'antd';
 import { UserOutlined, PhoneOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
@@ -10,6 +10,12 @@ import { HairColor, SkinColor } from '../lib/AAC';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
+export interface Settings{
+    fontSize: number;
+    hairColor: HairColor;
+    skinColor: SkinColor;
+    theme: string;
+}
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState<Api.User>();
@@ -26,6 +32,12 @@ const Profile: React.FC = () => {
             setUser(user);
             setLoading(false);
         });
+
+        let settings = Controller.getSettings();
+        setFontSize(settings.fontSize);
+        setHairColor(settings.hairColor);
+        setSkinColor(settings.skinColor);
+        setTheme(settings.theme);
     }, []);
 
     // Funzione per ottenere l'avatar dell'utente
@@ -56,7 +68,16 @@ const Profile: React.FC = () => {
     }, [getUserAvatar]);
 
     const handleFinish = () => {
-        console.log('Impostazioni finali:', { fontSize, hairColor, skinColor, theme });
+        Controller.setSettings({
+            fontSize,
+            hairColor,
+            skinColor,
+            theme,
+        });
+        message.success('Impostazioni salvate con successo!');
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     };
 
     return (

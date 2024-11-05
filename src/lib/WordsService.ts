@@ -2,7 +2,9 @@ import words from '../data/words_with_pictograms.json';
 import subjects from '../data/subjects.json';
 import verbs from '../data/verbs.json';
 import predefinedPhrases from '../data/predefined_phrases.json';
-import { Pictogram } from './AAC';
+import { AAC, Pictogram } from './AAC';
+import { Settings } from '../routes/Profile';
+import { Controller } from './Controller';
 
 // Dummy NLP manager for demonstration purposes, move this logic to the server
 // const manager = new NlpManager({ languages: ['it', 'en'] }); // Cannot be used directly in React client-side
@@ -13,10 +15,14 @@ interface WordsData {
 
 export class WordsService {
     static w = words as unknown as WordsData;
+    private static settings = Controller.getSettings();
 
     // Get all unique verbs
     static getVerbs = (): Pictogram[] => {
-        let v = verbs as Pictogram[];
+        let v = (verbs as Pictogram[]).map((p) => {
+            p.url = WordsService.convertLink(this.settings,p.url);
+            return p;
+        });
         return v.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
@@ -42,7 +48,10 @@ export class WordsService {
 
     // Get all unique subjects
     static getSubjects = (): Pictogram[] => {
-        let s = subjects as Pictogram[];
+        let s = (subjects as Pictogram[]).map((p) => {
+            p.url = WordsService.convertLink(this.settings,p.url);
+            return p;
+        });
         return s.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
@@ -58,6 +67,17 @@ export class WordsService {
         }
         return [];
     };
+
+    private static convertLink(settings:Settings,url:string):string{
+        console.log(settings);
+        if(!settings) return url;
+        let hair = AAC.hairColorToHex(settings.hairColor);
+        let skin = AAC.skinColorToHex(settings.skinColor);
+        let urlArray = url.split('_');
+        urlArray[1] = `hair-${hair}`;
+        urlArray[2] = `skin-${skin}`;
+        return urlArray.join('_');
+    }
 
     // Lemmatization function (could be moved to a backend service)
     private static async lemmatize(text: string, language: string): Promise<string[]> {

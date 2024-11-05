@@ -832,5 +832,46 @@
         "desc": "",
         "url": "https://static.arasaac.org/pictograms/5990/5990_hair-ED4120_skin-F5E5DE_500.png",
         "word": "trovare"
-    }
+    },
+    {
+        "schematic": false,
+        "sex": false,
+        "violence": false,
+        "aac": false,
+        "aacColor": false,
+        "skin": true,
+        "hair": true,
+        "downloads": 0,
+        "categories": [
+          "verb",
+          "smoking"
+        ],
+        "synsets": [
+          "01200739-v"
+        ],
+        "tags": [
+          "communication",
+          "language",
+          "verb",
+          "health",
+          "lifestyle",
+          "unhealthy habit",
+          "addiction",
+          "drugs",
+          "smoking"
+        ],
+        "_id": 7111,
+        "created": "2009-01-15T10:43:27.000Z",
+        "lastUpdated": "2021-01-19T10:47:20.794Z",
+        "keywords": [
+          {
+            "type": 3,
+            "keyword": "fumare",
+            "hasLocution": true
+          }
+        ],
+        "desc": "",
+        "url":"https://static.arasaac.org/pictograms/7111/7111_hair-ED4120_skin-F5E5DE_500.png",
+        "word":"fumare"
+      }
 ]

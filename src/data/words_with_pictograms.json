@@ -18172,5 +18172,205 @@
                 "url": "https://static.arasaac.org/pictograms/7187/7187_hair-ED4120_skin-F5E5DE_500.png"
             }
         }
+    ],
+    "fumare": [
+        {
+            "sigaretta": {
+                "schematic": false,
+                "sex": false,
+                "violence": false,
+                "aac": false,
+                "aacColor": false,
+                "skin": false,
+                "hair": false,
+                "downloads": 0,
+                "categories": [
+                    "smoking"
+                ],
+                "synsets": [
+                    "03034648-n"
+                ],
+                "tags": [
+                    "health",
+                    "lifestyle",
+                    "unhealthy habit",
+                    "addiction",
+                    "drugs",
+                    "smoking"
+                ],
+                "_id": 4601,
+                "created": "2008-04-28T13:22:24.000Z",
+                "lastUpdated": "2020-12-01T09:25:33.861Z",
+                "keywords": [
+                    {
+                        "type": 2,
+                        "keyword": "sigaretta",
+                        "hasLocution": true,
+                        "plural": "sigarette"
+                    }
+                ],
+                "desc": "",
+                "url": "https://api.arasaac.org/v1/pictograms/4601?plural=false&color=true&download=false"
+            }
+        },
+        {
+            "sigaro": {
+                "schematic": false,
+                "sex": false,
+                "violence": false,
+                "aac": false,
+                "aacColor": false,
+                "skin": false,
+                "hair": false,
+                "downloads": 0,
+                "categories": [
+                    "smoking"
+                ],
+                "synsets": [
+                    "03034020-n"
+                ],
+                "tags": [
+                    "health",
+                    "lifestyle",
+                    "unhealthy habit",
+                    "addiction",
+                    "drugs",
+                    "smoking"
+                ],
+                "_id": 4728,
+                "created": "2008-05-06T12:41:12.000Z",
+                "lastUpdated": "2020-12-01T09:26:22.272Z",
+                "keywords": [
+                    {
+                        "type": 2,
+                        "keyword": "sigaro",
+                        "hasLocution": true,
+                        "plural": "sigari"
+                    }
+                ],
+                "desc": "",
+                "url": "https://api.arasaac.org/v1/pictograms/4728?plural=false&color=true&download=false"
+            }
+        },
+        {
+            "menta": {
+                "schematic": false,
+                "sex": false,
+                "violence": false,
+                "aac": false,
+                "aacColor": false,
+                "skin": false,
+                "hair": false,
+                "downloads": 0,
+                "categories": [
+                    "aromatic plant",
+                    "aromatic herb"
+                ],
+                "synsets": [
+                    "12877047-n",
+                    "12860079-n",
+                    "12875802-n"
+                ],
+                "tags": [
+                    "plant",
+                    "aromatic plant",
+                    "feeding",
+                    "food",
+                    "plant-based food"
+                ],
+                "_id": 21982,
+                "created": "2010-10-03T11:37:39.000Z",
+                "lastUpdated": "2021-04-13T17:50:57.291Z",
+                "keywords": [
+                    {
+                        "type": 2,
+                        "keyword": "menta",
+                        "hasLocution": false
+                    }
+                ],
+                "desc": "",
+                "url": "https://api.arasaac.org/v1/pictograms/21982?plural=false&color=true&download=false"
+            }
+        },
+        {
+            "sigarette": {
+                "schematic": false,
+                "sex": false,
+                "violence": false,
+                "aac": false,
+                "aacColor": false,
+                "skin": false,
+                "hair": false,
+                "downloads": 0,
+                "categories": [
+                    "smoking"
+                ],
+                "synsets": [
+                    "03034648-n"
+                ],
+                "tags": [
+                    "health",
+                    "lifestyle",
+                    "unhealthy habit",
+                    "addiction",
+                    "drugs",
+                    "smoking"
+                ],
+                "_id": 4601,
+                "created": "2008-04-28T13:22:24.000Z",
+                "lastUpdated": "2020-12-01T09:25:33.861Z",
+                "keywords": [
+                    {
+                        "type": 2,
+                        "keyword": "sigaretta",
+                        "hasLocution": true,
+                        "plural": "sigarette"
+                    }
+                ],
+                "desc": "",
+                "url": "https://api.arasaac.org/v1/pictograms/4601?plural=false&color=true&download=false"
+            }
+        },
+        {
+            "prezzemolo": {
+                "schematic": false,
+                "sex": false,
+                "violence": false,
+                "aac": false,
+                "aacColor": false,
+                "skin": false,
+                "hair": false,
+                "downloads": 0,
+                "categories": [
+                    "aromatic plant",
+                    "aromatic herb",
+                    "herbaceous plant"
+                ],
+                "synsets": [
+                    "12963155-n",
+                    "07835872-n"
+                ],
+                "tags": [
+                    "plant",
+                    "aromatic plant",
+                    "feeding",
+                    "food",
+                    "plant-based food",
+                    "hervaceouos plant"
+                ],
+                "_id": 11334,
+                "created": "2009-12-24T20:00:04.000Z",
+                "lastUpdated": "2021-05-24T13:27:14.612Z",
+                "keywords": [
+                    {
+                        "type": 2,
+                        "keyword": "prezzemolo",
+                        "hasLocution": true
+                    }
+                ],
+                "desc": "",
+                "url": "https://api.arasaac.org/v1/pictograms/11334?plural=false&color=true&download=false"
+            }
+        }
     ]
 }

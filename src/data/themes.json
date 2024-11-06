@@ -30,7 +30,12 @@
                 "fontSizeHeading2": 26,
                 "fontSizeHeading3": 24,
                 "fontSizeHeading4": 22
+            },
+            "Select": {
+                "fontSize": 22,
+                "controlHeight": 52
             }
+            
         },
         "cssVar": true
     },
@@ -65,6 +70,10 @@
                 "fontSizeHeading2": 26,
                 "fontSizeHeading3": 24,
                 "fontSizeHeading4": 22
+            },
+            "Select": {
+                "fontSize": 22,
+                "controlHeight": 52
             }
         },
         "cssVar": true
@@ -100,6 +109,9 @@
                 "fontSizeHeading2": 26,
                 "fontSizeHeading3": 24,
                 "fontSizeHeading4": 22
+            },"Select": {
+                "fontSize": 22,
+                "controlHeight": 52
             }
         },
         "cssVar": true
@@ -135,6 +147,10 @@
                 "fontSizeHeading2": 26,
                 "fontSizeHeading3": 24,
                 "fontSizeHeading4": 22
+            },
+            "Select": {
+                "fontSize": 22,
+                "controlHeight": 52
             }
         },
         "cssVar": true
@@ -170,6 +186,10 @@
                 "fontSizeHeading2": 26,
                 "fontSizeHeading3": 24,
                 "fontSizeHeading4": 22
+            },
+            "Select": {
+                "fontSize": 22,
+                "controlHeight": 52
             }
         },
         "cssVar": true,

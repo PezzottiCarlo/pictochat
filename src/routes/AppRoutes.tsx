@@ -10,6 +10,7 @@ import NotFound from './NotFound';
 import ProtectedRoute from './ProtectedRoute';
 import Profile from './Profile';
 import { Logout } from './Logout';
+import { PersonalPictograms } from './PersonalPictograms';
 
 
 export const getActivePage = ():string => {
@@ -55,6 +56,14 @@ export const router = createHashRouter([
         element: (
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'personalPictograms',
+        element: (
+          <ProtectedRoute>
+            <PersonalPictograms />
           </ProtectedRoute>
         ),
       },

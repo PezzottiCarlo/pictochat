@@ -1,4 +1,4 @@
-import { MessageOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { MessageOutlined, SettingOutlined, TranslationOutlined, UserOutlined } from "@ant-design/icons";
 import { Space, Tabs } from "antd";
 import { router } from "../../routes/AppRoutes";
 
@@ -36,6 +36,14 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                             <UserOutlined />
                         </Space>
                     ),
+                },
+                {
+                    key: '3',
+                    label: (
+                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
+                            <TranslationOutlined />
+                        </Space>
+                    ),
                 }
             ]}
             onTabClick={(key) => {
@@ -47,6 +55,10 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                     case '2':
                         if (activeTab === 2) return;
                         router.navigate('/profile');
+                        break;
+                    case '3':
+                        if (activeTab === 3) return;
+                        router.navigate('/personalPictograms');
                         break;
                     default:
                         break;

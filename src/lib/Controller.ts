@@ -5,6 +5,8 @@ import { TgApi } from "./TgApi";
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Api } from "telegram";
 import { WordsService } from "./WordsService";
+import { PersonalPictogram, PersonalPictogramsCategory } from "../routes/PersonalPictograms";
+import Utils from "./Utils";
 
 export interface Settings {
     fontSize: number;
@@ -14,6 +16,7 @@ export interface Settings {
 }
 
 export class Controller {
+
     static tgApi = new TgApi(localStorage.getItem('stringSession') ? new StringSession(localStorage.getItem('stringSession') as string) : new StringSession(''));
     static aac = new AAC("it");
     static storage = new Store('pictochat-storage', 1);
@@ -96,17 +99,31 @@ export class Controller {
     };
 
     static getObjects = (verb: string | undefined): Pictogram[] => {
-        return WordsService.getObjects(verb).map((p) => {
+        let common = WordsService.getObjects(verb).map((p) => {
             p.url = this.convertLink(this.settings, p.url);
             return p;
         });
+
+        let personal = Controller.getPersonalPictograms().map((p) => {
+            if (p.category === PersonalPictogramsCategory.OGGETTO)
+                return Utils.personalPictogramToPictogram(p);
+        }) as Pictogram[]
+
+        return personal.concat(common).filter((p) => p !== undefined);
     };
 
     static getSubjects = (): Pictogram[] => {
-        return WordsService.getSubjects().map((p) => {
+        let common = WordsService.getSubjects().map((p) => {
             p.url = this.convertLink(this.settings, p.url);
             return p;
         });
+
+        let personal = Controller.getPersonalPictograms().map((p) => {
+            if (p.category === PersonalPictogramsCategory.SOGGETTO)
+                return Utils.personalPictogramToPictogram(p);
+        }) as Pictogram[]
+
+        return personal.concat(common).filter((p) => p !== undefined);
     };
 
     static extractChoices = (sentence: string): string[] => {
@@ -118,7 +135,7 @@ export class Controller {
         let pictos = (await Controller.aac.searchKeyword(keyword, normal));
         if (pictos.length === 0) return null;
         let picto = pictos[0];
-        const p = await Controller.aac.getImageFromId(picto._id, true,Controller.settings.skinColor,Controller.settings.hairColor);
+        const p = await Controller.aac.getImageFromId(picto._id, true, Controller.settings.skinColor, Controller.settings.hairColor);
         p.word = keyword;
         return p;
     }
@@ -143,7 +160,7 @@ export class Controller {
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1);
-        
+
         let pictograms = (await WordsService.extractPictograms(sentence)) || [];
         const unfoundWords = cleanedWords.filter((word) => !pictograms.find((p) => p.word === word));
 
@@ -151,20 +168,37 @@ export class Controller {
             const pictogram = await Controller.searchPictogram(word, true);
             if (pictogram) pictograms.push(pictogram);
         }
-    
+
         return cleanedWords.map((word) => {
             const pictogram = pictograms.find((p) => p.word === word);
             if (pictogram) {
                 pictogram.url = this.convertLink(this.settings, pictogram.url);
             }
             return pictogram;
-        }).filter((p): p is Pictogram => p !== undefined); 
+        }).filter((p): p is Pictogram => p !== undefined);
     }
-    
+
 
     static textToSpeech = (text: string): void => {
         WordsService.textToSpeech(text);
     }
+
+
+    static getPersonalPictograms(): PersonalPictogram[] {
+        let personalPictograms = localStorage.getItem('personalPictograms');
+        return personalPictograms ? JSON.parse(personalPictograms) : [];
+    }
+
+    static addPersonalPictogram(newPictogram: PersonalPictogram) {
+        let personalPictograms = Controller.getPersonalPictograms();
+        if (personalPictograms) {
+            personalPictograms.push(newPictogram);
+        } else {
+            personalPictograms = [newPictogram];
+        }
+        localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
+    }
+
 
     private static convertLink(settings: Settings, url: string): string {
         if (!settings) return url;

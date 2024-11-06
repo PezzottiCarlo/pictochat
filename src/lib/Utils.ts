@@ -1,6 +1,7 @@
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Pictogram } from "./AAC";
 import { Controller } from "./Controller";
+import { PersonalPictogram } from "../routes/PersonalPictograms";
 
 class Utils {
     static serializeDialog(dialog: Dialog): any {
@@ -14,6 +15,26 @@ class Utils {
     static formatDate(timestamp: number): string {
         const date = new Date(timestamp * 1000); // Telegram date is in seconds
         return date.toLocaleString();
+    }
+
+    static personalPictogramToPictogram(p: PersonalPictogram): Pictogram {
+        return {
+            _id: Math.floor(Math.random() * 100000000000000000).toString() as any,
+            url: p.photoUrl,
+            word: p.name,
+            tags: [],
+            keywords: [],
+            aac: false,
+            aacColor: false,
+            categories: [],
+            desc: '',
+            schematic: false,
+            hair: false,
+            sex: false,
+            skin: false,
+            synsets: [],
+            violence: false
+        } as Pictogram;
     }
 
     static charToColor(char: string): string {

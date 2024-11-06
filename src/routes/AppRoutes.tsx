@@ -36,6 +36,14 @@ export const router = createHashRouter([
         element: <Login />,
       },
       {
+        path: 'personalPictograms',
+        element: (
+          <ProtectedRoute>
+            <PersonalPictograms />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: 'contacts',
         element: (
           <ProtectedRoute>
@@ -56,14 +64,6 @@ export const router = createHashRouter([
         element: (
           <ProtectedRoute>
             <Profile />
-          </ProtectedRoute>
-        ),
-      },
-      {
-        path: 'personalPictograms',
-        element: (
-          <ProtectedRoute>
-            <PersonalPictograms />
           </ProtectedRoute>
         ),
       },

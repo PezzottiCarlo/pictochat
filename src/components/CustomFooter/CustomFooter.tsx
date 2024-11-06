@@ -1,4 +1,4 @@
-import { MessageOutlined, SettingOutlined, TranslationOutlined, UserOutlined } from "@ant-design/icons";
+import { MessageOutlined, TranslationOutlined, UserOutlined } from "@ant-design/icons";
 import { Space, Tabs } from "antd";
 import { router } from "../../routes/AppRoutes";
 

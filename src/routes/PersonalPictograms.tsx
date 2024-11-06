@@ -1,20 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Button, Modal, Form, Input, Select, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { Controller } from "../lib/Controller";
+import { CustomFooter } from "../components/CustomFooter/CustomFooter";
 
 const { Content } = Layout;
 const { Option } = Select;
 
-interface Pictogram {
+export enum PersonalPictogramsCategory {
+    SOGGETTO = "Soggetto",
+    OGGETTO = "Oggetto",
+}
+
+export interface PersonalPictogram {
     name: string;
-    category: string;
+    category: PersonalPictogramsCategory;
     photoUrl: string;
 }
 
 export const PersonalPictograms: React.FC = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
-    const [pictograms, setPictograms] = useState<Pictogram[]>([]);
+    const [pictograms, setPictograms] = useState<PersonalPictogram[]>([]);
+
+
+    useEffect(() => {
+        setPictograms(Controller.getPersonalPictograms());
+    }, []);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -32,13 +44,15 @@ export const PersonalPictograms: React.FC = () => {
                 const file = values.photo[0].originFileObj;
                 const reader = new FileReader();
                 reader.onload = () => {
-                    const newPictogram: Pictogram = {
+                    const newPictogram: PersonalPictogram = {
                         name: values.name,
                         category: values.category,
                         photoUrl: reader.result as string,
                     };
                     setPictograms([...pictograms, newPictogram]);
                     message.success("Immagine aggiunta con successo!");
+
+                    Controller.addPersonalPictogram(newPictogram);
                     setIsModalVisible(false);
                     form.resetFields();
                 };
@@ -54,7 +68,6 @@ export const PersonalPictograms: React.FC = () => {
             <Layout style={{ minHeight: "100vh" }}>
                 <Content style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
 
-                    {/* Sezione del pulsante */}
                     <div style={{ flex: .3, display: "flex", alignItems: "center", justifyContent: "center" }}>
                         <Button type="primary" onClick={showModal}>
                             <UploadOutlined />
@@ -62,7 +75,6 @@ export const PersonalPictograms: React.FC = () => {
                         </Button>
                     </div>
 
-                    {/* Sezione delle immagini */}
                     <div style={{
                         flex: 1,
                         overflowY: "auto",
@@ -91,7 +103,7 @@ export const PersonalPictograms: React.FC = () => {
                 open={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
-                
+
                 okText="Aggiungi"
                 cancelText="Annulla">
                 <Form form={form} >
@@ -107,9 +119,9 @@ export const PersonalPictograms: React.FC = () => {
                         name="category"
                         rules={[{ required: true, message: "Seleziona una categoria!" }]}>
                         <Select placeholder="Seleziona una categoria">
-                            <Option value="soggetto">Soggetto</Option>
-                            <Option value="oggetto">Oggetto</Option>
-                            <Option value="verbo">Verbo</Option>
+                            {Object.values(PersonalPictogramsCategory).map((category, index) => (
+                                <Option key={index} value={category}>{category}</Option>
+                            ))}
                         </Select>
                     </Form.Item>
                     <Form.Item
@@ -124,6 +136,7 @@ export const PersonalPictograms: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+
         </>
     );
 };

@@ -2,9 +2,7 @@ import words from '../data/words_with_pictograms.json';
 import subjects from '../data/subjects.json';
 import verbs from '../data/verbs.json';
 import predefinedPhrases from '../data/predefined_phrases.json';
-import { AAC, Pictogram } from './AAC';
-import { Settings } from '../routes/Profile';
-import { Controller } from './Controller';
+import { Pictogram } from './AAC';
 
 // Dummy NLP manager for demonstration purposes, move this logic to the server
 // const manager = new NlpManager({ languages: ['it', 'en'] }); // Cannot be used directly in React client-side
@@ -15,14 +13,10 @@ interface WordsData {
 
 export class WordsService {
     static w = words as unknown as WordsData;
-    private static settings = Controller.getSettings();
 
     // Get all unique verbs
     static getVerbs = (): Pictogram[] => {
-        let v = (verbs as Pictogram[]).map((p) => {
-            p.url = WordsService.convertLink(this.settings,p.url);
-            return p;
-        });
+        let v = (verbs as Pictogram[]);
         return v.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
@@ -48,10 +42,7 @@ export class WordsService {
 
     // Get all unique subjects
     static getSubjects = (): Pictogram[] => {
-        let s = (subjects as Pictogram[]).map((p) => {
-            p.url = WordsService.convertLink(this.settings,p.url);
-            return p;
-        });
+        let s = (subjects as Pictogram[]);
         return s.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
@@ -68,17 +59,6 @@ export class WordsService {
         return [];
     };
 
-    private static convertLink(settings:Settings,url:string):string{
-        console.log(settings);
-        if(!settings) return url;
-        let hair = AAC.hairColorToHex(settings.hairColor);
-        let skin = AAC.skinColorToHex(settings.skinColor);
-        let urlArray = url.split('_');
-        urlArray[1] = `hair-${hair}`;
-        urlArray[2] = `skin-${skin}`;
-        return urlArray.join('_');
-    }
-
     // Lemmatization function (could be moved to a backend service)
     private static async lemmatize(text: string, language: string): Promise<string[]> {
         // Make an API call to a backend or use a library that works in the client
@@ -88,7 +68,7 @@ export class WordsService {
     }
 
     // Extract pictograms based on a sentence
-    static extractPictograms = (sentence: string): string[] => {
+    static extractSuggestedPictograms = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
         let choices = WordsService.extractChoices(sentence);
         if (choices.length > 0) return choices;
@@ -102,7 +82,7 @@ export class WordsService {
     };
 
     // Extract subjects from a sentence
-    static extractSubjects = async (sentence: string): Promise<Pictogram[] | null> => {
+    static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         if (!WordsService.isString(sentence)) return null;
 
         sentence = WordsService.normalizeString(sentence);
@@ -143,8 +123,7 @@ export class WordsService {
 
         return result;
     };
-
-    // Utility: Normalize string (remove special characters, normalize accents, etc.)
+    
     static normalizeString = (str: string): string => {
         if (!WordsService.isString(str)) return "";
 

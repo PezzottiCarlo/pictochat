@@ -21,7 +21,6 @@ const WelcomePage: React.FC = () => {
     }
     const handleFinish = () => {
         nextStep();
-        console.log('Impostazioni finali:', { fontSize, hairColor, skinColor, theme });
     };
 
     const face = 'https://api.arasaac.org/v1/pictograms/2684?color=true&skin=';

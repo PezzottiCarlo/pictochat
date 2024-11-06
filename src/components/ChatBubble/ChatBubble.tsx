@@ -4,8 +4,8 @@ import { Api } from 'telegram';
 import BubbleMedia from './ChatBubbleMedia';
 import '../../styles/Bubble.css';
 import { Pictogram } from '../../lib/AAC';
-import { WordsService } from '../../lib/WordsService';
 import { PictogramImage } from '../Other/PictogramImage';
+import { Controller } from '../../lib/Controller';
 
 interface ChatBubbleProps {
     message: Api.Message;
@@ -34,13 +34,13 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name }) => {
     useEffect(() => {
         if (!message) return;
         if (message.message === null) return;
-        WordsService.extractSubjects(message.message).then((soggetto) => {
+        Controller.extractPictograms(message.message).then((soggetto) => {
             setPictoSuggestions(soggetto);
         });
     }, [message]);
 
     return (
-        <List.Item className={`bubble`} onClick={() => WordsService.textToSpeech(message.message)}>
+        <List.Item className={`bubble`} onClick={() => Controller.textToSpeech(message.message)}>
             <Flex align="center" justify={message.out ? "flex-end" : "flex-start"} style={{ width: '100%' }}>
                 <div className={`bubble-content ${bubbleClass}`}>
                     {name && <div className="name">{iName}</div>}

@@ -15,8 +15,6 @@ import hints from '../data/hints.json';
 import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
-import { WordsService } from '../lib/WordsService';
-import { getActivePage, router } from './AppRoutes';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
 import { ChatSendMedia } from '../components/Chat/ChatSendMedia';
@@ -61,18 +59,15 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const fetchPictogramsHints = useCallback(async (messages: Api.Message[]) => {
         const lastMessage = messages[messages.length - 1];
         if (!lastMessage) return;
-        let pictograms = WordsService.extractPictograms(lastMessage.message)
-        if (pictograms.length === 0) {
-            setPictoHints(new Map());
-            return;
-        }
-        const pictoHints = new Map<number, Pictogram>();
-        for (const picto of pictograms) {
-            const pictoData = (await Controller.aac.searchKeyword(picto, false))[0];
-            const p = await Controller.aac.getImageFromId(pictoData._id, true, SkinColor.WHITE, HairColor.RED);
-            pictoHints.set(pictoData._id, p);
-        }
-        setPictoHints(pictoHints);
+        Controller.extractSuggestedPictograms(lastMessage.message).then((pictograms) => {
+            const pictoMap = new Map();
+            if (!pictograms) return;
+            pictograms.forEach((picto, index) => {
+                pictoMap.set(index, picto);
+            });
+            setPictoHints(pictoMap);
+        });
+        
     }, []);
 
     useEffect(() => {

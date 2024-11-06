@@ -10,12 +10,6 @@ import { HairColor, SkinColor } from '../lib/AAC';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-export interface Settings{
-    fontSize: number;
-    hairColor: HairColor;
-    skinColor: SkinColor;
-    theme: string;
-}
 
 const Profile: React.FC = () => {
     const [user, setUser] = useState<Api.User>();

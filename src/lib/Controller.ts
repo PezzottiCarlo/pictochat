@@ -158,25 +158,44 @@ export class Controller {
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         const cleanedWords = sentence
             .split(' ')
-            .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
+            .map((word) => word.replace(/[.,!?;:()]/g, ""))
             .filter((word) => word.length > 1);
-
+    
+        // Ottieni pittogrammi personali e le parole corrispondenti
+        let personalPictograms = Controller.getPersonalPictograms().map((p) => Utils.personalPictogramToPictogram(p));
+        let personalWords = new Set(personalPictograms.map((p) => p.word));
+    
+        // Estrai pittogrammi tramite WordsService
         let pictograms = (await WordsService.extractPictograms(sentence)) || [];
         const unfoundWords = cleanedWords.filter((word) => !pictograms.find((p) => p.word === word));
-
+    
+        // Cerca i pittogrammi mancanti per le parole non trovate
         for (const word of unfoundWords) {
-            const pictogram = await Controller.searchPictogram(word, true);
-            if (pictogram) pictograms.push(pictogram);
+            if (!personalWords.has(word)) {
+                const pictogram = await Controller.searchPictogram(word, true);
+                if (pictogram) pictograms.push(pictogram);
+            }
         }
-
+    
+        // Sovrascrivi i pittogrammi trovati con quelli personali
+        const pictogramMap = new Map<string, Pictogram>();
+        for (const pictogram of pictograms) {
+            pictogramMap.set(pictogram.word as string, pictogram);
+        }
+        for (const personalPictogram of personalPictograms) {
+            pictogramMap.set(personalPictogram.word as string, personalPictogram);
+        }
+    
+        // Costruisci l'array dei pittogrammi in base alle parole della frase
         return cleanedWords.map((word) => {
-            const pictogram = pictograms.find((p) => p.word === word);
+            const pictogram = pictogramMap.get(word);
             if (pictogram) {
                 pictogram.url = this.convertLink(this.settings, pictogram.url);
             }
             return pictogram;
         }).filter((p): p is Pictogram => p !== undefined);
     }
+    
 
 
     static textToSpeech = (text: string): void => {
@@ -201,7 +220,9 @@ export class Controller {
 
 
     private static convertLink(settings: Settings, url: string): string {
-        if (!settings) return url;
+        if (!url.includes('arasaac')) return url;
+        console.log(url);
+        if (!url.includes('hair') && !url.includes('skin')) return url;
         let hair = AAC.hairColorToHex(settings.hairColor);
         let skin = AAC.skinColorToHex(settings.skinColor);
         let urlArray = url.split('_');

@@ -16,7 +16,7 @@ interface WordsData {
 
 interface Conjugation {
     verb: string;
-    usage:number;
+    usage: number;
     conjugations: { [tense: string]: string[] };
 }
 
@@ -60,15 +60,25 @@ export class WordsService {
     // Extract choices from a sentence (e.g., for a question asking for a preference)
     static extractChoices = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
-
-        const matches = sentence.match(/(?:preferisci|preferiresti|scegli)\s+(.+)$/i);
-
-        if (matches && matches.length > 1) {
-            const choicesString = matches[1];
-            return choicesString.split(/\s+/).map(s => s.trim().replace(/[^\w\s]/gi, '')).filter(s => s.length > 1);
-        }
-        return [];
+        console.log(sentence);
+    
+        // Verificare se la frase contiene una domanda (con il punto di domanda)
+        const isQuestion = sentence.includes('?');
+        if (!isQuestion) return [];
+    
+        // Identificare la parte della frase dopo il punto di domanda
+        const afterQuestion = sentence.split('?')[1];
+        if (!afterQuestion) return [];
+    
+        // Dividere le opzioni usando separatori: virgola, "o" (senza includerlo nei risultati)
+        const choices = afterQuestion
+            .split(/\s*(?:,|\s+o\s+)\s*/) // Dividere su virgola, o con spazi attorno ma senza includere "o"
+            .map(choice => choice.trim().replace(/[^\w\s]/gi, '')) // Pulire caratteri speciali
+            .filter(choice => choice.length > 0); // Rimuovere stringhe vuote
+    
+        return choices;
     };
+    
 
     // Extract pictograms based on a sentence
     static extractSuggestedPictograms = (sentence: string): string[] => {
@@ -175,20 +185,20 @@ export class WordsService {
         return matrix[a.length][b.length];
     };
 
-    static findInfinitive = (conjugatedVerb:string) => {
+    static findInfinitive = (conjugatedVerb: string) => {
         const normalizedConjugatedVerb = conjugatedVerb.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
-        
+
         for (let entry of this.conjugations) {
             const infinitive = entry['verb'];
-            if(entry['usage'] < 2000) break;
+            if (entry['usage'] < 2000) break;
             //block
             for (let tense in entry['conjugations']) {
                 for (let conjugation of entry['conjugations'][tense]) {
                     const normalizedConjugation = conjugation.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
-                    
+
                     if (normalizedConjugation[normalizedConjugation.length - 2] === "/") {
                         if (normalizedConjugation.slice(0, -3) === normalizedConjugatedVerb.slice(0, -1)) {
-                            
+
                             return infinitive;
                         }
                     }

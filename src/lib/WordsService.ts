@@ -180,12 +180,15 @@ export class WordsService {
         
         for (let entry of this.conjugations) {
             const infinitive = entry['verb'];
+            if(entry['usage'] < 2000) break;
+            //block
             for (let tense in entry['conjugations']) {
                 for (let conjugation of entry['conjugations'][tense]) {
                     const normalizedConjugation = conjugation.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
                     
                     if (normalizedConjugation[normalizedConjugation.length - 2] === "/") {
                         if (normalizedConjugation.slice(0, -3) === normalizedConjugatedVerb.slice(0, -1)) {
+                            
                             return infinitive;
                         }
                     }

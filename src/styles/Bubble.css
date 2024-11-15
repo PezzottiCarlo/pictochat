@@ -2,7 +2,6 @@
     padding: 10px 15px;
     margin-bottom: 10px;
     display: flex;
-    min-width: 100px;
     align-items: flex-end;
 }
 
@@ -12,6 +11,7 @@
     position: relative;
     line-height: 1.5;
     word-break: break-word;
+    max-width: 70%;
 }
 
 .bubble-content.outgoing {
@@ -41,7 +41,13 @@
     word-wrap: break-word;
 }
 
-.bubble-picto{
+.bubble-picto {
     display: flex;
     flex-direction: row;
+    max-width: 100%; /* La larghezza massima è legata al contenitore */
+    max-height: 200px; /* Altezza massima per evitare bubble eccessivamente grandi */
+    overflow-x: auto; /* Aggiunge scrolling orizzontale se necessario */
+    overflow-y: auto; /* Aggiunge scrolling verticale se necessario */
+    scrollbar-width: thin; /* Per browser moderni */
+    scrollbar-color: var(--ant-border-color) transparent; /* Colore della scrollbar */
 }

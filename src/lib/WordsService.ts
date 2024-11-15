@@ -3,6 +3,9 @@ import subjects from '../data/subjects.json';
 import verbs from '../data/verbs.json';
 import predefinedPhrases from '../data/predefined_phrases.json';
 import { Pictogram } from './AAC';
+import conjugations from '../data/verbs_conjugated.json';
+
+
 
 // Dummy NLP manager for demonstration purposes, move this logic to the server
 // const manager = new NlpManager({ languages: ['it', 'en'] }); // Cannot be used directly in React client-side
@@ -11,8 +14,16 @@ interface WordsData {
     [verb: string]: any[];
 }
 
+interface Conjugation {
+    verb: string;
+    usage:number;
+    conjugations: { [tense: string]: string[] };
+}
+
 export class WordsService {
     static w = words as unknown as WordsData;
+    static conjugations = conjugations as Conjugation[];
+    static AUSILIAR_VERBS = ["essere", "avere"];
 
     // Get all unique verbs
     static getVerbs = (): Pictogram[] => {
@@ -59,14 +70,6 @@ export class WordsService {
         return [];
     };
 
-    // Lemmatization function (could be moved to a backend service)
-    private static async lemmatize(text: string, language: string): Promise<string[]> {
-        // Make an API call to a backend or use a library that works in the client
-        // const result = await WordsService.manager.process(language, text);
-        // return result.sentiment.lemmas;
-        return text.split(' '); // Dummy response
-    }
-
     // Extract pictograms based on a sentence
     static extractSuggestedPictograms = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
@@ -81,13 +84,16 @@ export class WordsService {
         return [];
     };
 
+
+    static getAllVerbs = (): string[] => {
+        return this.conjugations.map((c) => c.verb);
+    }
+
     // Extract subjects from a sentence
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         if (!WordsService.isString(sentence)) return null;
 
         sentence = WordsService.normalizeString(sentence);
-        const lemmatizedSentence = (await WordsService.lemmatize(sentence, 'it')).join(' ');
-
         const result: Pictogram[] = [];
         const foundWords = new Set<string>();
 
@@ -96,7 +102,7 @@ export class WordsService {
 
         for (const subject of subjects) {
             const subjectWord = WordsService.normalizeString(subject.word || "");
-            if (!foundWords.has(subjectWord) && new RegExp(`\\b${subjectWord}\\b`, 'i').test(lemmatizedSentence)) {
+            if (!foundWords.has(subjectWord) && new RegExp(`\\b${subjectWord}\\b`, 'i').test(sentence)) {
                 result.push(subject);
                 foundWords.add(subjectWord);
             }
@@ -104,7 +110,7 @@ export class WordsService {
 
         for (const verb of verbs) {
             const verbWord = WordsService.normalizeString(verb.word || "");
-            if (!foundWords.has(verbWord) && new RegExp(`\\b${verbWord}\\b`, 'i').test(lemmatizedSentence)) {
+            if (!foundWords.has(verbWord) && new RegExp(`\\b${verbWord}\\b`, 'i').test(sentence)) {
                 result.push(verb);
                 foundWords.add(verbWord);
             }
@@ -114,7 +120,7 @@ export class WordsService {
             const objects = WordsService.getObjects(verb.word);
             for (const obj of objects) {
                 const objectWord = WordsService.normalizeString(obj.word || "");
-                if (!foundWords.has(objectWord) && new RegExp(`\\b${objectWord}\\b`, 'i').test(lemmatizedSentence)) {
+                if (!foundWords.has(objectWord) && new RegExp(`\\b${objectWord}\\b`, 'i').test(sentence)) {
                     result.push(obj);
                     foundWords.add(objectWord);
                 }
@@ -123,7 +129,7 @@ export class WordsService {
 
         return result;
     };
-    
+
     static normalizeString = (str: string): string => {
         if (!WordsService.isString(str)) return "";
 
@@ -150,4 +156,47 @@ export class WordsService {
         u.lang = 'it-IT';
         synth.speak(u);
     }
+
+    static levenshteinDistance = (a: string, b: string) => {
+        const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+        for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+        for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j] + 1,      // Cancellazione
+                    matrix[i][j - 1] + 1,      // Inserimento
+                    matrix[i - 1][j - 1] + cost // Sostituzione
+                );
+            }
+        }
+
+        return matrix[a.length][b.length];
+    };
+
+    static findInfinitive = (conjugatedVerb:string) => {
+        const normalizedConjugatedVerb = conjugatedVerb.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
+        
+        for (let entry of this.conjugations) {
+            const infinitive = entry['verb'];
+            for (let tense in entry['conjugations']) {
+                for (let conjugation of entry['conjugations'][tense]) {
+                    const normalizedConjugation = conjugation.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
+                    
+                    if (normalizedConjugation[normalizedConjugation.length - 2] === "/") {
+                        if (normalizedConjugation.slice(0, -3) === normalizedConjugatedVerb.slice(0, -1)) {
+                            return infinitive;
+                        }
+                    }
+                    else if (normalizedConjugation === normalizedConjugatedVerb) {
+                        return infinitive;
+                    }
+                }
+            }
+        }
+        return null;
+    };
+
+
 }

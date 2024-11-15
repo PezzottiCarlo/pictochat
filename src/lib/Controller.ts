@@ -155,29 +155,54 @@ export class Controller {
         return result;
     };
 
+
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
-        const cleanedWords = sentence
+        // Suddividere le parole, rimuovere i segni di punteggiatura e filtrare parole di lunghezza > 1
+        let cleanedWords = sentence
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, ""))
             .filter((word) => word.length > 1);
-    
+
+        let processedWords = [];
+
+        for (let i = 0; i < cleanedWords.length; i++) {
+            let word = WordsService.findInfinitive(cleanedWords[i]);
+            if (!word){
+                processedWords.push(cleanedWords[i])
+                continue;
+            }
+            if (WordsService.AUSILIAR_VERBS.includes(word)) {
+                let nextWord = cleanedWords[i + 1];
+                if (nextWord) {
+                    let combinedInfinitive = WordsService.findInfinitive(`${cleanedWords[i]} ${nextWord}`);
+                    if (combinedInfinitive) {
+                        processedWords.push(combinedInfinitive);
+                        i++;
+                        continue;
+                    }
+                }
+            }
+            let infinitive = WordsService.findInfinitive(word);
+            if (infinitive) {
+                processedWords.push(infinitive);
+            }
+        }
+
+
         // Ottieni pittogrammi personali e le parole corrispondenti
         let personalPictograms = Controller.getPersonalPictograms().map((p) => Utils.personalPictogramToPictogram(p));
         let personalWords = new Set(personalPictograms.map((p) => p.word));
-    
+
         // Estrai pittogrammi tramite WordsService
         let pictograms = (await WordsService.extractPictograms(sentence)) || [];
-        const unfoundWords = cleanedWords.filter((word) => !pictograms.find((p) => p.word === word));
-    
-        // Cerca i pittogrammi mancanti per le parole non trovate
+        const unfoundWords = processedWords.filter((word) => !pictograms.find((p) => p.word === word));
+        console.log(unfoundWords);
         for (const word of unfoundWords) {
             if (!personalWords.has(word)) {
                 const pictogram = await Controller.searchPictogram(word, true);
                 if (pictogram) pictograms.push(pictogram);
             }
         }
-    
-        // Sovrascrivi i pittogrammi trovati con quelli personali
         const pictogramMap = new Map<string, Pictogram>();
         for (const pictogram of pictograms) {
             pictogramMap.set(pictogram.word as string, pictogram);
@@ -185,9 +210,7 @@ export class Controller {
         for (const personalPictogram of personalPictograms) {
             pictogramMap.set(personalPictogram.word as string, personalPictogram);
         }
-    
-        // Costruisci l'array dei pittogrammi in base alle parole della frase
-        return cleanedWords.map((word) => {
+        return processedWords.map((word) => {
             const pictogram = pictogramMap.get(word);
             if (pictogram) {
                 pictogram.url = this.convertLink(this.settings, pictogram.url);
@@ -195,7 +218,7 @@ export class Controller {
             return pictogram;
         }).filter((p): p is Pictogram => p !== undefined);
     }
-    
+
 
 
     static textToSpeech = (text: string): void => {
@@ -221,7 +244,6 @@ export class Controller {
 
     private static convertLink(settings: Settings, url: string): string {
         if (!url.includes('arasaac')) return url;
-        console.log(url);
         if (!url.includes('hair') && !url.includes('skin')) return url;
         let hair = AAC.hairColorToHex(settings.hairColor);
         let skin = AAC.skinColorToHex(settings.skinColor);

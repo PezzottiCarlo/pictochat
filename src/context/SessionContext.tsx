@@ -2,16 +2,24 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { StringSession } from 'telegram/sessions';
 import { Controller } from '../lib/Controller';
 
-// Tipi del contesto
+/**
+ * Interface for the session context properties.
+ */
 interface SessionContextProps {
     session: StringSession | null;
     setSession: (session: StringSession | null) => void;
-    logout: () => void;  // Aggiunta del logout
+    logout: () => void; 
 }
 
-// Creazione del contesto
+/**
+ * Creates a context for managing session state.
+ */
 const SessionContext = createContext<SessionContextProps | undefined>(undefined);
 
+/**
+ * Provides session context to its children.
+ * @param children - The child components that will have access to the session context.
+ */
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [session, setSession] = useState<StringSession | null>(null);
 
@@ -22,11 +30,13 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
     }, []);
 
-    // Funzione di logout
+    /**
+     * Logs out the user by clearing the session and removing it from localStorage.
+     */
     const logout = async () => {
-        setSession(null); // Imposta la sessione a null
+        setSession(null);
         await Controller.dropDatabase();
-        localStorage.removeItem('stringSession'); // Rimuovi la sessione dal localStorage
+        localStorage.removeItem('stringSession');
     };
 
     return (
@@ -36,7 +46,11 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
 };
 
-// Hook per accedere al contesto
+/**
+ * Custom hook to access the session context.
+ * @returns The session context properties.
+ * @throws Will throw an error if used outside of a SessionProvider.
+ */
 export const useSession = (): SessionContextProps => {
     const context = useContext(SessionContext);
     if (!context) {
@@ -45,12 +59,18 @@ export const useSession = (): SessionContextProps => {
     return context;
 };
 
-// Verifica se è in fase di configurazione
+/**
+ * Custom hook to check if the application is in the setting phase.
+ * @returns Always returns true.
+ */
 export const useIsSetting = (): boolean => {
     return true;
 };
 
-// Verifica se l'utente è autenticato
+/**
+ * Custom hook to check if the user is authenticated.
+ * @returns True if the user is authenticated, otherwise false.
+ */
 export const useIsAuthenticated = (): boolean => {
     const { session } = useSession();
     if (session === null) {

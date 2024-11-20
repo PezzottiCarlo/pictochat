@@ -12,7 +12,7 @@ interface DialogAvatarProps {
     aac?: boolean;
     hairColor?: HairColor;
     skinColor?: SkinColor;
-    isOnline?: boolean;  // Nuova proprietà per indicare se l'utente è online
+    isOnline?: boolean;
 }
 
 const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, imageBuffer, badge, size, aac, hairColor, skinColor, isOnline }) => {

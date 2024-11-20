@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Avatar, Button, Divider, Typography, Space, Flex } from 'antd';
+import { Layout, Button, Typography, Flex } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import DialogAvatar from '../DialogItem/DialogAvatar';
 import { Dialog } from "telegram/tl/custom/dialog";

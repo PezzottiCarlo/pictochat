@@ -12,8 +12,11 @@ import Profile from './Profile';
 import { Logout } from './Logout';
 import { PersonalPictograms } from './PersonalPictograms';
 
-
-export const getActivePage = ():string => {
+/**
+ * Function to get the active page from the URL hash.
+ * @returns {string} The active page.
+ */
+export const getActivePage = (): string => {
   let hash = window.location.hash;
   let page = hash.split('/');
   if (page.length > 1)
@@ -21,55 +24,56 @@ export const getActivePage = ():string => {
   return page[0];
 }
 
+// Define the routes for the application using createHashRouter
 export const router = createHashRouter([
   {
     path: '/',
-    element: <MyApp />,
-    errorElement: <NotFound />,
+    element: <MyApp />, // Main application component
+    errorElement: <NotFound />, // Component to display for unknown routes
     children: [
       {
         path: 'welcomePage',
-        element: <WelcomePage />,
+        element: <WelcomePage />, // Welcome page component
       },
       {
         path: 'login',
-        element: <Login />,
+        element: <Login />, // Login page component
       },
       {
         path: 'personalPictograms',
         element: (
           <ProtectedRoute>
-            <PersonalPictograms />
-          </ProtectedRoute>
+            <PersonalPictograms /> 
+          </ProtectedRoute> // Personal pictograms component, protected route
         ),
       },
       {
         path: 'contacts',
         element: (
           <ProtectedRoute>
-            <Contacts />
-          </ProtectedRoute>
+            <Contacts /> 
+          </ProtectedRoute> // Contacts component, protected route
         ),
       },
       {
         path: 'chat/:chatId',
         element: (
           <ProtectedRoute>
-            <ChatWrapper />
-          </ProtectedRoute>
+            <ChatWrapper /> 
+          </ProtectedRoute> // Chat wrapper component, protected route
         ),
       },
       {
         path: 'profile',
         element: (
           <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
+            <Profile /> 
+          </ProtectedRoute> // Profile component, protected route
         ),
       },
       {
         path: 'logout',
-        element: <Logout />,
+        element: <Logout />, // Logout component
       }
     ],
   },

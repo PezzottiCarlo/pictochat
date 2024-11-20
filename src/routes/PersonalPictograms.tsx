@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Layout, Button, Modal, Form, Input, Select, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { Controller } from "../lib/Controller";
-import { CustomFooter } from "../components/CustomFooter/CustomFooter";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -136,7 +135,6 @@ export const PersonalPictograms: React.FC = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-
         </>
     );
 };

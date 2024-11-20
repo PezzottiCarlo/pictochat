@@ -102,8 +102,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
         setModalVisible(false);
         setSelectedPicto({ subjects: [], verbs: [], objects: [] });
     };
-
-    // Funzione per renderizzare più pittogrammi selezionati
+    
     const renderPictoCards = (type: 'subjects' | 'verbs' | 'objects', defaultIndex: number) => (
 
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>

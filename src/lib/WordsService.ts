@@ -17,18 +17,28 @@ interface Conjugation {
     conjugations: { [tense: string]: string[] };
 }
 
+/**
+ * Service for handling words and their associated pictograms.
+ */
 export class WordsService {
     static w = words as unknown as WordsData;
     static conjugations = conjugations as Conjugation[];
     static AUSILIAR_VERBS = ["essere", "avere"];
 
-    // Get all unique verbs
+    /**
+     * Get all unique verbs.
+     * @returns {Pictogram[]} Array of unique verbs as pictograms.
+     */
     static getVerbs = (): Pictogram[] => {
         let v = (verbs as Pictogram[]);
         return v.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
-    // Get objects associated with a verb
+    /**
+     * Get objects associated with a verb.
+     * @param {string | undefined} verb - The verb to get objects for.
+     * @returns {Pictogram[]} Array of pictograms associated with the verb.
+     */
     static getObjects = (verb: string | undefined): Pictogram[] => {
         if (!verb) return [];
 
@@ -48,36 +58,41 @@ export class WordsService {
         return [];
     };
 
-    // Get all unique subjects
+    /**
+     * Get all unique subjects.
+     * @returns {Pictogram[]} Array of unique subjects as pictograms.
+     */
     static getSubjects = (): Pictogram[] => {
         let s = (subjects as Pictogram[]);
         return s.filter((v, index, self) => self.findIndex(t => t._id === v._id) === index);
     };
 
-    // Extract choices from a sentence (e.g., for a question asking for a preference)
+    /**
+     * Extract choices from a sentence (e.g., for a question asking for a preference).
+     * @param {string} sentence - The sentence to extract choices from.
+     * @returns {string[]} Array of choices extracted from the sentence.
+     */
     static extractChoices = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
         console.log(sentence);
-    
-        // Verificare se la frase contiene una domanda (con il punto di domanda)
         const isQuestion = sentence.includes('?');
         if (!isQuestion) return [];
-    
-        // Identificare la parte della frase dopo il punto di domanda
         const afterQuestion = sentence.split('?')[1];
         if (!afterQuestion) return [];
-    
-        // Dividere le opzioni usando separatori: virgola, "o" (senza includerlo nei risultati)
         const choices = afterQuestion
-            .split(/\s*(?:,|\s+o\s+)\s*/) // Dividere su virgola, o con spazi attorno ma senza includere "o"
-            .map(choice => choice.trim().replace(/[^\w\s]/gi, '')) // Pulire caratteri speciali
-            .filter(choice => choice.length > 0); // Rimuovere stringhe vuote
+            .split(/\s*(?:,|\s+o\s+)\s*/)
+            .map(choice => choice.trim().replace(/[^\w\s]/gi, ''))
+            .filter(choice => choice.length > 0);
     
         return choices;
     };
     
 
-    // Extract pictograms based on a sentence
+    /**
+     * Extract pictograms based on a sentence.
+     * @param {string} sentence - The sentence to extract pictograms from.
+     * @returns {string[]} Array of suggested pictograms.
+     */
     static extractSuggestedPictograms = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
         let choices = WordsService.extractChoices(sentence);
@@ -92,11 +107,19 @@ export class WordsService {
     };
 
 
+    /**
+     * Get all verbs.
+     * @returns {string[]} Array of all verbs.
+     */
     static getAllVerbs = (): string[] => {
         return this.conjugations.map((c) => c.verb);
     }
 
-    // Extract subjects from a sentence
+    /**
+     * Extract subjects from a sentence.
+     * @param {string} sentence - The sentence to extract subjects from.
+     * @returns {Promise<Pictogram[] | null>} Promise resolving to an array of pictograms or null.
+     */
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         if (!WordsService.isString(sentence)) return null;
 
@@ -137,6 +160,11 @@ export class WordsService {
         return result;
     };
 
+    /**
+     * Normalize a string by converting to lowercase, removing special characters, and normalizing accents.
+     * @param {string} str - The string to normalize.
+     * @returns {string} The normalized string.
+     */
     static normalizeString = (str: string): string => {
         if (!WordsService.isString(str)) return "";
 
@@ -148,23 +176,36 @@ export class WordsService {
             .replace(/[\u0300-\u036f]/g, '');
     };
 
-    // Utility: Check if value is a string
+    /**
+     * Utility: Check if value is a string.
+     * @param {any} value - The value to check.
+     * @returns {boolean} True if the value is a string, false otherwise.
+     */
     static isString = (value: any): value is string => {
         return typeof value === 'string';
     };
 
+    /**
+     * Convert text to speech.
+     * @param {string} text - The text to convert to speech.
+     */
     static textToSpeech = (text: string): void => {
 
         //DA SISTEMARE rendere voci più naturali
 
         const synth = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(text);
-        //set italian language
         u.lang = 'it-IT';
         synth.speak(u);
     }
 
-    static levenshteinDistance = (a: string, b: string) => {
+    /**
+     * Calculate the Levenshtein distance between two strings.
+     * @param {string} a - The first string.
+     * @param {string} b - The second string.
+     * @returns {number} The Levenshtein distance between the two strings.
+     */
+    static levenshteinDistance = (a: string, b: string): number => {
         const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
         for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
         for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
@@ -172,9 +213,9 @@ export class WordsService {
             for (let j = 1; j <= b.length; j++) {
                 const cost = a[i - 1] === b[j - 1] ? 0 : 1;
                 matrix[i][j] = Math.min(
-                    matrix[i - 1][j] + 1,      // Cancellazione
-                    matrix[i][j - 1] + 1,      // Inserimento
-                    matrix[i - 1][j - 1] + cost // Sostituzione
+                    matrix[i - 1][j] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j - 1] + cost
                 );
             }
         }
@@ -182,13 +223,17 @@ export class WordsService {
         return matrix[a.length][b.length];
     };
 
-    static findInfinitive = (conjugatedVerb: string) => {
+    /**
+     * Find the infinitive form of a conjugated verb.
+     * @param {string} conjugatedVerb - The conjugated verb to find the infinitive for.
+     * @returns {string | null} The infinitive form of the verb, or null if not found.
+     */
+    static findInfinitive = (conjugatedVerb: string): string | null => {
         const normalizedConjugatedVerb = conjugatedVerb.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();
 
         for (let entry of this.conjugations) {
             const infinitive = entry['verb'];
             if (entry['usage'] < 2000) break;
-            //block
             for (let tense in entry['conjugations']) {
                 for (let conjugation of entry['conjugations'][tense]) {
                     const normalizedConjugation = conjugation.toLowerCase().replace(/^(io|tu|lui\/lei|noi|voi|loro)\s+/i, '').trim();

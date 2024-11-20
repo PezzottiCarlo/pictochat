@@ -1,24 +1,22 @@
 import "../styles/Login.css";
-import React, { useEffect, useState } from 'react';
-import { Layout, Form, Input, Button, Typography, message, Row, Col, Image } from 'antd';
-import { motion } from 'framer-motion'; // Animazioni
+import React, {useState } from 'react';
+import { Layout, Form, Input, Button, Typography, message, Row, Col } from 'antd';
+import { motion } from 'framer-motion';
 import { Controller } from '../lib/Controller';
-import { router } from './AppRoutes';
-import { useSession } from "../context/SessionContext";
-import { PhoneOutlined, LockOutlined } from '@ant-design/icons'; // Icone Ant Design
+import { PhoneOutlined, LockOutlined } from '@ant-design/icons';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
 
 const Login: React.FC = () => {
-    const [phonePrefix, setPhonePrefix] = useState<string>('+41'); // Prefisso del numero di telefono
-    const [phoneNumber, setPhoneNumber] = useState<string>(''); // Numero di telefono
-    const [code, setCode] = useState<string>(''); // Codice di verifica
-    const [isCodeSent, setIsCodeSent] = useState<boolean>(false); // Stato invio codice
+    const [phonePrefix, setPhonePrefix] = useState<string>('+41');
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [code, setCode] = useState<string>('');
+    const [isCodeSent, setIsCodeSent] = useState<boolean>(false);
     const [authResult, setAuthResult] = useState<{ phoneCodeHash: string, isCodeViaApp: boolean }>();
 
     const handleSendCode = () => {
-        const fullPhoneNumber = `${phonePrefix}${phoneNumber}`; // Combina prefisso e numero di telefono
+        const fullPhoneNumber = `${phonePrefix}${phoneNumber}`;
         if (phoneNumber) {
             setIsCodeSent(true);
             Controller.tgApi.sendCode(fullPhoneNumber).then((res) => {

@@ -1,3 +1,7 @@
+// This is the main entry point for the React application. It sets up the root element, 
+// applies a theme configuration, and renders the application using the RouterProvider 
+// and SessionProvider components.
+
 import "./polyfill";
 import React from 'react';
 import ReactDOM from 'react-dom/client';

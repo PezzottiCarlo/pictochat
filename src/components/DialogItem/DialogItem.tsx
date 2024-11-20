@@ -1,4 +1,4 @@
-import { List, Avatar, Flex } from 'antd';
+import { List, Flex } from 'antd';
 import React, { useEffect } from 'react';
 import DialogAvatar from './DialogAvatar';
 import { Dialog } from 'telegram/tl/custom/dialog';

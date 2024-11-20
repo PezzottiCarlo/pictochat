@@ -22,11 +22,23 @@ export class Controller {
     static storage = new Store('pictochat-storage', 1);
     static settings = Controller.getSettings();
 
+    /**
+     * Retrieves a dialog by its ID.
+     * @param id - The ID of the dialog.
+     * @returns A promise that resolves to the dialog or null if not found.
+     */
     static async getDialog(id: bigInt.BigInteger): Promise<Dialog | null> {
         let dialog = await this.storage.getDialog(id.toString());
         return dialog;
     }
 
+    /**
+     * Sends media to a specified chat.
+     * @param chatId - The ID of the chat.
+     * @param media - The media file to send.
+     * @param caption - The caption for the media.
+     * @returns A promise that resolves to the updates from the API.
+     */
     static async sendMedia(chatId: bigInt.BigInteger, media: File, caption: string): Promise<Api.TypeUpdates> {
         let isPhoto = media.type.startsWith('image');
         return await this.tgApi.sendMedia(chatId, media, isPhoto, {
@@ -34,10 +46,20 @@ export class Controller {
         });
     }
 
+    /**
+     * Marks a dialog as read locally.
+     * @param id - The ID of the dialog.
+     * @returns A promise that resolves when the operation is complete.
+     */
     static async markAsReadLocal(id: bigInt.BigInteger): Promise<void> {
         await this.storage.markAsRead(id.toString());
     }
 
+    /**
+     * Retrieves dialogs and updates them.
+     * @param onUpdate - Callback function to handle updated dialogs.
+     * @returns A promise that resolves to the list of dialogs.
+     */
     static async getDialogs(onUpdate: (dialogs: Dialog[]) => void): Promise<Dialog[]> {
         let storedDialogs = await this.storage.getDialogs();
 
@@ -62,6 +84,11 @@ export class Controller {
         return storedDialogs;
     }
 
+    /**
+     * Retrieves the profile picture of a user by their ID.
+     * @param id - The ID of the user.
+     * @returns A promise that resolves to the profile picture as a Buffer.
+     */
     static async getProfilePic(id: bigInt.BigInteger): Promise<Buffer> {
         let photo = await this.storage.getImageByDialogId(id.toString());
         if (!photo) {
@@ -74,23 +101,45 @@ export class Controller {
         return photo;
     }
 
+    /**
+     * Retrieves messages from a chat.
+     * @param chatId - The ID of the chat.
+     * @param limit - The maximum number of messages to retrieve.
+     * @returns A promise that resolves to the list of messages.
+     */
     static async getMessages(chatId: bigInt.BigInteger, limit: number): Promise<Api.Message[] | any> {
-        //chache messages
+        //chache messages - NOT LONGER NEEDED
     }
 
+    /**
+     * Drops the local database.
+     * @returns A promise that resolves when the operation is complete.
+     */
     static async dropDatabase(): Promise<void> {
         await this.storage.dropDatabase();
     }
 
+    /**
+     * Sets the application settings.
+     * @param settings - The settings to apply.
+     */
     static setSettings(settings: Settings): void {
         localStorage.setItem('settings', JSON.stringify(settings));
     }
 
+    /**
+     * Retrieves the application settings.
+     * @returns The current settings.
+     */
     static getSettings(): Settings {
         let settings = localStorage.getItem('settings');
         return settings ? JSON.parse(settings) : {};
     }
 
+    /**
+     * Retrieves a list of verb pictograms.
+     * @returns The list of verb pictograms.
+     */
     static getVerbs = (): Pictogram[] => {
         return WordsService.getVerbs().map((p) => {
             p.url = this.convertLink(this.settings, p.url);
@@ -98,6 +147,11 @@ export class Controller {
         });
     };
 
+    /**
+     * Retrieves a list of object pictograms based on a verb.
+     * @param verb - The verb to filter objects by.
+     * @returns The list of object pictograms.
+     */
     static getObjects = (verb: string | undefined): Pictogram[] => {
         let common = WordsService.getObjects(verb).map((p) => {
             p.url = this.convertLink(this.settings, p.url);
@@ -112,6 +166,10 @@ export class Controller {
         return personal.concat(common).filter((p) => p !== undefined);
     };
 
+    /**
+     * Retrieves a list of subject pictograms.
+     * @returns The list of subject pictograms.
+     */
     static getSubjects = (): Pictogram[] => {
         let common = WordsService.getSubjects().map((p) => {
             p.url = this.convertLink(this.settings, p.url);
@@ -126,11 +184,21 @@ export class Controller {
         return personal.concat(common).filter((p) => p !== undefined);
     };
 
+    /**
+     * Extracts choices from a sentence.
+     * @param sentence - The sentence to extract choices from.
+     * @returns The list of choices.
+     */
     static extractChoices = (sentence: string): string[] => {
         return WordsService.extractChoices(sentence)
     };
 
-
+    /**
+     * Searches for a pictogram by keyword.
+     * @param keyword - The keyword to search for.
+     * @param normal - Whether to perform a normal search.
+     * @returns A promise that resolves to the found pictogram or null if not found.
+     */
     static searchPictogram = async (keyword: string, normal: boolean): Promise<Pictogram | null> => {
         let pictos = (await Controller.aac.searchKeyword(keyword, normal));
         if (pictos.length === 0) return null;
@@ -140,6 +208,11 @@ export class Controller {
         return p;
     }
 
+    /**
+     * Extracts suggested pictograms from a sentence.
+     * @param sentence - The sentence to extract pictograms from.
+     * @returns A promise that resolves to the list of suggested pictograms or null if not found.
+     */
     static extractSuggestedPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         let o = WordsService.extractSuggestedPictograms(sentence);
         let result = await Controller.extractPictograms(o.join(' '));
@@ -155,7 +228,11 @@ export class Controller {
         return result;
     };
 
-
+    /**
+     * Extracts pictograms from a sentence.
+     * @param sentence - The sentence to extract pictograms from.
+     * @returns A promise that resolves to the list of pictograms or null if not found.
+     */
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         // Suddividere le parole, rimuovere i segni di punteggiatura e filtrare parole di lunghezza > 1
         let cleanedWords = sentence
@@ -219,18 +296,27 @@ export class Controller {
         }).filter((p): p is Pictogram => p !== undefined);
     }
 
-
-
+    /**
+     * Converts text to speech.
+     * @param text - The text to convert to speech.
+     */
     static textToSpeech = (text: string): void => {
         WordsService.textToSpeech(text);
     }
 
-
+    /**
+     * Retrieves personal pictograms from local storage.
+     * @returns The list of personal pictograms.
+     */
     static getPersonalPictograms(): PersonalPictogram[] {
         let personalPictograms = localStorage.getItem('personalPictograms');
         return personalPictograms ? JSON.parse(personalPictograms) : [];
     }
 
+    /**
+     * Adds a new personal pictogram to local storage.
+     * @param newPictogram - The new personal pictogram to add.
+     */
     static addPersonalPictogram(newPictogram: PersonalPictogram) {
         let personalPictograms = Controller.getPersonalPictograms();
         if (personalPictograms) {
@@ -241,7 +327,12 @@ export class Controller {
         localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
     }
 
-
+    /**
+     * Converts a link based on settings.
+     * @param settings - The settings to use for conversion.
+     * @param url - The URL to convert.
+     * @returns The converted URL.
+     */
     private static convertLink(settings: Settings, url: string): string {
         if (!url.includes('arasaac')) return url;
         if (!url.includes('hair') && !url.includes('skin')) return url;

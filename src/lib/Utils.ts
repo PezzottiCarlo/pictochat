@@ -1,9 +1,13 @@
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Pictogram } from "./AAC";
-import { Controller } from "./Controller";
 import { PersonalPictogram } from "../routes/PersonalPictograms";
 
 class Utils {
+    /**
+     * Serializes a Telegram dialog object.
+     * @param {Dialog} dialog - The dialog to serialize.
+     * @returns {any} The serialized dialog.
+     */
     static serializeDialog(dialog: Dialog): any {
         return {
             id: dialog.id,
@@ -12,11 +16,22 @@ class Utils {
             entity: dialog.entity
         }
     }
+
+    /**
+     * Formats a timestamp into a human-readable date string.
+     * @param {number} timestamp - The timestamp to format (in seconds).
+     * @returns {string} The formatted date string.
+     */
     static formatDate(timestamp: number): string {
         const date = new Date(timestamp * 1000); // Telegram date is in seconds
         return date.toLocaleString();
     }
 
+    /**
+     * Converts a PersonalPictogram object to a Pictogram object.
+     * @param {PersonalPictogram} p - The personal pictogram to convert.
+     * @returns {Pictogram} The converted pictogram.
+     */
     static personalPictogramToPictogram(p: PersonalPictogram): Pictogram {
         return {
             _id: Math.floor(Math.random() * 100000000000000000).toString() as any,
@@ -37,20 +52,20 @@ class Utils {
         } as Pictogram;
     }
 
+    /**
+     * Converts a character to a pastel color.
+     * @param {string} char - The character to convert.
+     * @returns {string} The corresponding pastel color in hex format.
+     */
     static charToColor(char: string): string {
         const alphabet = 'abcdefghijklmnopqrstuvwxyz';
         const index = alphabet.indexOf(char.toLowerCase());
         if (index === -1) {
-            // Character not found in the alphabet
-            return '#000000'; // Return black color as fallback
+            return '#000000';
         }
-    
-        // Generate pastel colors
-        const hue = (index * 15) % 360; // Distribute hues evenly
-        const saturation = 40; // Keep saturation low for pastel colors
-        const lightness = 80; // Keep lightness high for pastel colors
-    
-        // Convert HSL to RGB
+        const hue = (index * 15) % 360;
+        const saturation = 40;
+        const lightness = 80;
         const h = hue / 360;
         const s = saturation / 100;
         const l = lightness / 100;
@@ -71,8 +86,6 @@ class Utils {
         } else {
             r = c; b = x;
         }
-    
-        // Scale and convert to hex
         const rgbToHex = (rgb: number) => {
             const hex = Math.round(rgb * 255).toString(16);
             return hex.length === 1 ? '0' + hex : hex;

@@ -12,7 +12,6 @@ export const ChatSendMedia: React.FC<ChatSendMediaProps> = ({ media, setMedia })
     const [showFile, setShowFile] = useState<boolean>(false);
     const [fileName, setFileName] = useState<string | null>(null);
 
-    // Aggiorna lo stato `fileName` e `showFile` quando `media` cambia
     useEffect(() => {
         if (media) {
             setFileName(media.name);

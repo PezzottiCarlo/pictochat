@@ -67,7 +67,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             });
             setPictoHints(pictoMap);
         });
-        
+
     }, []);
 
     useEffect(() => {
@@ -92,16 +92,11 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
 
     const fetchMoreMessages = useCallback(async () => {
         if (!messages.length || !contentRef.current) return;
-
-        // Salviamo la posizione corrente dello scroll e l'altezza precedente del contenitore
         setPrevScrollTop(contentRef.current.scrollTop);
-
         const lastMessageId = messages[0]?.id;
         try {
             const moreMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize, max_id: lastMessageId });
             setMessages(prevMessages => [...moreMessages.reverse(), ...prevMessages]);
-
-            // Usiamo un timeout per assicurarci che la UI abbia renderizzato i nuovi messaggi prima di modificare lo scroll
             setTimeout(() => {
                 if (contentRef.current) {
                     contentRef.current.scrollTop = prevScrollTop;
@@ -125,12 +120,12 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         }
 
         const tempMessage: Api.Message = {
-            id: Math.random(), // ID temporaneo
+            id: Math.random(),
             message: inputValue,
             date: Math.floor(Date.now() / 1000),
             out: true,
-            fromId: { userId: 1 }, // Valore temporaneo
-            peerId: { channelId: 1 }, // Valore temporaneo
+            fromId: { userId: 1 },
+            peerId: { channelId: 1 },
 
         } as unknown as Api.Message;
 
@@ -172,7 +167,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         const message = `${picto.word}`;
         setInputValue(message);
         setTimeout(handleSend, 100);
-        //hide hints 
         setPictoHints(new Map());
     }
 
@@ -188,7 +182,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     async function getName(message: Api.Message): Promise<string | undefined> {
         if (!(dialog.entity?.className === "Channel")) return Promise.resolve(undefined);
         let id = (message.fromId as any).userId
-        //let tempName = (await Controller.getDialog(id))?.name;
         return id.toString();
     }
 

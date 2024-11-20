@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List, Flex, Image } from 'antd';
+import { List, Flex } from 'antd';
 import { Api } from 'telegram';
 import BubbleMedia from './ChatBubbleMedia';
 import '../../styles/Bubble.css';
@@ -13,7 +13,7 @@ interface ChatBubbleProps {
 }
 
 const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp * 1000); // Telegram date is in seconds
+    const date = new Date(timestamp * 1000);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
@@ -22,7 +22,6 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name }) => {
     const [pictoSuggestions, setPictoSuggestions] = useState<Pictogram[] | null>(null);
     const [iName, setIName] = useState<string | undefined>(undefined);
 
-    //when name is resolved, update the component
     useEffect(() => {
         name?.then((name) => {
             if (name) {

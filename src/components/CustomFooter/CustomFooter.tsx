@@ -18,7 +18,7 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                 bottom: -17,
                 width: '100%',
                 zIndex: 1000,
-                backdropFilter: 'blur(10px)' // Blur effect
+                backdropFilter: 'blur(10px)'
             }}
             items={[
                 {

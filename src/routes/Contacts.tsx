@@ -63,10 +63,10 @@ const Contacts: React.FC = () => {
                     setContactsData(dialogs);
                     setFilteredContacts(dialogs.slice(0, 10));
                 });
-                dialogs.sort((a, b) => b.date - a.date); // Sorting dialogs by date
+                dialogs.sort((a, b) => b.date - a.date);
                 if (isMounted) {
                     setContactsData(dialogs);
-                    setFilteredContacts(dialogs.slice(0, 10)); // Initial load of 10 dialogs
+                    setFilteredContacts(dialogs.slice(0, 10));
                 }
             } catch (error) {
                 console.error('Error fetching dialogs:', error);
@@ -82,7 +82,6 @@ const Contacts: React.FC = () => {
         };
     }, []);
 
-    // Function to load more contacts when scrolling
     const loadMoreData = () => {
         const filtered = contactsData.filter(contact =>
             (contact.name as string).toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -100,23 +99,20 @@ const Contacts: React.FC = () => {
         ]);
     };
 
-    // Update the filtered contacts based on search query or showGroups toggle
     useEffect(() => {
         const filtered = contactsData.filter(contact =>
             (contact.name as string).toLowerCase().includes(searchQuery.toLowerCase()) &&
             (showGroups || !contact.isGroup)
         );
 
-        setFilteredContacts(filtered.slice(0, 10)); // Reset filtered contacts to initial 10
-        setHasMore(filtered.length > 10); // Check if more contacts are available
+        setFilteredContacts(filtered.slice(0, 10));
+        setHasMore(filtered.length > 10);
     }, [searchQuery, contactsData, showGroups]);
 
-    // Handle search input changes
     const handleSearch = (value: string) => {
         setSearchQuery(value);
     };
 
-    // Toggle showing groups in the list
     const toggleShowGroups = () => {
         setShowGroups(prev => !prev);
     };
@@ -133,12 +129,10 @@ const Contacts: React.FC = () => {
                     flexDirection: 'column',
                 }}
             >
-                {/* Title */}
                 <div style={{ textAlign: 'left' }}>
                     <Title level={2}>Chats</Title>
                 </div>
 
-                {/* Search and Hide Group Button */}
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Search
                         placeholder="Search contacts"

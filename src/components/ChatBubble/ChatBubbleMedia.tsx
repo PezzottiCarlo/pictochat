@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Api } from 'telegram';
-import { Image, Card } from 'antd';
+import { Image } from 'antd';
 import { Controller } from '../../lib/Controller';
 import { FileOutlined, FilePdfFilled } from '@ant-design/icons';
 

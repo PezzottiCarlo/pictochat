@@ -7,9 +7,6 @@ import conjugations from '../data/verbs_conjugated.json';
 
 
 
-// Dummy NLP manager for demonstration purposes, move this logic to the server
-// const manager = new NlpManager({ languages: ['it', 'en'] }); // Cannot be used directly in React client-side
-
 interface WordsData {
     [verb: string]: any[];
 }

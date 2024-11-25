@@ -291,6 +291,8 @@ export class Controller {
         // Cerca i pittogrammi multi-parola
         let processedSentence = processedWords.join(' ');
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
+
+        console.log("for sentence: ",sentence," with words: ",processedWords," found pictograms: ",foundPictograms);
     
         let result: (Pictogram | string)[] = [...processedWords];
     
@@ -308,6 +310,8 @@ export class Controller {
                 result.splice(startIndex, phraseWords.length, pictogram);
             }
         }
+
+        console.log("result: ",result);
     
         // Gestione dei pittogrammi personali
         let personalPictograms = Controller.getPersonalPictograms();
@@ -322,6 +326,9 @@ export class Controller {
                 }
             }
         }
+
+        //remove the string from result
+        result = result.filter((item) => typeof item !== 'string');
 
     
         // Filtra eventuali null e restituisci i pittogrammi

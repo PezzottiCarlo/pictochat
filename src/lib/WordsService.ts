@@ -2,7 +2,7 @@ import words from '../data/words_with_pictograms.json';
 import subjects from '../data/subjects.json';
 import verbs from '../data/verbs.json';
 import predefinedPhrases from '../data/predefined_phrases.json';
-import { Pictogram } from './AAC';
+import { AAC, Pictogram } from './AAC';
 import conjugations from '../data/verbs_conjugated.json';
 
 
@@ -122,42 +122,8 @@ export class WordsService {
      */
     static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         if (!WordsService.isString(sentence)) return null;
-
         sentence = WordsService.normalizeString(sentence);
-        const result: Pictogram[] = [];
-        const foundWords = new Set<string>();
-
-        const subjects = WordsService.getSubjects();
-        const verbs = WordsService.getVerbs();
-
-        for (const subject of subjects) {
-            const subjectWord = WordsService.normalizeString(subject.word || "");
-            if (!foundWords.has(subjectWord) && new RegExp(`\\b${subjectWord}\\b`, 'i').test(sentence)) {
-                result.push(subject);
-                foundWords.add(subjectWord);
-            }
-        }
-
-        for (const verb of verbs) {
-            const verbWord = WordsService.normalizeString(verb.word || "");
-            if (!foundWords.has(verbWord) && new RegExp(`\\b${verbWord}\\b`, 'i').test(sentence)) {
-                result.push(verb);
-                foundWords.add(verbWord);
-            }
-        }
-
-        for (const verb of verbs) {
-            const objects = WordsService.getObjects(verb.word);
-            for (const obj of objects) {
-                const objectWord = WordsService.normalizeString(obj.word || "");
-                if (!foundWords.has(objectWord) && new RegExp(`\\b${objectWord}\\b`, 'i').test(sentence)) {
-                    result.push(obj);
-                    foundWords.add(objectWord);
-                }
-            }
-        }
-
-        return result;
+        return AAC.searchPictograms(sentence);
     };
 
     /**

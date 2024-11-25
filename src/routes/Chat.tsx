@@ -18,6 +18,7 @@ import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
 import { ChatSendMedia } from '../components/Chat/ChatSendMedia';
+import ChatPictograms from '../components/Chat/ChatPictograms';
 
 const { Content, Footer } = Layout;
 
@@ -188,7 +189,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     return (
         <Layout style={{ height: '100vh' }}>
             <ChatHeader id={chatId} />
-
             <Content
                 id="scrollableDiv"
                 style={{
@@ -231,17 +231,22 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             <Footer style={{ padding: '0.5rem', paddingBottom: '1.5rem' }}>
                 <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>
                     {pictoHints.size === 0 ? (
-                        <Popover
-                            open={showHints}
-                            content={<ChatHints onHintClick={handleHints} hints={hints} />}
-                            placement="top"
-                            trigger="click"
-                            onOpenChange={setShowHints}
-                        >
-                            <motion.div whileTap={{ scale: 0.9 }} className="motion-div">
-                                <BulbFilled style={{ fontSize: '2rem', color: 'var(--ant-color-primary)' }} />
-                            </motion.div>
-                        </Popover>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <Popover
+                                open={showHints}
+                                content={<ChatHints onHintClick={handleHints} hints={hints} />}
+                                placement="top"
+                                trigger="click"
+                                onOpenChange={setShowHints}
+                            >
+                                <motion.div whileTap={{ scale: 0.9 }} className="motion-div">
+                                    <BulbFilled style={{ fontSize: '2rem', color: 'var(--ant-color-primary)' }} />
+                                </motion.div>
+                            </Popover>
+                            <ChatPictograms callback={function (pictogram: Pictogram): void {
+                                setInputValue(inputValue +" "+ pictogram.word);
+                            }} />
+                        </div>
                     ) : (
                         <ChatHintsPicto pictos={Array.from(pictoHints.values())} onPictoClick={handleHintsPicto} />
                     )}

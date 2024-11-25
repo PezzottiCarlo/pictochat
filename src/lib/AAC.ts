@@ -1,6 +1,12 @@
 /**
  * Enum representing different hair colors.
  */
+/**
+ * Class representing AAC functionalities.
+ */
+
+import allPictrograms from "../data/result.json";
+
 export enum HairColor {
     BLONDE = "blonde",
     BROWN = "brown",
@@ -58,13 +64,12 @@ export interface Pictogram {
     _id: number;
     desc: string;
     url: string;
+    created: string;
 }
 
-/**
- * Class representing AAC functionalities.
- */
 export class AAC {
     language: string;
+    static pictograms: Pictogram[] = allPictrograms as Pictogram[];
 
     /**
      * Constructs an instance of AAC.
@@ -242,5 +247,61 @@ export class AAC {
         let pictogram: Pictogram = await this.getInfoFromId(id);
         pictogram.url = imageUrl;
         return pictogram;
+    }
+
+    static searchWord = (keyword: string) => {
+        console.log("Searching for word: " + keyword.toLowerCase().trim());
+        for (let i = 0; i < AAC.pictograms.length; i++) {
+            if (!AAC.pictograms[i]) continue;
+            if (!AAC.pictograms[i].word) continue;
+            if ((AAC.pictograms[i].word)?.toLowerCase().trim() === (keyword).trim().toLowerCase()) {
+                console.log("Found word: " + keyword);
+                return AAC.pictograms[i];
+            }
+        }
+    }
+
+    static searchForCategory = (category: string) => {
+        const foundPictograms = [];
+        for (let i = 0; i < AAC.pictograms.length; i++) {
+            if (!AAC.pictograms[i]) continue;
+            if (!AAC.pictograms[i].tags) continue;
+            let categories = AAC.pictograms[i].tags as string[];
+            if (categories.includes(category)) {
+                foundPictograms.push(AAC.pictograms[i]);
+            }
+        }
+        return foundPictograms
+    }
+
+    static searchPictograms = (genericSentence:string) => {
+        const maxWordLength = 4; // Lunghezza massima delle parole combinate nei pittogrammi
+        const words = genericSentence.split(" ");
+        const foundPictograms = [];
+        let i = 0;
+
+        while (i < words.length) {
+            let matched = false;
+
+            // Controlla per gruppi di parole da 4 fino a 1
+            for (let len = maxWordLength; len > 0; len--) {
+                if (i + len > words.length) continue;
+
+                // Combina len parole
+                const keyword = words.slice(i, i + len).join(" ");
+                const pictogram = AAC.searchWord(keyword);
+
+                if (pictogram) {
+                    foundPictograms.push(pictogram);
+                    i += len; // Salta le parole usate per questo pittogramma
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                i++;
+            }
+        }
+        return foundPictograms;
     }
 }

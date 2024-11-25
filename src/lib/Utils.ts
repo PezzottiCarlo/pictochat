@@ -48,7 +48,8 @@ class Utils {
             sex: false,
             skin: false,
             synsets: [],
-            violence: false
+            violence: false,
+            created: Date.now().toString(),
         } as Pictogram;
     }
 

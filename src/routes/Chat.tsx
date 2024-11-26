@@ -19,6 +19,7 @@ import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
 import { ChatSendMedia } from '../components/Chat/ChatSendMedia';
 import ChatPictograms from '../components/Chat/ChatPictograms';
+import { PersonalPictogramsCategory } from './PersonalPictograms';
 
 const { Content, Footer } = Layout;
 
@@ -60,7 +61,6 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             });
             setPictoHints(pictoMap);
         });
-
     }, []);
 
     useEffect(() => {
@@ -82,6 +82,14 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         try {
             let fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
             fetchedMessages = fetchedMessages.filter((message) => message.className === "Message");
+            
+            //aggiunta setting via messaggio 
+            fetchedMessages.forEach((message) => {
+                if (message.message.trim().toLowerCase().includes("oggetto:") && message.media){
+                    let splitted = message.message.split(":");
+                    Controller.importPersonalPictogramFromMessage((splitted[0].toLowerCase()==="soggetto")?PersonalPictogramsCategory.SOGGETTO:PersonalPictogramsCategory.OGGETTO, splitted[1], message);
+                }
+            });
 
             if (fetchedMessages.length < messageBatchSize) {
                 setHasMore(false);

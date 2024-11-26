@@ -12,7 +12,6 @@ interface ChatHintsPictoProps {
 const ChatHintsPicto: React.FC<ChatHintsPictoProps> = ({ pictos, onPictoClick }) => {
 
     const handlePictoClick = (picto: any) => {
-        picto.word = picto.keywords[0].keyword;
         onPictoClick(picto);
     }
 

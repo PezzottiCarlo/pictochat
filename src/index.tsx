@@ -15,11 +15,16 @@ import themes from "./data/themes.json"
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
+window.alert = function(message) {
+  console.log("Intercepted alert:", message);
+};
+
 if (window.matchMedia('(display-mode: standalone)').matches) {
   //alert("App correctly installed")
   //do stuff if this on
 }
 
+alert("App correctly installed")
 let themeNumber = 4;
 
 export const themeConfig: ThemeConfig = {

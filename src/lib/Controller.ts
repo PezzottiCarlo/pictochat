@@ -18,12 +18,13 @@ export interface Settings {
 }
 
 export class Controller {
-    static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>,callback: (dialog: any, message: string) => void) {
+
+    static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>, callback: (dialog: any, message: string) => void) {
         if (type === 0) {
             let shortMess = update.originalUpdate as Api.UpdateShortMessage;
             let fromID = shortMess.userId;
-            if(!fromID){
-                callback("Tu",(shortMess.message as any).message);
+            if (!fromID) {
+                callback("Tu", (shortMess.message as any).message);
                 Controller.getMe().then((me) => {
                     contactsData.forEach((dialog) => {
                         if (dialog.id?.toString() === me.id.toString()) {
@@ -44,7 +45,7 @@ export class Controller {
                     contactsData.splice(contactsData.indexOf(dialog), 1);
                     contactsData.unshift(dialog);
                     setContactsData([...contactsData]);
-                    callback(dialog.name,dialog.message.message);
+                    callback(dialog.name, dialog.message.message);
                     break;
                 }
             }
@@ -249,7 +250,7 @@ export class Controller {
         });
     }
 
-    static searchPictograms = async (word: string, limit:number): Promise<Pictogram[] | null> => {
+    static searchPictograms = async (word: string, limit: number): Promise<Pictogram[] | null> => {
         let pictos = (await Controller.aac.searchKeyword(word, true));
         if (pictos.length === 0) return [];
         let result = [];
@@ -292,13 +293,6 @@ export class Controller {
         let result = await Controller.extractPictograms(o.join(' '));
         if (result === null) return null;
         if (o.length === result.length) return result;
-        let unfound = o.filter((word) => !(result as Pictogram[]).find((p) => p.word === word));
-        for (const word of unfound) {
-            let p = await Controller.searchPictogram(word, true);
-            if (p) {
-                result.push(p);
-            }
-        }
         return result;
     };
 
@@ -312,7 +306,7 @@ export class Controller {
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1);
-    
+
         let processedWords: string[] = [];
         for (let i = 0; i < cleanedWords.length; i++) {
             let word = WordsService.findInfinitive(cleanedWords[i]);
@@ -336,12 +330,12 @@ export class Controller {
                 processedWords.push(infinitive);
             }
         }
-    
+
         // Cerca i pittogrammi multi-parola
         let processedSentence = processedWords.join(' ');
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
         let result: (Pictogram | string)[] = [...processedWords];
-    
+
         for (const pictogram of foundPictograms) {
             let phraseWords = (pictogram.word as string).toLowerCase().split(' ');
             let startIndex = result.findIndex((item, index) => {
@@ -349,39 +343,57 @@ export class Controller {
                     result[index + offset] && result[index + offset] === pw
                 );
             });
-    
+
             if (startIndex !== -1) {
                 // Sostituisci le parole corrispondenti con il pittogramma
                 result.splice(startIndex, phraseWords.length, pictogram);
             }
         }
-    
+
         // Gestione dei pittogrammi personali
         let personalPictograms = Controller.getPersonalPictograms();
         for (let i = 0; i < result.length; i++) {
+            let word = "";
             if (typeof result[i] === 'string') {
-                let word = result[i] as string;
-                let personalPictogram = personalPictograms.find(
-                    (p) => p.name.toLowerCase() === word.toLowerCase()
-                );
-                if (personalPictogram) {
-                    result[i] = Utils.personalPictogramToPictogram(personalPictogram);
-                }
+                word = result[i] as string;
+            } else {
+                if(!(result[i] as Pictogram).word) continue;
+                word = (result[i] as Pictogram).word as string;
+            }
+            let personalPictogram = personalPictograms.find(
+                (p) => p.name.toLowerCase().trim() === (word as string).toLowerCase().trim()
+            );
+            if (personalPictogram) {
+                result[i] = Utils.personalPictogramToPictogram(personalPictogram);
             }
         }
 
         //remove the string from result
         result = result.filter((item) => typeof item !== 'string');
 
-    
+
         // Filtra eventuali null e restituisci i pittogrammi
         return (result.filter((item) => item !== null) as Pictogram[]).map((p) => {
             p.url = this.convertLink(this.settings, p.url);
             return p;
         });
     };
-    
-    
+
+
+    static importPersonalPictogramFromMessage = (type: PersonalPictogramsCategory, name: string, message: Api.Message): void => {
+        name = name.trim();
+        let pp = this.getPersonalPictograms();
+        if (pp.find((p) => p.name.toLowerCase().trim() === name.toLowerCase().trim())) return;
+
+        this.tgApi.downloadMedia(message.media as Api.TypeMessageMedia, 1).then((result) => {
+            let pictogram = {
+                name: name,
+                category: type,
+                photoUrl: `data:image/jpeg;base64,${Buffer.from(result).toString('base64')}`
+            } as PersonalPictogram;
+            Controller.addPersonalPictogram(pictogram);
+        });
+    }
 
     /**
      * Converts text to speech.
@@ -411,6 +423,12 @@ export class Controller {
         } else {
             personalPictograms = [newPictogram];
         }
+        localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
+    }
+
+    static deletePersonalPictogram(pictogram: PersonalPictogram) {
+        let personalPictograms = Controller.getPersonalPictograms();
+        personalPictograms = personalPictograms.filter((p) => p.name !== pictogram.name);
         localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
     }
 

@@ -62,6 +62,11 @@ export const PersonalPictograms: React.FC = () => {
             });
     };
 
+    function handleDelete(pictogram: PersonalPictogram) {
+        setPictograms(pictograms.filter((p) => p !== pictogram));
+        Controller.deletePersonalPictogram(pictogram);
+    }
+
     return (
         <>
             <Layout style={{ minHeight: "100vh" }}>
@@ -92,6 +97,7 @@ export const PersonalPictograms: React.FC = () => {
                                 />
                                 <p>{pictogram.name}</p>
                                 <p style={{ fontSize: "12px", color: "gray" }}>{pictogram.category}</p>
+                                <Button type="primary" danger onClick={() => { handleDelete(pictogram) }}>Elimina</Button>
                             </div>
                         ))}
                     </div>

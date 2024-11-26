@@ -7,6 +7,8 @@ import { Api } from "telegram";
 import { WordsService } from "./WordsService";
 import { PersonalPictogram, PersonalPictogramsCategory } from "../routes/PersonalPictograms";
 import Utils from "./Utils";
+import { message } from "antd";
+import { Dispatch, SetStateAction } from "react";
 
 export interface Settings {
     fontSize: number;
@@ -16,6 +18,49 @@ export interface Settings {
 }
 
 export class Controller {
+    static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>,callback: (dialog: any, message: string) => void) {
+        if (type === 0) {
+            let shortMess = update.originalUpdate as Api.UpdateShortMessage;
+            let fromID = shortMess.userId;
+            if(!fromID){
+                callback("Tu",(shortMess.message as any).message);
+                Controller.getMe().then((me) => {
+                    contactsData.forEach((dialog) => {
+                        if (dialog.id?.toString() === me.id.toString()) {
+                            dialog.message = shortMess.message as any as Api.Message;
+                            dialog.unreadCount++;
+                            contactsData.splice(contactsData.indexOf(dialog), 1);
+                            contactsData.unshift(dialog);
+                            setContactsData([...contactsData]);
+                        }
+                    });
+                });
+            }
+
+            for (let dialog of contactsData) {
+                if (dialog.id?.toString() === fromID.toString()) {
+                    dialog.message = shortMess as any as Api.Message;
+                    dialog.unreadCount++;
+                    contactsData.splice(contactsData.indexOf(dialog), 1);
+                    contactsData.unshift(dialog);
+                    setContactsData([...contactsData]);
+                    callback(dialog.name,dialog.message.message);
+                    break;
+                }
+            }
+        } else if (type === 1) {
+            let userStatus = update as Api.UpdateUserStatus;
+            let fromID = userStatus.userId;
+            for (let dialog of contactsData) {
+                if (dialog.id?.toString() === fromID.toString()) {
+                    if (dialog.entity) {
+                        (dialog.entity as any).status = userStatus.status.className;
+                    }
+                    setContactsData([...contactsData]);
+                }
+            }
+        }
+    }
 
     static tgApi = new TgApi(localStorage.getItem('stringSession') ? new StringSession(localStorage.getItem('stringSession') as string) : new StringSession(''));
     static aac = new AAC("it");
@@ -30,6 +75,10 @@ export class Controller {
     static async getDialog(id: bigInt.BigInteger): Promise<Dialog | null> {
         let dialog = await this.storage.getDialog(id.toString());
         return dialog;
+    }
+
+    static async getMe(): Promise<Api.User> {
+        return await this.tgApi.getMe();
     }
 
     /**
@@ -291,15 +340,11 @@ export class Controller {
         // Cerca i pittogrammi multi-parola
         let processedSentence = processedWords.join(' ');
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
-
-        console.log("for sentence: ",sentence," with words: ",processedWords," found pictograms: ",foundPictograms);
-    
         let result: (Pictogram | string)[] = [...processedWords];
     
         for (const pictogram of foundPictograms) {
             let phraseWords = (pictogram.word as string).toLowerCase().split(' ');
             let startIndex = result.findIndex((item, index) => {
-                // Confronta tutte le parole della frase
                 return typeof item === 'string' && phraseWords.every((pw, offset) =>
                     result[index + offset] && result[index + offset] === pw
                 );
@@ -310,8 +355,6 @@ export class Controller {
                 result.splice(startIndex, phraseWords.length, pictogram);
             }
         }
-
-        console.log("result: ",result);
     
         // Gestione dei pittogrammi personali
         let personalPictograms = Controller.getPersonalPictograms();

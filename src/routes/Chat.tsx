@@ -46,18 +46,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [prevScrollTop, setPrevScrollTop] = useState(0);
     const [media, setMedia] = useState<File>();
 
-    useEffect(() => {
-        updateManager.set("chat", (update, type) => {
-            let mes = update.message as Api.Message;
-            if (!mes.fromId) return;
-            if (((mes.fromId as any).userId as bigInt.BigInteger).equals(dialog.id as bigInt.BigInteger)) {
-                setMessages((prevMessages) => [...prevMessages, mes]);
-            }
-        });
-
-    }, []);
+    
 
     const fetchPictogramsHints = useCallback(async (messages: Api.Message[]) => {
+        console.log('Fetching pictograms hints...');
         const lastMessage = messages[messages.length - 1];
         if (!lastMessage) return;
         Controller.extractSuggestedPictograms(lastMessage.message).then((pictograms) => {
@@ -70,6 +62,17 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
         });
 
     }, []);
+
+    useEffect(() => {
+        updateManager.set("chat", (update, type) => {
+            let mes = update.message as Api.Message;
+            if (!mes || !mes.fromId) return;
+            if (((mes.fromId as any).userId as bigInt.BigInteger).equals(dialog.id as bigInt.BigInteger)) {
+                setMessages((prevMessages) => [...prevMessages, mes]);
+            }
+            fetchPictogramsHints([mes]);
+        });
+    }, [messages, dialog, fetchPictogramsHints]);
 
     useEffect(() => {
         fetchMessages().then(scrollToBottom);

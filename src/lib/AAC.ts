@@ -250,12 +250,10 @@ export class AAC {
     }
 
     static searchWord = (keyword: string) => {
-        console.log("Searching for word: " + keyword.toLowerCase().trim());
         for (let i = 0; i < AAC.pictograms.length; i++) {
             if (!AAC.pictograms[i]) continue;
             if (!AAC.pictograms[i].word) continue;
             if ((AAC.pictograms[i].word)?.toLowerCase().trim() === (keyword).trim().toLowerCase()) {
-                console.log("Found word: " + keyword);
                 return AAC.pictograms[i];
             }
         }

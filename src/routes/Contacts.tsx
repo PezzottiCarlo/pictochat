@@ -24,32 +24,9 @@ const Contacts: React.FC = () => {
 
     useEffect(() => {
         updateManager.set("contacts", (update, type) => {
-            if (type === 0) {
-                let shortMess = update.originalUpdate as Api.UpdateShortMessage;
-                let fromID = shortMess.userId;
-                for (let dialog of contactsData) {
-                    if (dialog.id?.toString() === fromID.toString()) {
-                        dialog.message = shortMess as any as Api.Message;
-                        dialog.unreadCount++;
-                        contactsData.splice(contactsData.indexOf(dialog), 1);
-                        contactsData.unshift(dialog);
-                        setContactsData([...contactsData]);
-                        message.info(`${dialog.name}: ${dialog.message.message}`);
-                        break;
-                    }
-                }
-            } else if (type === 1) {
-                let userStatus = update as Api.UpdateUserStatus;
-                let fromID = userStatus.userId;
-                for (let dialog of contactsData) {
-                    if (dialog.id?.toString() === fromID.toString()) {
-                        if (dialog.entity) {
-                            (dialog.entity as any).status = userStatus.status.className;
-                        }
-                        setContactsData([...contactsData]);
-                    }
-                }
-            }
+            Controller.handleContactUpdate(update, type, contactsData, setContactsData,(dialog,msg) => {
+                message.info(`${dialog} : ${msg}`);
+            });
         });
     }, [contactsData]);
 

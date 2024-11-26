@@ -60,7 +60,6 @@ export class TgApi {
             await this.client.connect();
             console.log("Connesso a Telegram");
         } catch (error) {
-            console.error("Errore nella connessione a Telegram:", error);
         }
     }
 

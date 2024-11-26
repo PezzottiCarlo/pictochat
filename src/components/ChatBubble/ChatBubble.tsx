@@ -5,11 +5,12 @@ import BubbleMedia from './ChatBubbleMedia';
 import '../../styles/Bubble.css';
 import { Pictogram } from '../../lib/AAC';
 import { PictogramImage } from '../Other/PictogramImage';
-import { Controller } from '../../lib/Controller';
+import { Controller, PictogramContext } from '../../lib/Controller';
 
 interface ChatBubbleProps {
     message: Api.Message;
     name?: Promise<string | undefined>;
+    chatWith: bigInt.BigInteger;
 }
 
 const formatDate = (timestamp: number): string => {
@@ -17,7 +18,7 @@ const formatDate = (timestamp: number): string => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name }) => {
+const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name,chatWith}) => {
     const bubbleClass = message.out ? 'outgoing' : 'incoming';
     const [pictoSuggestions, setPictoSuggestions] = useState<Pictogram[] | null>(null);
     const [iName, setIName] = useState<string | undefined>(undefined);
@@ -33,9 +34,14 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message, name }) => {
     useEffect(() => {
         if (!message) return;
         if (message.message === null) return;
-        Controller.extractPictograms(message.message).then((soggetto) => {
-            setPictoSuggestions(soggetto);
-        });
+
+        let me = Controller.getMe();
+        let context ={
+            me: (message.out) ? me.id : chatWith,
+            you: (message.out) ? chatWith : me.id,
+        } as PictogramContext;
+
+        setPictoSuggestions(Controller.extractPictograms(message.message, context));
     }, [message]);
 
     return (

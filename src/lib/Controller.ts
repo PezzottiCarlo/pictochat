@@ -17,7 +17,14 @@ export interface Settings {
     theme: string;
 }
 
+export interface PictogramContext {
+    me: any,
+    you: any
+}
+
 export class Controller {
+
+
 
     static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>, callback: (dialog: any, message: string) => void) {
         if (type === 0) {
@@ -25,16 +32,15 @@ export class Controller {
             let fromID = shortMess.userId;
             if (!fromID) {
                 callback("Tu", (shortMess.message as any).message);
-                Controller.getMe().then((me) => {
-                    contactsData.forEach((dialog) => {
-                        if (dialog.id?.toString() === me.id.toString()) {
-                            dialog.message = shortMess.message as any as Api.Message;
-                            dialog.unreadCount++;
-                            contactsData.splice(contactsData.indexOf(dialog), 1);
-                            contactsData.unshift(dialog);
-                            setContactsData([...contactsData]);
-                        }
-                    });
+                let me = Controller.getMe();
+                contactsData.forEach((dialog) => {
+                    if (dialog.id?.toString() === me.id.toString()) {
+                        dialog.message = shortMess.message as any as Api.Message;
+                        dialog.unreadCount++;
+                        contactsData.splice(contactsData.indexOf(dialog), 1);
+                        contactsData.unshift(dialog);
+                        setContactsData([...contactsData]);
+                    }
                 });
             }
 
@@ -78,8 +84,9 @@ export class Controller {
         return dialog;
     }
 
-    static async getMe(): Promise<Api.User> {
-        return await this.tgApi.getMe();
+    static getMe(): Api.User {
+        let tmp = localStorage.getItem('me') as string;
+        return JSON.parse(tmp) as Api.User;
     }
 
     /**
@@ -290,7 +297,7 @@ export class Controller {
      */
     static extractSuggestedPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
         let o = WordsService.extractSuggestedPictograms(sentence);
-        let result = await Controller.extractPictograms(o.join(' '));
+        let result = Controller.extractPictograms(o.join(' '));
         if (result === null) return null;
         if (o.length === result.length) return result;
         return result;
@@ -301,7 +308,10 @@ export class Controller {
      * @param sentence - The sentence to extract pictograms from.
      * @returns A promise that resolves to the list of pictograms or null if not found.
      */
-    static extractPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
+    static extractPictograms = (sentence: string, context?: PictogramContext): Pictogram[] | null => {
+
+        console.log(context)
+
         let cleanedWords = sentence
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
@@ -357,9 +367,14 @@ export class Controller {
             if (typeof result[i] === 'string') {
                 word = result[i] as string;
             } else {
-                if(!(result[i] as Pictogram).word) continue;
+                if (!(result[i] as Pictogram).word) continue;
                 word = (result[i] as Pictogram).word as string;
             }
+
+            if(word === "io" && context?.me) {
+                // TO IMPLEMENT
+            }
+
             let personalPictogram = personalPictograms.find(
                 (p) => p.name.toLowerCase().trim() === (word as string).toLowerCase().trim()
             );
@@ -367,6 +382,9 @@ export class Controller {
                 result[i] = Utils.personalPictogramToPictogram(personalPictogram);
             }
         }
+
+
+
 
         //remove the string from result
         result = result.filter((item) => typeof item !== 'string');
@@ -423,6 +441,8 @@ export class Controller {
         } else {
             personalPictograms = [newPictogram];
         }
+        let tmp = newPictogram;
+        tmp.name = tmp.name.trim();
         localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
     }
 

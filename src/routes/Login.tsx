@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   const [isPhoneValid, setIsPhoneValid] = useState<boolean>(false);
 
   const validatePhoneNumber = () => {
-    const phonePrefixPattern = /^\+\d{1,3}$/; 
+    const phonePrefixPattern = /^\+\d{1,3}$/;
     const phoneNumberPattern = /^\d{9}$/;
     const isPrefixValid = phonePrefixPattern.test(phonePrefix);
     const isNumberValid = phoneNumberPattern.test(phoneNumber);
@@ -55,7 +55,10 @@ const Login: React.FC = () => {
             message.success("Login effettuato con successo!");
             Controller.tgApi.setClient(stringSession).then(() => {
               localStorage.setItem("stringSession", stringSession);
-              setTimeout(() => window.location.reload(), 500);
+              Controller.tgApi.getMe().then((me) => {
+                localStorage.setItem("me", JSON.stringify(me));
+                setTimeout(() => window.location.reload(), 500);
+              });
             });
           }
         })

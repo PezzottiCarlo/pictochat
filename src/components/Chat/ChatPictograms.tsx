@@ -5,6 +5,8 @@ import { AAC, Pictogram } from '../../lib/AAC';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
+import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
+import Utils from '../../lib/Utils';
 
 interface ChatPictogramsProps {
     callback: (pictogram: Pictogram) => void;
@@ -22,10 +24,10 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const ITEMS_PER_PAGE = 200;
 
     const keywords: { [key: string]: string[] } = {
-        "Tempo libero": ["sport", "hobby"],
-        "Lavoro": ["professional", "work"],
-        "Alimentazione": ["food", "soda"],
-        "Luoghi": ["building"]
+        "tempo libero": ["sport", "hobby"],
+        "lavoro": ["professional", "work"],
+        "cibo": ["food", "soda"],
+        "luoghi": ["building"],
     };
 
     // Rimuove duplicati usando l'ID dei pittogrammi
@@ -89,6 +91,23 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         setPictogramModalVisible(false);
     };
 
+    function handlePersonalClick(personal: string): void {
+        setLoading(false);
+        let personalPictograms = Controller.getPersonalPictograms();
+        personalPictograms = personalPictograms.filter((p) => p.category.toLowerCase() === personal.toLowerCase());
+        setSelectedCategory(personal);
+        setCategoryModalVisible(false);
+        setPictograms([]);
+        setDisplayedPictograms([]);
+        let tmp = personalPictograms.map((p) => {
+            return Utils.personalPictogramToPictogram(p);
+        });
+        setDisplayedPictograms(tmp)
+        setPictograms(tmp);
+        setPictogramModalVisible(true);
+        
+    }
+
     return (
         <>
             <PlusCircleOutlined
@@ -107,9 +126,24 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                         <Card
                             key={category}
                             style={{ cursor: 'pointer', width: '120px', textAlign: 'center' }}
-                            onClick={() => handleCategoryClick(category)}
-                        >
-                            {category}
+                            onClick={() => handleCategoryClick(category)}>
+                            <PictogramImage
+                                picto={(Controller.extractPictograms(category) as Pictogram[])[0]}
+                                width={100}
+                                height={100}
+                            />
+                        </Card>
+                    ))}
+                    {Object.keys(PersonalPictogramsCategory).map((category) => (
+                        <Card
+                            key={category}
+                            style={{ cursor: 'pointer', width: '120px', textAlign: 'center' }}
+                            onClick={() => handlePersonalClick(category)}>
+                            <PictogramImage
+                                picto={(Controller.extractPictograms((category==="SOGGETTO")?"gente":"oggetti quotidiani") as Pictogram[])[0]}
+                                width={100}
+                                height={100}
+                            />
                         </Card>
                     ))}
                 </div>
@@ -136,11 +170,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                         dataLength={displayedPictograms.length}
                         next={loadMorePictograms}
                         hasMore={hasMore}
-                        loader={
-                            <div style={{ textAlign: 'center', padding: '20px' }}>
-                                <Spin size="large" />
-                            </div>
-                        }
+                        loader={null}
                         scrollableTarget="modal-body" // Target dello scroll nel modal
                     >
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>

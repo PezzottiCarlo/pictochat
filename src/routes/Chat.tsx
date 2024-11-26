@@ -233,7 +233,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                             emptyText: <Empty description={null} image={null} />
                         }}
                         dataSource={messages}
-                        renderItem={item => <ChatBubble message={item} name={getName(item)} />}
+                        renderItem={item => <ChatBubble message={item} name={getName(item)} chatWith={dialog.id as bigInt.BigInteger} />}
                         className='chat-list'
                     />
                 </InfiniteScroll>

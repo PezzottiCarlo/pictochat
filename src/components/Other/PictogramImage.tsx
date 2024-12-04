@@ -10,6 +10,12 @@ interface PictogramProps {
 }
 
 export const PictogramImage: React.FC<PictogramProps> = ({ picto, style, width, height,onClick }) => {
+
+
+    if (!picto) {
+        return null;
+    }
+
     return (
         <div onClick={onClick} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Image

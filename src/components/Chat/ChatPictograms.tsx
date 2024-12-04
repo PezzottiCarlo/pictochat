@@ -22,14 +22,17 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const [displayedPictograms, setDisplayedPictograms] = useState<Pictogram[]>([]);
     const [hasMore, setHasMore] = useState(true);
 
-    const ITEMS_PER_PAGE = 200;
+    const ITEMS_PER_PAGE = 500;
 
     const keywords: { [key: string]: string[] } = {
         "tempo libero": ["sport", "hobby"],
-        "lavoro": ["professional", "work"],
+        "lavoro": ["education","professional", "work"],
         "cibo": ["food", "soda"],
+        "medicina": ["medicine"],
         "luoghi": ["building"],
-        "verbi":["usual verbs"]
+        "verbi":["usual verbs"],
+        "emozioni":["emotion","feeling"],
+        "tempo":["time"],
     };
 
     // Rimuove duplicati usando l'ID dei pittogrammi
@@ -46,6 +49,9 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
 
     // Carica i pittogrammi iniziali per la categoria selezionata
     const fetchPictograms = (keyword: string) => {
+
+        console.log(Controller.getAllCategories());
+
         setLoading(true);
         setPictograms([]);
         setDisplayedPictograms([]);

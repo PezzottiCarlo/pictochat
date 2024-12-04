@@ -257,6 +257,18 @@ export class Controller {
         });
     }
 
+    static getAllCategories = (): string[] => {
+        let categories = new Set<string>();
+        for (let p of AAC.pictograms) {
+            if (p.tags) {
+                for (let tag of p.tags) {
+                    categories.add(tag);
+                }
+            }
+        }
+        return Array.from(categories);
+    }
+
     static searchPictograms = async (word: string, limit: number): Promise<Pictogram[] | null> => {
         let pictos = (await Controller.aac.searchKeyword(word, true));
         if (pictos.length === 0) return [];
@@ -310,12 +322,19 @@ export class Controller {
      */
     static extractPictograms = (sentence: string, context?: PictogramContext): Pictogram[] | null => {
 
-        console.log(context)
-
+        let gw = WordsService.getGarbageWords();
         let cleanedWords = sentence
             .split(' ')
+            .filter((word) => !gw.includes(word))
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1);
+
+        let tmp = cleanedWords.join(' ');
+        gw.forEach((word) => {
+            tmp = tmp.replaceAll(" "+word+" ", '');
+        });
+        cleanedWords = tmp.split(' ').filter((word) => word.length > 1);
+        console.log(cleanedWords);
 
         let processedWords: string[] = [];
         for (let i = 0; i < cleanedWords.length; i++) {
@@ -371,7 +390,7 @@ export class Controller {
                 word = (result[i] as Pictogram).word as string;
             }
 
-            if(word === "io" && context?.me) {
+            if (word === "io" && context?.me) {
                 // TO IMPLEMENT
             }
 

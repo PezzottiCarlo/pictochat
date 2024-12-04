@@ -24,6 +24,31 @@ export class WordsService {
     static w = words as unknown as WordsData;
     static conjugations = conjugations as Conjugation[];
     static AUSILIAR_VERBS = ["essere", "avere"];
+    static ARTICLES_DET = [
+        "il", "lo", "la", "i", "gli", "le", "l'"
+    ]
+    static ARTICLES_IND = [
+        "un", "uno", "una", "un'"
+    ]
+    static PREPOSITIONS = [
+        "di", "a", "da", "in", "con", "su", "per", "tra", "fra"
+    ]
+    static ARTICLES_PREP = [
+        "del", "dello", "della", "dei", "degli", "delle", "dell'","di",
+        "al", "allo", "alla", "ai", "agli", "alle", "all'",
+        "dal", "dallo", "dalla", "dai", "dagli", "dalle", "dall'",
+        "nel", "nello", "nella", "nei", "negli", "nelle", "nell'",
+        "sul", "sullo", "sulla", "sui", "sugli", "sulle", "sull'"
+    ]
+
+
+
+    
+    
+    static getGarbageWords = (): string[] => {
+        return this.ARTICLES_DET.concat(this.ARTICLES_IND).concat(this.PREPOSITIONS).concat(this.ARTICLES_PREP);
+    }
+
 
     /**
      * Get all unique verbs.
@@ -83,10 +108,10 @@ export class WordsService {
             .split(/\s*(?:,|\s+o\s+)\s*/)
             .map(choice => choice.trim().replace(/[^\w\s]/gi, ''))
             .filter(choice => choice.length > 0);
-    
+
         return choices;
     };
-    
+
 
     /**
      * Extract pictograms based on a sentence.

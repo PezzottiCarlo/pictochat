@@ -302,4 +302,8 @@ export class AAC {
         }
         return foundPictograms;
     }
+
+    static getAllPictograms = () => {
+        return AAC.pictograms;
+    }
 }

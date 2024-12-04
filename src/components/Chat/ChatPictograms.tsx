@@ -7,6 +7,7 @@ import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
 import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 import Utils from '../../lib/Utils';
+import { WordsService } from '../../lib/WordsService';
 
 interface ChatPictogramsProps {
     callback: (pictogram: Pictogram) => void;
@@ -28,6 +29,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         "lavoro": ["professional", "work"],
         "cibo": ["food", "soda"],
         "luoghi": ["building"],
+        "verbi":["usual verbs"]
     };
 
     // Rimuove duplicati usando l'ID dei pittogrammi
@@ -101,6 +103,9 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         setDisplayedPictograms([]);
         let tmp = personalPictograms.map((p) => {
             return Utils.personalPictogramToPictogram(p);
+        });
+        Controller.getSubjects().forEach((s) => {
+            tmp.push(s);
         });
         setDisplayedPictograms(tmp)
         setPictograms(tmp);

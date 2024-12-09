@@ -1,17 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Card, Spin } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
-import { AAC, Pictogram } from '../../lib/AAC';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
 import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 import Utils from '../../lib/Utils';
-import { WordsService } from '../../lib/WordsService';
+import { Pictogram } from '../../lib/AAC';
 
 interface ChatPictogramsProps {
     callback: (pictogram: Pictogram) => void;
 }
+
+const ITEMS_PER_PAGE = 30;
+
+const keywords: { [key: string]: string[] } = {
+    "tempo libero": ["sport", "hobby"],
+    "lavoro": ["education", "professional", "work"],
+    "cibo": ["food", "soda"],
+    "medicina": ["medicine"],
+    "luoghi": ["building"],
+    "verbi": ["usual verbs"],
+    "emozioni": ["emotion", "feeling"],
+    "tempo": ["time"],
+};
+
+// Utility to deduplicate pictograms
+const deduplicatePictograms = (pictograms: Pictogram[]): Pictogram[] => {
+    const seen = new Set();
+    return pictograms.filter(pictogram => {
+        if (seen.has(pictogram.word)) return false;
+        if(seen.has(pictogram._id)) return false;
+        seen.add(pictogram.word);
+        return true;
+    });
+};
 
 const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const [categoryModalVisible, setCategoryModalVisible] = useState(false);
@@ -22,75 +45,61 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const [displayedPictograms, setDisplayedPictograms] = useState<Pictogram[]>([]);
     const [hasMore, setHasMore] = useState(true);
 
-    const ITEMS_PER_PAGE = 500;
-
-    const keywords: { [key: string]: string[] } = {
-        "tempo libero": ["sport", "hobby"],
-        "lavoro": ["education","professional", "work"],
-        "cibo": ["food", "soda"],
-        "medicina": ["medicine"],
-        "luoghi": ["building"],
-        "verbi":["usual verbs"],
-        "emozioni":["emotion","feeling"],
-        "tempo":["time"],
-    };
-
-    // Rimuove duplicati usando l'ID dei pittogrammi
-    const deduplicatePictograms = (pictograms: Pictogram[]): Pictogram[] => {
-        const seen = new Set();
-        return pictograms.filter((pictogram) => {
-            if (seen.has(pictogram._id)) {
-                return false;
-            }
-            seen.add(pictogram._id);
-            return true;
-        });
-    };
-
-    // Carica i pittogrammi iniziali per la categoria selezionata
-    const fetchPictograms = (keyword: string) => {
-
-        console.log(Controller.getAllCategories());
-
+    // Fetch pictograms based on category
+    const fetchPictograms = useCallback((category: string) => {
         setLoading(true);
-        setPictograms([]);
-        setDisplayedPictograms([]);
         setHasMore(true);
 
         let newPictograms: Pictogram[] = [];
-        for (const entry of keywords[keyword]) {
-            const categoryPictograms = Controller.searchForCategory(entry);
-            categoryPictograms.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
-
+        keywords[category].forEach(keyword => {
+            const categoryPictograms = Controller.searchForCategory(keyword);
             newPictograms = [...newPictograms, ...categoryPictograms];
-        }
+        });
 
-        // Deduplica i pittogrammi prima di salvarli
-        newPictograms = deduplicatePictograms(newPictograms);
-
-        setPictograms(newPictograms);
-        setDisplayedPictograms(newPictograms.slice(0, ITEMS_PER_PAGE));
-        setHasMore(newPictograms.length > ITEMS_PER_PAGE);
+        const uniquePictograms = deduplicatePictograms(newPictograms);
+        setPictograms(uniquePictograms);
+        setDisplayedPictograms(uniquePictograms.slice(0, ITEMS_PER_PAGE));
+        setHasMore(uniquePictograms.length > ITEMS_PER_PAGE);
         setLoading(false);
-    };
+    }, []);
 
-    // Carica altri pittogrammi quando l'utente scorre
-    const loadMorePictograms = () => {
+    // Fetch personal pictograms
+    const fetchPersonalPictograms = useCallback((personalCategory: string) => {
+        setLoading(true);
+        const personalPictograms = Controller.getPersonalPictograms()
+            .filter(p => p.category.toLowerCase() === personalCategory.toLowerCase())
+            .map(Utils.personalPictogramToPictogram);
+
+        const combinedPictograms = deduplicatePictograms([
+            ...personalPictograms,
+            ...Controller.getWords(PersonalPictogramsCategory.SOGGETTO)
+        ]);
+
+        setPictograms(combinedPictograms);
+        setDisplayedPictograms(combinedPictograms.slice(0, ITEMS_PER_PAGE));
+        setHasMore(combinedPictograms.length > ITEMS_PER_PAGE);
+        setLoading(false);
+    }, []);
+
+    // Load more pictograms for infinite scroll
+    const loadMorePictograms = useCallback(() => {
         const currentLength = displayedPictograms.length;
         const nextPictograms = pictograms.slice(currentLength, currentLength + ITEMS_PER_PAGE);
+        setDisplayedPictograms(prev => [...prev, ...nextPictograms]);
+        if (currentLength + nextPictograms.length >= pictograms.length) setHasMore(false);
+    }, [pictograms, displayedPictograms]);
 
-        setDisplayedPictograms((prev) => [...prev, ...nextPictograms]);
-
-        // Aggiorna lo stato di `hasMore` se sono stati caricati tutti i pittogrammi
-        if (currentLength + nextPictograms.length >= pictograms.length) {
-            setHasMore(false);
-        }
-    };
-
-    const handleCategoryClick = async (category: string) => {
+    const handleCategoryClick = (category: string) => {
         setSelectedCategory(category);
         setCategoryModalVisible(false);
         fetchPictograms(category);
+        setPictogramModalVisible(true);
+    };
+
+    const handlePersonalCategoryClick = (category: string) => {
+        setSelectedCategory(category);
+        setCategoryModalVisible(false);
+        fetchPersonalPictograms(category);
         setPictogramModalVisible(true);
     };
 
@@ -99,24 +108,11 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         setPictogramModalVisible(false);
     };
 
-    function handlePersonalClick(personal: string): void {
-        setLoading(false);
-        let personalPictograms = Controller.getPersonalPictograms();
-        personalPictograms = personalPictograms.filter((p) => p.category.toLowerCase() === personal.toLowerCase());
-        setSelectedCategory(personal);
-        setCategoryModalVisible(false);
-        setPictograms([]);
-        setDisplayedPictograms([]);
-        let tmp = personalPictograms.map((p) => {
-            return Utils.personalPictogramToPictogram(p);
-        });
-        Controller.getWords(PersonalPictogramsCategory.SOGGETTO).forEach((s) => {
-            tmp.push(s);
-        });
-        setDisplayedPictograms(tmp)
-        setPictograms(tmp);
-        setPictogramModalVisible(true);
-        
+    function handleScroll(event: any): void {
+        const element = event.target;
+        if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+            loadMorePictograms();
+        }
     }
 
     return (
@@ -126,6 +122,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                 onClick={() => setCategoryModalVisible(true)}
             />
 
+            {/* Category Selection Modal */}
             <Modal
                 title="Seleziona una categoria"
                 open={categoryModalVisible}
@@ -133,11 +130,12 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                 footer={null}
             >
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
-                    {Object.keys(keywords).map((category) => (
+                    {Object.keys(keywords).map(category => (
                         <Card
                             key={category}
                             style={{ cursor: 'pointer', width: '120px', textAlign: 'center' }}
-                            onClick={() => handleCategoryClick(category)}>
+                            onClick={() => handleCategoryClick(category)}
+                        >
                             <PictogramImage
                                 picto={(Controller.extractPictograms(category) as Pictogram[])[0]}
                                 width={100}
@@ -145,13 +143,16 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                             />
                         </Card>
                     ))}
-                    {Object.keys(PersonalPictogramsCategory).map((category) => (
+                    {Object.keys(PersonalPictogramsCategory).map(category => (
                         <Card
                             key={category}
                             style={{ cursor: 'pointer', width: '120px', textAlign: 'center' }}
-                            onClick={() => handlePersonalClick(category)}>
+                            onClick={() => handlePersonalCategoryClick(category)}
+                        >
                             <PictogramImage
-                                picto={(Controller.extractPictograms((category==="SOGGETTO")?"gente":"oggetti quotidiani") as Pictogram[])[0]}
+                                picto={(Controller.extractPictograms(
+                                    category === "SOGGETTO" ? "gente" : "oggetti quotidiani"
+                                ) as Pictogram[])[0]}
                                 width={100}
                                 height={100}
                             />
@@ -165,43 +166,44 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                 open={pictogramModalVisible}
                 onCancel={() => setPictogramModalVisible(false)}
                 footer={null}
-                styles={{
-                    body: {
-                        maxHeight: 'calc(100vh - 200px)',
-                        overflowY: 'auto',
-                    }
+                bodyStyle={{
+                    maxHeight: 'calc(100vh - 200px)',
+                    overflowY: 'auto',
                 }}
             >
-                {loading ? (
-                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                        <Spin size="large" />
-                    </div>
-                ) : (
-                    <InfiniteScroll
-                        dataLength={displayedPictograms.length}
-                        next={loadMorePictograms}
-                        hasMore={hasMore}
-                        loader={null}
-                        scrollableTarget="modal-body" // Target dello scroll nel modal
-                    >
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
-                            {displayedPictograms.map((pictogram) => (
-                                <PictogramImage
-                                    picto={pictogram}
-                                    key={pictogram._id}
-                                    onClick={() => handlePictogramSelect(pictogram)}
-                                    height={200}
-                                    width={200}
-                                />
-                            ))}
-                            {displayedPictograms.length === 0 && !loading && (
-                                <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                                    Nessun pittogramma disponibile.
-                                </div>
-                            )}
+                <div id="scrollableModalBody" style={{ maxHeight: 'calc(100vh - 200px)', overflow: 'auto' }} onScroll={handleScroll}>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            <Spin size="large" />
                         </div>
-                    </InfiniteScroll>
-                )}
+                    ) : (
+                        <InfiniteScroll
+                            dataLength={displayedPictograms.length}
+                            next={loadMorePictograms}
+                            hasMore={hasMore}
+                            loader={<div style={{ textAlign: 'center', marginTop: '20px' }}>Caricamento...</div>}
+                            scrollableTarget="scrollableModalBody"
+                            
+                        >
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
+                                {displayedPictograms.map((pictogram) => (
+                                    <PictogramImage
+                                        picto={pictogram}
+                                        key={pictogram._id}
+                                        onClick={() => handlePictogramSelect(pictogram)}
+                                        height={200}
+                                        width={200}
+                                    />
+                                ))}
+                                {displayedPictograms.length === 0 && !loading && (
+                                    <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                                        Nessun pittogramma disponibile.
+                                    </div>
+                                )}
+                            </div>
+                        </InfiniteScroll>
+                    )}
+                </div>
             </Modal>
         </>
     );

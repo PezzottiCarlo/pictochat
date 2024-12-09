@@ -130,7 +130,6 @@ export class Controller {
         this.tgApi.getDialogs().then((dialogs) => {
             for (const dialog of dialogs) {
                 if (storedDialogs.find((d) => d.id?.equals(dialog.id as bigInt.BigInteger))) {
-                    console.log('updating dialog');
                     this.storage.updateDialog(dialog);
                 } else {
                     this.storage.addDialog(dialog);
@@ -215,7 +214,7 @@ export class Controller {
         });
     };
 
-    
+
     /**
      * Retrieves a list of subject pictograms.
      * @param category - The category of the subject pictograms.
@@ -336,7 +335,6 @@ export class Controller {
             tmp = tmp.replaceAll(" "+word+" ", '');
         });
         cleanedWords = tmp.split(' ').filter((word) => word.length > 1);
-        console.log(cleanedWords);
 
         let processedWords: string[] = [];
         for (let i = 0; i < cleanedWords.length; i++) {

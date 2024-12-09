@@ -7,6 +7,7 @@ import { Controller } from '../../lib/Controller';
 import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 import Utils from '../../lib/Utils';
 import { Pictogram } from '../../lib/AAC';
+import { WordsService } from '../../lib/WordsService';
 
 interface ChatPictogramsProps {
     callback: (pictogram: Pictogram) => void;
@@ -26,15 +27,31 @@ const keywords: { [key: string]: string[] } = {
 };
 
 // Utility to deduplicate pictograms
-const deduplicatePictograms = (pictograms: Pictogram[]): Pictogram[] => {
-    const seen = new Set();
+const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boolean): Pictogram[] => {
+    pictograms = pictograms.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+
+    const seenWords: string[] = [];
+    const seenIds = new Set();
+
     return pictograms.filter(pictogram => {
-        if (seen.has(pictogram.word)) return false;
-        if(seen.has(pictogram._id)) return false;
-        seen.add(pictogram.word);
+        // Controlla se l'ID è già stato visto
+        if (seenIds.has(pictogram._id)) return false;
+        if(seenIds.has(pictogram.word)) return false;
+
+        if (levenshteinDistance) {
+            if (seenWords.some(word => WordsService.levenshteinDistance(word, pictogram.word as string) <= 2)) {
+                return false;
+            }
+        }
+
+        // Aggiungi la parola e l'ID agli insiemi "visti"
+        seenWords.push(pictogram.word as string);
+        seenIds.add(pictogram._id);
+        seenIds.add(pictogram.word);
         return true;
     });
 };
+
 
 const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const [categoryModalVisible, setCategoryModalVisible] = useState(false);
@@ -56,7 +73,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
             newPictograms = [...newPictograms, ...categoryPictograms];
         });
 
-        const uniquePictograms = deduplicatePictograms(newPictograms);
+        const uniquePictograms = deduplicatePictograms(newPictograms, true);
         setPictograms(uniquePictograms);
         setDisplayedPictograms(uniquePictograms.slice(0, ITEMS_PER_PAGE));
         setHasMore(uniquePictograms.length > ITEMS_PER_PAGE);
@@ -73,7 +90,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         const combinedPictograms = deduplicatePictograms([
             ...personalPictograms,
             ...Controller.getWords(PersonalPictogramsCategory.SOGGETTO)
-        ]);
+        ], false);
 
         setPictograms(combinedPictograms);
         setDisplayedPictograms(combinedPictograms.slice(0, ITEMS_PER_PAGE));
@@ -183,7 +200,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                             hasMore={hasMore}
                             loader={<div style={{ textAlign: 'center', marginTop: '20px' }}>Caricamento...</div>}
                             scrollableTarget="scrollableModalBody"
-                            
+
                         >
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center' }}>
                                 {displayedPictograms.map((pictogram) => (

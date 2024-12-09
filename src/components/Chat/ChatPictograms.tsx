@@ -26,7 +26,6 @@ const keywords: { [key: string]: string[] } = {
     "tempo": ["time"],
 };
 
-// Utility to deduplicate pictograms
 const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boolean): Pictogram[] => {
     pictograms = pictograms.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
 
@@ -34,7 +33,6 @@ const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boo
     const seenIds = new Set();
 
     return pictograms.filter(pictogram => {
-        // Controlla se l'ID è già stato visto
         if (seenIds.has(pictogram._id)) return false;
         if(seenIds.has(pictogram.word)) return false;
 
@@ -43,8 +41,6 @@ const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boo
                 return false;
             }
         }
-
-        // Aggiungi la parola e l'ID agli insiemi "visti"
         seenWords.push(pictogram.word as string);
         seenIds.add(pictogram._id);
         seenIds.add(pictogram.word);

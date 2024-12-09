@@ -188,9 +188,20 @@ export class Controller {
      * Retrieves the application settings.
      * @returns The current settings.
      */
-    static getSettings(): Settings {
+    static getSettings(): Settings | any {
         let settings = localStorage.getItem('settings');
-        return settings ? JSON.parse(settings) : {};
+        let defaultSettings = {
+            fontSize: 14,
+            hairColor: HairColor.BLACK,
+            skinColor: SkinColor.WHITE,
+            theme: 'light'
+        } as Settings;
+        let res = settings ? JSON.parse(settings) : null;
+        if(res === null) {
+            Controller.setSettings(defaultSettings);
+            return null;
+        }
+        return res;
     }
 
     /**
@@ -204,42 +215,33 @@ export class Controller {
         });
     };
 
-    /**
-     * Retrieves a list of object pictograms based on a verb.
-     * @param verb - The verb to filter objects by.
-     * @returns The list of object pictograms.
-     */
-    static getObjects = (verb: string | undefined): Pictogram[] => {
-        let common = WordsService.getObjects(verb).map((p) => {
-            p.url = this.convertLink(this.settings, p.url);
-            return p;
-        });
-
-        let personal = Controller.getPersonalPictograms().map((p) => {
-            if (p.category === PersonalPictogramsCategory.OGGETTO)
-                return Utils.personalPictogramToPictogram(p);
-        }) as Pictogram[]
-
-        return personal.concat(common).filter((p) => p !== undefined);
-    };
-
+    
     /**
      * Retrieves a list of subject pictograms.
+     * @param category - The category of the subject pictograms.
+     * @param verb - The verb to filter subjects by.
      * @returns The list of subject pictograms.
      */
-    static getSubjects = (): Pictogram[] => {
-        let common = WordsService.getSubjects().map((p) => {
+    static getWords = (category: PersonalPictogramsCategory,verb?: string): Pictogram[] => {
+        let getted = (category === PersonalPictogramsCategory.SOGGETTO) ? WordsService.getSubjects() : WordsService.getObjects(verb);
+        let common = getted.map((p) => {
             p.url = this.convertLink(this.settings, p.url);
             return p;
         });
 
-        let personal = Controller.getPersonalPictograms().map((p) => {
-            if (p.category === PersonalPictogramsCategory.SOGGETTO)
+        let personal = (Controller.getPersonalPictograms().map((p) => {
+            if (p.category === category)
                 return Utils.personalPictogramToPictogram(p);
-        }) as Pictogram[]
+        }) as Pictogram[]).filter((p) => p !== undefined);
+
+
+        //before return remove common pictograms that are already in personal
+        personal.forEach((p) => {
+            common = common.filter((c) => c.word !== p.word);
+        });
 
         return personal.concat(common).filter((p) => p !== undefined);
-    };
+    }
 
     /**
      * Extracts choices from a sentence.

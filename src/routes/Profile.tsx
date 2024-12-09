@@ -28,6 +28,7 @@ const Profile: React.FC = () => {
         });
 
         let settings = Controller.getSettings();
+        if (!settings) return;
         setFontSize(settings.fontSize);
         setHairColor(settings.hairColor);
         setSkinColor(settings.skinColor);

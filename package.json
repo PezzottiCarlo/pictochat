@@ -21,6 +21,7 @@
     "fs": "^0.0.1-security",
     "net": "^1.0.2",
     "path-browserify": "^1.0.1",
+    "pictochat": "file:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-infinite-scroll-component": "^6.1.0",

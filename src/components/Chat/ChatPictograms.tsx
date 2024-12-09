@@ -110,7 +110,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         let tmp = personalPictograms.map((p) => {
             return Utils.personalPictogramToPictogram(p);
         });
-        Controller.getSubjects().forEach((s) => {
+        Controller.getWords(PersonalPictogramsCategory.SOGGETTO).forEach((s) => {
             tmp.push(s);
         });
         setDisplayedPictograms(tmp)

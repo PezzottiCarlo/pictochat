@@ -37,7 +37,7 @@ function MyApp() {
 
   useEffect(() => {
     if (!isSetting) {
-      navigate("/settings");
+      navigate("/profile");
     } else if (!isAuthenticated) {
       navigate("/login");
     } else {

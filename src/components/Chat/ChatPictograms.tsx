@@ -8,6 +8,7 @@ import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 import Utils from '../../lib/Utils';
 import { Pictogram } from '../../lib/AAC';
 import { WordsService } from '../../lib/WordsService';
+import { motion } from 'framer-motion';
 
 interface ChatPictogramsProps {
     callback: (pictogram: Pictogram) => void;
@@ -24,6 +25,7 @@ const keywords: { [key: string]: string[] } = {
     "verbi": ["usual verbs"],
     "emozioni": ["emotion", "feeling"],
     "tempo": ["time"],
+    "oggetti quotidiani": ["object", "hygiene product"],
 };
 
 const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boolean): Pictogram[] => {
@@ -34,7 +36,7 @@ const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boo
 
     return pictograms.filter(pictogram => {
         if (seenIds.has(pictogram._id)) return false;
-        if(seenIds.has(pictogram.word)) return false;
+        if (seenIds.has(pictogram.word)) return false;
 
         if (levenshteinDistance) {
             if (seenWords.some(word => WordsService.levenshteinDistance(word, pictogram.word as string) <= 2)) {
@@ -99,7 +101,11 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         const currentLength = displayedPictograms.length;
         const nextPictograms = pictograms.slice(currentLength, currentLength + ITEMS_PER_PAGE);
         setDisplayedPictograms(prev => [...prev, ...nextPictograms]);
-        if (currentLength + nextPictograms.length >= pictograms.length) setHasMore(false);
+        console.log("Loading more pictograms", currentLength, displayedPictograms.length, nextPictograms.length, pictograms.length);
+        if (currentLength + nextPictograms.length >= pictograms.length) {
+            console.log("No more pictograms");
+            setHasMore(false);
+        }
     }, [pictograms, displayedPictograms]);
 
     const handleCategoryClick = (category: string) => {
@@ -123,17 +129,24 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
 
     function handleScroll(event: any): void {
         const element = event.target;
-        if (element.scrollHeight - element.scrollTop === element.clientHeight) {
+        let scrollPercentage = 100 * element.scrollTop / (element.scrollHeight - element.clientHeight);
+        if (scrollPercentage > 90 && hasMore) {
             loadMorePictograms();
         }
     }
 
     return (
         <>
-            <PlusCircleOutlined
-                style={{ fontSize: '2rem', cursor: 'pointer' }}
-                onClick={() => setCategoryModalVisible(true)}
-            />
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                >
+                <PlusCircleOutlined
+                    style={{ fontSize: '2rem', cursor: 'pointer', color: 'var(--ant-color-primary)' }}
+                    onClick={() => setCategoryModalVisible(true)}
+                />
+            </motion.div>
 
             {/* Category Selection Modal */}
             <Modal
@@ -179,7 +192,7 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                 open={pictogramModalVisible}
                 onCancel={() => setPictogramModalVisible(false)}
                 footer={null}
-                bodyStyle={{
+                style={{
                     maxHeight: 'calc(100vh - 200px)',
                     overflowY: 'auto',
                 }}

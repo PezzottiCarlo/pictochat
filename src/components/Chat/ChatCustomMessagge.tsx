@@ -73,7 +73,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
             case 'objects':
                 const reversedVerbs = selectedPicto.verbs.slice().reverse();
                 reversedVerbs.forEach((verb) => {
-                    const objectsForVerb = Controller.getWords("oggetti", verb.word);
+                    const objectsForVerb = Controller.getWords("oggetti quotidiani", verb.word);
                     items.push(...objectsForVerb); // Usa lo spread operator per inserire gli oggetti direttamente
                 });
                 break;
@@ -89,7 +89,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                         key={picto._id}
                         onClick={() => handlePictoSelect(picto)}
                         style={{ margin: '10px', padding: 0, cursor: 'pointer' }}>
-                        <PictogramImage picto={picto} style={{ backgroundColor: 'white' }}/>
+                        <PictogramImage picto={picto} style={{ backgroundColor: 'white',objectFit:"cover" }}/>
                     </Card>
                 ))}
             </div>
@@ -113,7 +113,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
                             key={index}
                             style={{ margin: '10px', padding: 0, cursor: 'pointer' }}
                             cover={
-                                <PictogramImage picto={picto} style={{ backgroundColor: 'white' }} onClick={() => handlePictoClick(type)} height={100} width={100} />
+                                <PictogramImage picto={picto} style={{ backgroundColor: 'white',objectFit:"cover" }} onClick={() => handlePictoClick(type)} height={100} width={100} />
                             }
                             actions={[
                                 <DeleteOutlined key="delete" onClick={() => setSelectedPicto((prevState) => ({

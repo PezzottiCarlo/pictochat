@@ -83,7 +83,11 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             
             //aggiunta setting via messaggio 
             fetchedMessages.forEach((message) => {
-                Controller.readPersonalPictogram(message);
+                let somethingNew = Controller.readPersonalPictogram(message)
+                if (somethingNew) {
+                    fetchPictogramsHints(messages);
+                }
+                
             });
 
             if (fetchedMessages.length < messageBatchSize) {

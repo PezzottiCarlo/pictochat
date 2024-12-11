@@ -275,9 +275,7 @@ export class Controller {
      * @returns The list of subject pictograms.
      */
     static getWords = (category: string, verb?: string): Pictogram[] => {
-
         //TO FIX
-
         let getted = (category === "persone") ? WordsService.getSubjects() : WordsService.getObjects(verb);
         let common = getted.map((p) => {
             p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
@@ -381,12 +379,13 @@ export class Controller {
     };
 
 
-    static readPersonalPictogram = (message: Api.Message): void => {
-        if (!message.message.trim().toLowerCase().includes(":") && !message.media) return;
+    static readPersonalPictogram = (message: Api.Message): boolean => {
+        if (!message.message.trim().toLowerCase().includes(":") && !message.media) return false;
         let splitted = message.message.split(":");
-        if (!Controller.getCategories().includes(splitted[0].trim().toLowerCase())) return
-        if (message.media?.className !== "MessageMediaPhoto") return;
+        if (!Controller.getCategories().includes(splitted[0].trim().toLowerCase())) return false;
+        if (message.media?.className !== "MessageMediaPhoto") return false;
         Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
+        return true;
     }
 
     /**
@@ -477,7 +476,6 @@ export class Controller {
 
 
     static importPersonalPictogramFromMessage = (type: string, name: string, message: Api.Message): void => {
-        name = name.trim();
         let pp = this.getPersonalPictograms();
         if (pp.find((p) => p.name.toLowerCase().trim() === name.toLowerCase().trim())) return;
 
@@ -513,7 +511,13 @@ export class Controller {
      * @param newPictogram - The new personal pictogram to add.
      */
     static addPersonalPictogram(newPictogram: PersonalPictogram) {
+
+        newPictogram.category = newPictogram.category.trim().toLowerCase();
+        newPictogram.name = newPictogram.name.trim().toLowerCase();
+
         let personalPictograms = Controller.getPersonalPictograms();
+        if(personalPictograms.find((p) => p.name.toLowerCase().trim() === newPictogram.name.toLowerCase().trim())) return;
+
         if (personalPictograms) {
             personalPictograms.push(newPictogram);
         } else {

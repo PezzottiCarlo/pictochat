@@ -54,7 +54,7 @@ const HintsManager: React.FC<HintsManagerProps> = ({ callback, currentHints }) =
                         onChange={(e) => setNewHint({ ...newHint, text: e.target.value })}
                     />
                     <Input
-                        placeholder="Emoji"
+                        placeholder="Icona"
                         value={newHint.icon}
                         onChange={(e) => setNewHint({ ...newHint, icon: e.target.value })}
                     />

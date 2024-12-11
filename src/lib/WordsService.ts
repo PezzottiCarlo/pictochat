@@ -99,7 +99,6 @@ export class WordsService {
      */
     static extractChoices = (sentence: string): string[] => {
         if (!WordsService.isString(sentence)) return [];
-        console.log(sentence);
         const isQuestion = sentence.includes('?');
         if (!isQuestion) return [];
         const afterQuestion = sentence.split('?')[1];

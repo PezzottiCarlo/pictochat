@@ -6,11 +6,11 @@ interface PictogramProps {
     style?: React.CSSProperties;
     width?: number;
     height?: number;
+    text?: boolean;
     onClick?: () => void;
 }
 
-export const PictogramImage: React.FC<PictogramProps> = ({ picto, style, width, height,onClick }) => {
-
+export const PictogramImage: React.FC<PictogramProps> = ({ picto, style={objectFit:"cover"}, width, height,onClick,text=true}) => {
 
     if (!picto) {
         return null;
@@ -26,7 +26,7 @@ export const PictogramImage: React.FC<PictogramProps> = ({ picto, style, width, 
                 preview={false}
                 style={style}
             />
-            <span style={{ fontSize: '.7rem' }}>{picto.word}</span>
+            {text && <span style={{ fontSize: '.7rem' }}>{picto.word}</span>}
         </div>
     )
 }

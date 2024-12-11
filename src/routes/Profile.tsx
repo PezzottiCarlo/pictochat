@@ -1,46 +1,54 @@
+import "../styles/Profile.css";
+
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Button, Typography, Skeleton, Space, Divider, Row, Col, Select, Slider, Radio, Layout, message } from 'antd';
+import {
+    Avatar, Button, Typography, Skeleton, Space, Divider,
+    Row, Col, Layout, message
+} from 'antd';
 import { UserOutlined, PhoneOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
-import { Controller } from '../lib/Controller';
+import { Controller, Settings } from '../lib/Controller';
 import { Api } from 'telegram/tl/api';
 import DialogAvatar from '../components/DialogItem/DialogAvatar';
 import { HairColor, SkinColor } from '../lib/AAC';
+import HintsManager from '../components/Profile/HintsManager';
+import { ThemeManager } from '../components/Profile/ThemeManager';
+import { CharacterManager } from '../components/Profile/CharacterManager';
+import { FontManager } from '../components/Profile/FontSizeManager';
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 const Profile: React.FC = () => {
-    const [user, setUser] = useState<Api.User>();
+    const [user, setUser] = useState<Api.User | null>(null);
     const [avatar, setAvatar] = useState<JSX.Element | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [fontSize, setFontSize] = useState(14);
-    const [hairColor, setHairColor] = useState<HairColor>(HairColor.RED);
-    const [skinColor, setSkinColor] = useState<SkinColor>(SkinColor.WHITE);
-    const [theme, setTheme] = useState<string>('light');
+    const [settings, setSettings] = useState<Settings | null>(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        Controller.tgApi.getMe().then((user) => {
-            setUser(user);
-            setLoading(false);
-        });
-
-        let settings = Controller.getSettings();
-        if (!settings) return;
-        setFontSize(settings.fontSize);
-        setHairColor(settings.hairColor);
-        setSkinColor(settings.skinColor);
-        setTheme(settings.theme);
+        const loadData = async () => {
+            try {
+                const currentUser = Controller.getMe();
+                const userSettings = Controller.getSettings();
+                setUser(currentUser);
+                setSettings(userSettings);
+            } catch (error) {
+                message.error('Errore nel caricamento del profilo.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
     }, []);
 
-    // Funzione per ottenere l'avatar dell'utente
-    const getUserAvatar = useCallback(() => {
+    const getUserAvatar = useCallback(async () => {
         if (user?.id) {
-            Controller.getProfilePic(user.id as bigInt.BigInteger).then((pic) => {
-                if (pic) {
-                    setAvatar(
+            try {
+                const pic = await Controller.getProfilePic(user.id as bigInt.BigInteger);
+                setAvatar(
+                    pic ? (
                         <DialogAvatar
                             imageBuffer={pic}
                             name={user.username || ''}
@@ -48,11 +56,13 @@ const Profile: React.FC = () => {
                             badge={false}
                             unreadedMessages={0}
                         />
-                    );
-                } else {
-                    setAvatar(<Avatar size={150} icon={<UserOutlined />} />);
-                }
-            });
+                    ) : (
+                        <Avatar size={150} icon={<UserOutlined />} />
+                    )
+                );
+            } catch {
+                setAvatar(<Avatar size={150} icon={<UserOutlined />} />);
+            }
         } else {
             setAvatar(<Avatar size={150} icon={<UserOutlined />} />);
         }
@@ -62,147 +72,110 @@ const Profile: React.FC = () => {
         getUserAvatar();
     }, [getUserAvatar]);
 
-    const handleFinish = () => {
-        Controller.setSettings({
-            fontSize,
-            hairColor,
-            skinColor,
-            theme,
-        });
-        message.success('Impostazioni salvate con successo!');
-        setTimeout(() => {
-            window.location.reload();
-        }, 1000);
+    const updateSettings = (key: keyof Settings, value: any) => {
+        if (!settings) return;
+        const updatedSettings = { ...settings, [key]: value };
+        Controller.updateSettings(key, value);
+        setSettings(updatedSettings);
+        console.log('Settings updated:', updatedSettings);
     };
+
+    const handleCharacter = (hairColor: HairColor, skinColor: SkinColor) => {
+        if (!settings) return;
+        if (hairColor !== settings.hairColor) {
+            updateSettings('hairColor', hairColor);
+        }
+        if (skinColor !== settings.skinColor) {
+            updateSettings('skinColor', skinColor);
+        }
+
+    };
+
+    const handleHints = (hints: { text: string; icon: string }[]) => {
+        Controller.setHints(hints);
+    };
+
+    const handleFontSize = (fontSize: number) => {
+        updateSettings('fontSize', fontSize);
+    };
+
+    const handleTheme = (theme: string) => {
+        updateSettings('theme', theme);
+    };
+
+    if (loading) {
+        return (
+            <Layout>
+                <Skeleton avatar paragraph={{ rows: 3 }} active />
+            </Layout>
+        );
+    }
 
     return (
         <Layout>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '100vh',
-                padding: '20px',
-                paddingBottom: '100px',
-            }}>
-                {loading ? (
-                    <Skeleton avatar paragraph={{ rows: 3 }} active />
-                ) : (
-                    <div style={styles.content}>
-                        <div style={{
-                            textAlign: 'left',
-                            marginBottom: '20px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                        }}>
-                            <Title level={2} style={{ margin: 0 }}>Profilo</Title>
-                            <LogoutOutlined
-                                style={{ fontSize: '24px', cursor: 'pointer' }}
-                                onClick={() => navigate('/logout')} />
-                        </div>
-                        <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
-                            <Row gutter={24}>
-                                <Col style={{ display: 'flex', justifyContent: 'space-between', alignItems: "center", width: "100%" }}>
-                                    {avatar}
-                                    <DialogAvatar
-                                        imageBuffer={null}
-                                        name={user?.username || ''}
-                                        size={150}
-                                        badge={false}
-                                        unreadedMessages={0}
-                                        aac={true}
-                                        hairColor={hairColor as HairColor}
-                                        skinColor={skinColor as SkinColor}
-                                    />
-                                </Col>
-                                <Divider />
-                                <Col xs={24} sm={16} md={18} lg={20}>
-                                    <Title level={3} style={{ margin: 0 }}>
-                                        {user?.firstName} {user?.lastName}
-                                    </Title>
-                                    <Text type="secondary">@{user?.username}</Text>
-                                    <br />
-                                    <Text type="secondary">
-                                        <PhoneOutlined /> {user?.phone}
-                                    </Text>
-                                </Col>
-                            </Row>
-                            <Divider />
-                            <Title level={3}>Impostazioni</Title>
+            <div className="profile-container">
+                <div className="profile-header">
+                    <Title level={2} style={{ margin: 0 }}>Profilo</Title>
+                    <LogoutOutlined
+                        style={{ fontSize: '24px', cursor: 'pointer' }}
+                        onClick={() => navigate('/logout')}
+                    />
+                </div>
 
-                            <h3>Dimensione del Font</h3>
-                            <Slider
-                                min={12}
-                                max={24}
-                                value={fontSize}
-                                onChange={(value) => setFontSize(value)}
-                                tooltip={{ open: true }}
+                <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
+                    <Row gutter={24}>
+                        <Col className="profile-avatar-container"  xs={24} sm={8} md={6} lg={4}>
+                            {avatar}
+                            <DialogAvatar
+                                imageBuffer={null}
+                                name={user?.username || ''}
+                                size={150}
+                                badge={false}
+                                unreadedMessages={0}
+                                aac={true}
+                                hairColor={settings?.hairColor}
+                                skinColor={settings?.skinColor}
                             />
-
-                            <h3>Colore dei Capelli</h3>
-                            <Select
-                                value={hairColor}
-                                onChange={(value) => setHairColor(value as HairColor)}
-                                style={{ width: '100%' }}
-                                placeholder="Seleziona un colore"
-                            >
-                                {Object.values(HairColor).map((color) => (
-                                    <Option key={color} value={color}>
-                                        {color}
-                                    </Option>
-                                ))}
-                            </Select>
-
-                            <h3>Colore della Pelle</h3>
-                            <Select
-                                value={skinColor}
-                                onChange={(value) => setSkinColor(value as SkinColor)}
-                                style={{ width: '100%' }}
-                                placeholder="Seleziona un colore"
-                            >
-                                {Object.values(SkinColor).map((color) => (
-                                    <Option key={color} value={color}>
-                                        {color}
-                                    </Option>
-                                ))}
-                            </Select>
-
-                            <h3>Tema</h3>
-                            <Radio.Group
-                                onChange={(e) => setTheme(e.target.value)}
-                                value={theme}
-                                style={{ width: '100%' }}
-                            >
-                                <Radio.Button value="light" style={{ width: '100%', textAlign: 'center' }}>
-                                    Light
-                                </Radio.Button>
-                                <Radio.Button value="dark" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
-                                    Dark
-                                </Radio.Button>
-                                <Radio.Button value="high-contrast" style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}>
-                                    High Contrast
-                                </Radio.Button>
-                            </Radio.Group>
-
-                            <Button type="primary" block onClick={handleFinish} style={{ marginTop: '20px' }}>
-                                Conferma Impostazioni
-                            </Button>
-                        </Space>
-                    </div>
-                )}
+                        </Col>
+                        <Divider />
+                        <Col xs={24} sm={16} md={18} lg={20}>
+                            <Title level={3} style={{ margin: 0 }}>
+                                {user?.firstName} {user?.lastName}
+                            </Title>
+                            <Text type="secondary">@{user?.username}</Text>
+                            <br />
+                            <Text type="secondary">
+                                <PhoneOutlined /> {user?.phone}
+                            </Text>
+                        </Col>
+                    </Row>
+                    <Divider />
+                    <Title level={3}>Impostazioni</Title>
+                    <CharacterManager
+                        callback={handleCharacter}
+                        currentHairColor={settings?.hairColor}
+                        currentSkinColor={settings?.skinColor}
+                    />
+                    <Divider />
+                    <HintsManager
+                        callback={handleHints}
+                        currentHints={Controller.getHints() || []}
+                    />
+                    <Divider />
+                    <FontManager
+                        callback={handleFontSize}
+                        currentFontSize={settings?.fontSize || 14}
+                    />
+                    <Divider />
+                    <ThemeManager
+                        callback={handleTheme}
+                        currentTheme={settings?.theme || 'light'}
+                    />
+                </Space>
             </div>
-
             <CustomFooter activeTab={2} />
         </Layout>
     );
-};
-
-const styles = {
-    container: {},
-    content: {
-        width: '100%',
-        maxWidth: '800px',
-        margin: '0 auto',
-    },
 };
 
 export default Profile;

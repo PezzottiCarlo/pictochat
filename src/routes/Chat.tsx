@@ -11,7 +11,6 @@ import ChatHints from '../components/Chat/ChatHintsText';
 import ChatHintsPicto from '../components/Chat/ChatHintsPicto';
 import { Api } from 'telegram';
 import { Pictogram, HairColor, SkinColor } from '../lib/AAC';
-import hints from '../data/hints.json';
 import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
@@ -84,11 +83,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             
             //aggiunta setting via messaggio 
             fetchedMessages.forEach((message) => {
-                if (message.message.trim().toLowerCase().includes(":") && message.media){
-                    let splitted = message.message.split(":");
-                    console.log(splitted);
-                    Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
-                }
+                Controller.readPersonalPictogram(message);
             });
 
             if (fetchedMessages.length < messageBatchSize) {
@@ -245,7 +240,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <Popover
                                 open={showHints}
-                                content={<ChatHints onHintClick={handleHints} hints={hints} />}
+                                content={<ChatHints onHintClick={handleHints} hints={Controller.getHints()} />}
                                 placement="top"
                                 trigger="click"
                                 onOpenChange={setShowHints}

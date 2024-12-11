@@ -244,5 +244,4 @@ export class WordsService {
         return null;
     };
 
-
 }

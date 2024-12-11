@@ -10,6 +10,7 @@ import Utils from "./Utils";
 import { message } from "antd";
 import { Dispatch, SetStateAction } from "react";
 import categories from "../data/categories.json";
+import hints from "../data/hints.json";
 import { isString } from "antd/es/button";
 
 export interface Settings {
@@ -24,7 +25,43 @@ export interface PictogramContext {
     you: any
 }
 
+export type Hint = {
+    text: string;
+    icon: string;
+}
+
+
 export class Controller {
+    
+    
+    
+
+
+    static async firstLogin(stringSession:string): Promise<void> {
+        await Controller.dropDatabase();
+        localStorage.removeItem('me');
+        localStorage.removeItem('personalPictograms');
+        localStorage.removeItem('settings');
+
+        localStorage.setItem('stringSession', stringSession);
+        let me = await Controller.tgApi.getMe();
+        localStorage.setItem('me', JSON.stringify(me));
+        localStorage.setItem('hints', JSON.stringify(hints));
+        localStorage.setItem('settings', JSON.stringify({
+            fontSize: 14,
+            hairColor: HairColor.BLACK,
+            skinColor: SkinColor.WHITE,
+            theme: 'dark'
+        }));
+    }
+
+    static getHints = (): Hint[] => {
+        return JSON.parse(localStorage.getItem('hints') as string);
+    }
+
+    static setHints(hints: { text: string; icon: string; }[]) {
+        localStorage.setItem('hints', JSON.stringify(hints));
+    }
 
     static getCategories = (): string[] => {
         return Object.keys(categories);
@@ -190,6 +227,7 @@ export class Controller {
      */
     static setSettings(settings: Settings): void {
         localStorage.setItem('settings', JSON.stringify(settings));
+        this.settings = settings;
     }
 
     /**
@@ -212,13 +250,19 @@ export class Controller {
         return res;
     }
 
+    static updateSettings(arg0: string, value: any) {
+        let settings = Controller.getSettings();
+        settings[arg0] = value;
+        Controller.setSettings(settings);   
+    }
+
     /**
      * Retrieves a list of verb pictograms.
      * @returns The list of verb pictograms.
      */
     static getVerbs = (): Pictogram[] => {
         return WordsService.getVerbs().map((p) => {
-            p.url = this.convertLink(this.settings, p.url);
+            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
             return p;
         });
     };
@@ -236,7 +280,7 @@ export class Controller {
 
         let getted = (category === "persone") ? WordsService.getSubjects() : WordsService.getObjects(verb);
         let common = getted.map((p) => {
-            p.url = this.convertLink(this.settings, p.url);
+            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
             return p;
         });
 
@@ -265,13 +309,13 @@ export class Controller {
 
     static searchForCategory = (category: string): { personal: Pictogram[], araasac: Pictogram[] } => {
         let personal = Controller.getPersonalPictograms()
-        .filter((p) => (p.category).trim().toLocaleLowerCase() === category.trim().toLocaleLowerCase())
-        .map(Utils.personalPictogramToPictogram);
+            .filter((p) => (p.category).trim().toLocaleLowerCase() === category.trim().toLocaleLowerCase())
+            .map(Utils.personalPictogramToPictogram);
 
         let r = {
             personal: personal,
             araasac: AAC.searchForCategory(category).map((p) => {
-                p.url = this.convertLink(this.settings, p.url);
+                p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
                 return p;
             })
         }
@@ -336,6 +380,15 @@ export class Controller {
         return result;
     };
 
+
+    static readPersonalPictogram = (message: Api.Message): void => {
+        if (!message.message.trim().toLowerCase().includes(":") && !message.media) return;
+        let splitted = message.message.split(":");
+        if (!Controller.getCategories().includes(splitted[0].trim().toLowerCase())) return
+        if (message.media?.className !== "MessageMediaPhoto") return;
+        Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
+    }
+
     /**
      * Extracts pictograms from a sentence.
      * @param sentence - The sentence to extract pictograms from.
@@ -348,31 +401,32 @@ export class Controller {
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1 && !gw.includes(word));
-    
+
         // Gestione dei pittogrammi personali (massimo 3 parole)
+        // eslint-disable-next-line array-callback-return
         let personalPictograms = Controller.getPersonalPictograms();
         let result: (Pictogram | string)[] = [...cleanedWords];
-    
+
         for (const personalPictogram of personalPictograms) {
-            let phraseWords = personalPictogram.name.toLowerCase().split(' ');
+            let phraseWords = personalPictogram.name.toLowerCase().split(' ').filter((word) => !gw.includes(word));
             if (phraseWords.length > 3) continue; // Ignora se supera 3 parole
-    
+
             let startIndex = result.findIndex((item, index) => {
                 return typeof item === 'string' && phraseWords.every((pw, offset) =>
                     result[index + offset] && result[index + offset] === pw
                 );
             });
-    
+
             if (startIndex !== -1) {
                 // Sostituisci le parole corrispondenti con il pittogramma personale
                 result.splice(startIndex, phraseWords.length, Utils.personalPictogramToPictogram(personalPictogram));
             }
         }
-    
+
         // Estrazione dei verbi all'infinito dalle parole rimaste
         let remainingWords = result.filter(item => typeof item === 'string') as string[];
         let processedWords: { original: string, processed: string }[] = [];
-    
+
         for (let i = 0; i < remainingWords.length; i++) {
             let word = WordsService.findInfinitive(remainingWords[i]);
             if (!word) {
@@ -392,11 +446,11 @@ export class Controller {
             }
             processedWords.push({ original: remainingWords[i], processed: word });
         }
-    
+
         // Cerca i pittogrammi di sistema per le parole rimaste
         let processedSentence = processedWords.map(w => w.processed).join(' ');
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
-    
+
         for (const pictogram of foundPictograms) {
             let phraseWords = (pictogram.word as string).toLowerCase().split(' ');
             let startIndex = result.findIndex((item, index) => {
@@ -404,22 +458,22 @@ export class Controller {
                     result[index + offset] && result[index + offset] === processedWords.find(pwObj => pwObj.processed === pw)?.original
                 );
             });
-    
+
             if (startIndex !== -1) {
                 // Sostituisci le parole corrispondenti con il pittogramma di sistema
                 result.splice(startIndex, phraseWords.length, pictogram);
             }
         }
-    
+
 
 
         // Filtra eventuali null e restituisci i pittogrammi
         return (result.filter((item) => item !== null && !isString(item)) as Pictogram[]).map((p) => {
-            p.url = this.convertLink(this.settings, p.url);
+            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
             return p;
         });
     };
-    
+
 
 
     static importPersonalPictogramFromMessage = (type: string, name: string, message: Api.Message): void => {
@@ -482,14 +536,39 @@ export class Controller {
      * @param url - The URL to convert.
      * @returns The converted URL.
      */
-    private static convertLink(settings: Settings, url: string): string {
+    private static convertLink(settings: Settings, url: string, hair: boolean, skin: boolean): string {
         if (!url.includes('arasaac')) return url;
         if (!url.includes('hair') && !url.includes('skin')) return url;
-        let hair = AAC.hairColorToHex(settings.hairColor);
-        let skin = AAC.skinColorToHex(settings.skinColor);
         let urlArray = url.split('_');
-        urlArray[1] = `hair-${hair}`;
-        urlArray[2] = `skin-${skin}`;
+        if (hair) {
+            let h = AAC.hairColorToHex(settings.hairColor);
+            let hairIndex = urlArray.findIndex(part => part.startsWith('hair-'));
+            if (hairIndex !== -1) {
+                urlArray[hairIndex] = `hair-${h}`;
+            } else {
+                urlArray.splice(1, 0, `hair-${h}`);
+            }
+        } else {
+            urlArray = urlArray.filter(part => !part.startsWith('hair-'));
+        }
+        if (skin) {
+            let s = AAC.skinColorToHex(settings.skinColor);
+            let skinIndex = urlArray.findIndex(part => part.startsWith('skin-'));
+            if (skinIndex !== -1) {
+                urlArray[skinIndex] = `skin-${s}`;
+            } else {
+                if (urlArray.length > 1) {
+                    urlArray.splice(2, 0, `skin-${s}`);
+                } else {
+                    urlArray.splice(1, 0, `skin-${s}`);
+                }
+            }
+        } else {
+            urlArray = urlArray.filter(part => !part.startsWith('skin-'));
+        }
+    
         return urlArray.join('_');
     }
+    
+    
 }

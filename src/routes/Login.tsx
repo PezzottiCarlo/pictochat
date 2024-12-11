@@ -54,9 +54,7 @@ const Login: React.FC = () => {
           if (stringSession) {
             message.success("Login effettuato con successo!");
             Controller.tgApi.setClient(stringSession).then(() => {
-              localStorage.setItem("stringSession", stringSession);
-              Controller.tgApi.getMe().then((me) => {
-                localStorage.setItem("me", JSON.stringify(me));
+              Controller.firstLogin(stringSession).then(() => {
                 setTimeout(() => window.location.reload(), 500);
               });
             });

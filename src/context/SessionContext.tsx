@@ -64,7 +64,6 @@ export const useSession = (): SessionContextProps => {
  * @returns Always returns true.
  */
 export const useIsSetting = (): boolean => {
-    console.log(Controller.getSettings() !== null);
     return (Controller.getSettings() !== null);
 };
 

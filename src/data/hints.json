@@ -1,22 +1,22 @@
 [
     {
         "text": "Dove sei?",
-        "emoji": "👋"
+        "icon": "👋"
     },
     {
         "text": "Cosa fai?",
-        "emoji": "🤔"
+        "icon": "🤔"
     },
     {
         "text": "Usciamo stasera?",
-        "emoji": "🎉"
+        "icon": "🎉"
     },
     {
         "text": "Vieni a casa",
-        "emoji": "😴"
+        "icon": "😴"
     },
     {
         "text": "Ti voglio bene",
-        "emoji": "💕"
+        "icon": "💕"
     }
 ]

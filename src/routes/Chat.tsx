@@ -19,7 +19,6 @@ import { Dialog } from 'telegram/tl/custom/dialog';
 import { updateManager } from '../MyApp';
 import { ChatSendMedia } from '../components/Chat/ChatSendMedia';
 import ChatPictograms from '../components/Chat/ChatPictograms';
-import { PersonalPictogramsCategory } from './PersonalPictograms';
 
 const { Content, Footer } = Layout;
 
@@ -85,9 +84,10 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
             
             //aggiunta setting via messaggio 
             fetchedMessages.forEach((message) => {
-                if (message.message.trim().toLowerCase().includes("oggetto:") && message.media){
+                if (message.message.trim().toLowerCase().includes(":") && message.media){
                     let splitted = message.message.split(":");
-                    Controller.importPersonalPictogramFromMessage((splitted[0].toLowerCase()==="soggetto")?PersonalPictogramsCategory.SOGGETTO:PersonalPictogramsCategory.OGGETTO, splitted[1], message);
+                    console.log(splitted);
+                    Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
                 }
             });
 

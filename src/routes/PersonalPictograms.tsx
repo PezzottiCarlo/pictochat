@@ -6,14 +6,9 @@ import { Controller } from "../lib/Controller";
 const { Content } = Layout;
 const { Option } = Select;
 
-export enum PersonalPictogramsCategory {
-    SOGGETTO = "Soggetto",
-    OGGETTO = "Oggetto",
-}
-
 export interface PersonalPictogram {
     name: string;
-    category: PersonalPictogramsCategory;
+    category: string;
     photoUrl: string;
 }
 
@@ -124,7 +119,7 @@ export const PersonalPictograms: React.FC = () => {
                         name="category"
                         rules={[{ required: true, message: "Seleziona una categoria!" }]}>
                         <Select placeholder="Seleziona una categoria">
-                            {Object.values(PersonalPictogramsCategory).map((category, index) => (
+                            {Controller.getCategories().map((category, index) => (
                                 <Option key={index} value={category}>{category}</Option>
                             ))}
                         </Select>

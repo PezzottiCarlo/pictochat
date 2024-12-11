@@ -6,7 +6,6 @@ import '../../styles/ChatCustomMessage.css';
 import { Pictogram } from '../../lib/AAC';
 import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
-import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 
 interface ChatCustomMessageProps {
     callback: (subjects: Pictogram[], verbs: Pictogram[], objects: Pictogram[]) => void;
@@ -66,7 +65,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
         let items: Pictogram[] = [];
         switch (currentSelection) {
             case 'subjects':
-                items = Controller.getWords(PersonalPictogramsCategory.SOGGETTO)
+                items = Controller.getWords("persone")
                 break;
             case 'verbs':
                 items = Controller.getVerbs();
@@ -74,7 +73,7 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
             case 'objects':
                 const reversedVerbs = selectedPicto.verbs.slice().reverse();
                 reversedVerbs.forEach((verb) => {
-                    const objectsForVerb = Controller.getWords(PersonalPictogramsCategory.OGGETTO, verb.word);
+                    const objectsForVerb = Controller.getWords("oggetti", verb.word);
                     items.push(...objectsForVerb); // Usa lo spread operator per inserire gli oggetti direttamente
                 });
                 break;

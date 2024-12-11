@@ -1,26 +1,22 @@
 [
     {
-        "text": "Ciao, tutto ok?",
+        "text": "Dove sei?",
         "emoji": "👋"
     },
     {
-        "text": "Che fai?",
+        "text": "Cosa fai?",
         "emoji": "🤔"
-    },
-    {
-        "text": "Com'è andata?",
-        "emoji": "😊"
     },
     {
         "text": "Usciamo stasera?",
         "emoji": "🎉"
     },
     {
-        "text": "Mi annoio!",
+        "text": "Vieni a casa",
         "emoji": "😴"
     },
     {
-        "text": "Non vedo l'ora di rivederti!",
-        "emoji": "❤️"
+        "text": "Ti voglio bene",
+        "emoji": "💕"
     }
 ]

@@ -5,10 +5,11 @@ import { TgApi } from "./TgApi";
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Api } from "telegram";
 import { WordsService } from "./WordsService";
-import { PersonalPictogram, PersonalPictogramsCategory } from "../routes/PersonalPictograms";
+import { PersonalPictogram } from "../routes/PersonalPictograms";
 import Utils from "./Utils";
 import { message } from "antd";
 import { Dispatch, SetStateAction } from "react";
+import categories from "../data/categories.json";
 
 export interface Settings {
     fontSize: number;
@@ -24,6 +25,13 @@ export interface PictogramContext {
 
 export class Controller {
 
+    static getCategories = (): string[] => {
+        return Object.keys(categories);
+    }
+
+    static getCategoriesData = (): { [key: string]: string[] } => {
+        return categories;
+    }
 
 
     static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>, callback: (dialog: any, message: string) => void) {
@@ -196,7 +204,7 @@ export class Controller {
             theme: 'light'
         } as Settings;
         let res = settings ? JSON.parse(settings) : null;
-        if(res === null) {
+        if (res === null) {
             Controller.setSettings(defaultSettings);
             return null;
         }
@@ -221,8 +229,8 @@ export class Controller {
      * @param verb - The verb to filter subjects by.
      * @returns The list of subject pictograms.
      */
-    static getWords = (category: PersonalPictogramsCategory,verb?: string): Pictogram[] => {
-        let getted = (category === PersonalPictogramsCategory.SOGGETTO) ? WordsService.getSubjects() : WordsService.getObjects(verb);
+    static getWords = (category: string, verb?: string): Pictogram[] => {
+        let getted = (category === "persone") ? WordsService.getSubjects() : WordsService.getObjects(verb);
         let common = getted.map((p) => {
             p.url = this.convertLink(this.settings, p.url);
             return p;
@@ -251,11 +259,20 @@ export class Controller {
         return WordsService.extractChoices(sentence)
     };
 
-    static searchForCategory = (category: string): Pictogram[] => {
-        return AAC.searchForCategory(category).map((p) => {
-            p.url = this.convertLink(this.settings, p.url);
-            return p;
-        });
+    static searchForCategory = (category: string): { personal: Pictogram[], araasac: Pictogram[] } => {
+        let personal = Controller.getPersonalPictograms()
+        .filter((p) => (p.category).trim().toLocaleLowerCase() === category.trim().toLocaleLowerCase())
+        .map(Utils.personalPictogramToPictogram);
+
+        let r = {
+            personal: personal,
+            araasac: AAC.searchForCategory(category).map((p) => {
+                p.url = this.convertLink(this.settings, p.url);
+                return p;
+            })
+        }
+        console.log(r.personal);
+        return r;
     }
 
     static getAllCategories = (): string[] => {
@@ -332,7 +349,7 @@ export class Controller {
 
         let tmp = cleanedWords.join(' ');
         gw.forEach((word) => {
-            tmp = tmp.replaceAll(" "+word+" ", '');
+            tmp = tmp.replaceAll(" " + word + " ", '');
         });
         cleanedWords = tmp.split(' ').filter((word) => word.length > 1);
 
@@ -417,7 +434,7 @@ export class Controller {
     };
 
 
-    static importPersonalPictogramFromMessage = (type: PersonalPictogramsCategory, name: string, message: Api.Message): void => {
+    static importPersonalPictogramFromMessage = (type: string, name: string, message: Api.Message): void => {
         name = name.trim();
         let pp = this.getPersonalPictograms();
         if (pp.find((p) => p.name.toLowerCase().trim() === name.toLowerCase().trim())) return;

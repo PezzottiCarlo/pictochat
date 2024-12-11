@@ -4,7 +4,6 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
-import { PersonalPictogramsCategory } from '../../routes/PersonalPictograms';
 import Utils from '../../lib/Utils';
 import { Pictogram } from '../../lib/AAC';
 import { WordsService } from '../../lib/WordsService';
@@ -16,33 +15,30 @@ interface ChatPictogramsProps {
 
 const ITEMS_PER_PAGE = 30;
 
-const keywords: { [key: string]: string[] } = {
-    "tempo libero": ["sport", "hobby"],
-    "lavoro": ["education", "professional", "work"],
-    "cibo": ["food", "soda"],
-    "medicina": ["medicine"],
-    "luoghi": ["building"],
-    "verbi": ["usual verbs"],
-    "emozioni": ["emotion", "feeling"],
-    "tempo": ["time"],
-    "oggetti quotidiani": ["object", "hygiene product"],
-};
+const keywords = Controller.getCategoriesData();
 
-const deduplicatePictograms = (pictograms: Pictogram[], levenshteinDistance: boolean): Pictogram[] => {
-    pictograms = pictograms.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+const deduplicatePictograms = (pictograms: Pictogram[], toIgnore: number): Pictogram[] => {
+
+    //pictograms = pictograms.sort((a, b) => new Date(a.created).getTime() - new Date(b.created).getTime());
+    //sort alphabetically
+    //pictograms = pictograms.sort((a, b) => (a.word as string).localeCompare(b.word as string));
 
     const seenWords: string[] = [];
     const seenIds = new Set();
 
+    let i = 0;
     return pictograms.filter(pictogram => {
+        if (i < toIgnore) {
+            i++;
+            return true;
+        }
         if (seenIds.has(pictogram._id)) return false;
         if (seenIds.has(pictogram.word)) return false;
 
-        if (levenshteinDistance) {
-            if (seenWords.some(word => WordsService.levenshteinDistance(word, pictogram.word as string) <= 2)) {
-                return false;
-            }
+        if (seenWords.some(word => WordsService.levenshteinDistance(word, pictogram.word as string) <= 2)) {
+            return false;
         }
+
         seenWords.push(pictogram.word as string);
         seenIds.add(pictogram._id);
         seenIds.add(pictogram.word);
@@ -64,37 +60,25 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
     const fetchPictograms = useCallback((category: string) => {
         setLoading(true);
         setHasMore(true);
+        setDisplayedPictograms([]);
+        setPictograms([]);
 
+        let newPictogramsPersonal: Pictogram[] = [];
         let newPictograms: Pictogram[] = [];
         keywords[category].forEach(keyword => {
             const categoryPictograms = Controller.searchForCategory(keyword);
-            newPictograms = [...newPictograms, ...categoryPictograms];
+            newPictograms = [...newPictograms, ...categoryPictograms.araasac];
+            newPictogramsPersonal = [...newPictogramsPersonal, ...categoryPictograms.personal];
         });
 
-        const uniquePictograms = deduplicatePictograms(newPictograms, true);
+        let mergedPictograms = [...newPictogramsPersonal, ...newPictograms];
+        const uniquePictograms = deduplicatePictograms(mergedPictograms, newPictogramsPersonal.length);
         setPictograms(uniquePictograms);
         setDisplayedPictograms(uniquePictograms.slice(0, ITEMS_PER_PAGE));
         setHasMore(uniquePictograms.length > ITEMS_PER_PAGE);
         setLoading(false);
     }, []);
 
-    // Fetch personal pictograms
-    const fetchPersonalPictograms = useCallback((personalCategory: string) => {
-        setLoading(true);
-        const personalPictograms = Controller.getPersonalPictograms()
-            .filter(p => p.category.toLowerCase() === personalCategory.toLowerCase())
-            .map(Utils.personalPictogramToPictogram);
-
-        const combinedPictograms = deduplicatePictograms([
-            ...personalPictograms,
-            ...Controller.getWords(PersonalPictogramsCategory.SOGGETTO)
-        ], false);
-
-        setPictograms(combinedPictograms);
-        setDisplayedPictograms(combinedPictograms.slice(0, ITEMS_PER_PAGE));
-        setHasMore(combinedPictograms.length > ITEMS_PER_PAGE);
-        setLoading(false);
-    }, []);
 
     // Load more pictograms for infinite scroll
     const loadMorePictograms = useCallback(() => {
@@ -115,13 +99,6 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
         setPictogramModalVisible(true);
     };
 
-    const handlePersonalCategoryClick = (category: string) => {
-        setSelectedCategory(category);
-        setCategoryModalVisible(false);
-        fetchPersonalPictograms(category);
-        setPictogramModalVisible(true);
-    };
-
     const handlePictogramSelect = (pictogram: Pictogram) => {
         callback(pictogram);
         setPictogramModalVisible(false);
@@ -137,11 +114,11 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
 
     return (
         <>
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
-                >
+            >
                 <PlusCircleOutlined
                     style={{ fontSize: '2rem', cursor: 'pointer', color: 'var(--ant-color-primary)' }}
                     onClick={() => setCategoryModalVisible(true)}
@@ -164,21 +141,6 @@ const ChatPictograms: React.FC<ChatPictogramsProps> = ({ callback }) => {
                         >
                             <PictogramImage
                                 picto={(Controller.extractPictograms(category) as Pictogram[])[0]}
-                                width={100}
-                                height={100}
-                            />
-                        </Card>
-                    ))}
-                    {Object.keys(PersonalPictogramsCategory).map(category => (
-                        <Card
-                            key={category}
-                            style={{ cursor: 'pointer', width: '120px', textAlign: 'center' }}
-                            onClick={() => handlePersonalCategoryClick(category)}
-                        >
-                            <PictogramImage
-                                picto={(Controller.extractPictograms(
-                                    category === "SOGGETTO" ? "gente" : "oggetti quotidiani"
-                                ) as Pictogram[])[0]}
                                 width={100}
                                 height={100}
                             />

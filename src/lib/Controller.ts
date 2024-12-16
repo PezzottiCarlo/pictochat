@@ -400,38 +400,53 @@ export class Controller {
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1 && !gw.includes(word));
-
-        // Gestione dei pittogrammi personali (massimo 3 parole)
-        // eslint-disable-next-line array-callback-return
-        let personalPictograms = Controller.getPersonalPictograms();
+    
+        // Inizializza il risultato con le parole pulite
         let result: (Pictogram | string)[] = [...cleanedWords];
+        result = this.estraiPictoPersonali(result);
+        let { result: processedResult, processedWords } = this.estraiVerbiInfiniti(result);
 
+        result = this.estraiPicto(processedResult, processedWords);
+        return (result.filter((item) => item !== null && typeof item !== "string") as Pictogram[]).map((p) => {
+            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
+            return p;
+        });
+    };
+
+    private static estraiPictoPersonali = (result: (Pictogram | string)[]): (Pictogram | string)[] => {
+        let personalPictograms = Controller.getPersonalPictograms();
+        let gw = WordsService.getGarbageWords();
+    
         for (const personalPictogram of personalPictograms) {
             let phraseWords = personalPictogram.name.toLowerCase().split(' ').filter((word) => !gw.includes(word));
             if (phraseWords.length > 3) continue; // Ignora se supera 3 parole
-
+    
             let startIndex = result.findIndex((item, index) => {
                 return typeof item === 'string' && phraseWords.every((pw, offset) =>
                     result[index + offset] && result[index + offset] === pw
                 );
             });
-
+    
             if (startIndex !== -1) {
                 // Sostituisci le parole corrispondenti con il pittogramma personale
                 result.splice(startIndex, phraseWords.length, Utils.personalPictogramToPictogram(personalPictogram));
             }
         }
+    
+        return result;
+    };
 
-        // Estrazione dei verbi all'infinito dalle parole rimaste
+    private static estraiVerbiInfiniti = (result: (Pictogram | string)[]): { result: (Pictogram | string)[], processedWords: { original: string, processed: string }[] } => {
         let remainingWords = result.filter(item => typeof item === 'string') as string[];
         let processedWords: { original: string, processed: string }[] = [];
-
+    
         for (let i = 0; i < remainingWords.length; i++) {
             let word = WordsService.findInfinitive(remainingWords[i]);
             if (!word) {
                 processedWords.push({ original: remainingWords[i], processed: remainingWords[i] });
                 continue;
             }
+    
             if (WordsService.AUSILIAR_VERBS.includes(word)) {
                 let nextWord = remainingWords[i + 1];
                 if (nextWord) {
@@ -443,35 +458,29 @@ export class Controller {
                     }
                 }
             }
+    
             processedWords.push({ original: remainingWords[i], processed: word });
         }
+    
+        let processedResult = result.map(item => {
+            if (typeof item === 'string') {
+                let processedWord = processedWords.find(pw => pw.original === item)?.processed;
+                return processedWord || item;
+            }
+            return item;
+        });
+    
+        return { result: processedResult, processedWords };
+    };
 
-        // Cerca i pittogrammi di sistema per le parole rimaste
+    private static estraiPicto = (result: (Pictogram | string)[], processedWords: { original: string, processed: string }[]): (Pictogram | string)[] => {
         let processedSentence = processedWords.map(w => w.processed).join(' ');
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
 
-        for (const pictogram of foundPictograms) {
-            let phraseWords = (pictogram.word as string).toLowerCase().split(' ');
-            let startIndex = result.findIndex((item, index) => {
-                return typeof item === 'string' && phraseWords.every((pw, offset) =>
-                    result[index + offset] && result[index + offset] === processedWords.find(pwObj => pwObj.processed === pw)?.original
-                );
-            });
-
-            if (startIndex !== -1) {
-                // Sostituisci le parole corrispondenti con il pittogramma di sistema
-                result.splice(startIndex, phraseWords.length, pictogram);
-            }
-        }
-
-
-
-        // Filtra eventuali null e restituisci i pittogrammi
-        return (result.filter((item) => item !== null && !isString(item)) as Pictogram[]).map((p) => {
-            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
-            return p;
-        });
-    };
+        result.push(...foundPictograms);
+    
+        return result;
+    };    
 
 
 

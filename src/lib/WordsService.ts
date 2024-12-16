@@ -24,6 +24,7 @@ export class WordsService {
     static w = words as unknown as WordsData;
     static conjugations = conjugations as Conjugation[];
     static AUSILIAR_VERBS = ["essere", "avere"];
+    static MODAL_VERBS = ["potere", "dovere", "volere"];
     static ARTICLES_DET = [
         "il", "lo", "la", "i", "gli", "le", "l'"
     ]
@@ -242,5 +243,10 @@ export class WordsService {
         }
         return null;
     };
+
+    static isAuxiliaryOrModal = (word: string): boolean => {
+        return WordsService.AUSILIAR_VERBS.includes(word) || WordsService.MODAL_VERBS.includes(word);
+    };
+    
 
 }

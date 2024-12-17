@@ -64,9 +64,13 @@ const Login: React.FC = () => {
           switch (err.code) {
             case 400:
               message.error("Codice di verifica non valido.");
+              //reload page
+              window.location.reload();
               break;
             default:
               message.error("Errore, riprova più tardi.");
+              window.location.reload();
+              break;
           }
         });
     } else {

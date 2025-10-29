@@ -1,12 +1,13 @@
 import "../styles/Login.css";
 import React, { useState, useEffect } from "react";
-import { Layout, Form, Input, Button, Typography, message, Row, Col } from "antd";
-import { motion } from "framer-motion";
+import { Form, Input, Button, Typography, message, Row, Col, Space, Card, Avatar, Divider } from "antd";
+import { motion, AnimatePresence } from "framer-motion";
 import { Controller } from "../lib/Controller";
-import { PhoneOutlined, LockOutlined } from "@ant-design/icons";
+import { PhoneOutlined, CheckCircleFilled, LockOutlined } from "@ant-design/icons";
+import PageLayout from '../components/Other/PageLayout';
+import { router } from './AppRoutes';
 
-const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const Login: React.FC = () => {
   const [phonePrefix, setPhonePrefix] = useState<string>("+41");
@@ -30,7 +31,16 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     validatePhoneNumber();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phonePrefix, phoneNumber]);
+
+  useEffect(() => {
+    // Auto-submit when OTP is complete (5 digits)
+    if (code.length === 5 && isCodeSent) {
+      handleVerifyCode();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
 
   const handleSendCode = () => {
     const fullPhoneNumber = `${phonePrefix}${phoneNumber}`;
@@ -55,7 +65,10 @@ const Login: React.FC = () => {
             message.success("Login effettuato con successo!");
             Controller.tgApi.setClient(stringSession).then(() => {
               Controller.firstLogin(stringSession).then(() => {
-                setTimeout(() => window.location.reload(), 500);
+                // Navigate to Welcome page for first-time setup
+                setTimeout(() => {
+                  router.navigate('/welcomePage');
+                }, 100);
               });
             });
           }
@@ -64,7 +77,6 @@ const Login: React.FC = () => {
           switch (err.code) {
             case 400:
               message.error("Codice di verifica non valido.");
-              //reload page
               window.location.reload();
               break;
             default:
@@ -78,84 +90,184 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleChangeNumber = () => {
+    setIsCodeSent(false);
+    setCode("");
+    setAuthResult(undefined);
+    setPhoneNumber("");
+  };
+
   return (
-    <Layout className="layout">
-      <Content className="content">
+    <PageLayout title="Pictochat" footer={null} fullWidth>
+      <div className="login-wrap">
+        {/* Hero animated */}
         <motion.div
-          className="form-container"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <Title level={2} className="login-title" style={{ textAlign: "center" }}>
-            Pictochat
-          </Title>
-          <Text
-            type="secondary"
-            style={{ textAlign: "center", display: "block", marginBottom: "2rem" }}
-          >
-            Inserisci il tuo numero di telefono per accedere.
-          </Text>
-          <Form layout="vertical">
-            <Form.Item label="Numero di Telefono">
-              <Row gutter={8}>
-                <Col span={6}>
-                  <Input
-                    prefix={<PhoneOutlined />}
-                    value={phonePrefix}
-                    onChange={(e) => setPhonePrefix(e.target.value)}
-                    disabled={isCodeSent}
-                    placeholder="+41"
-                  />
-                </Col>
-                <Col span={18}>
-                  <Input
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    disabled={isCodeSent}
-                    placeholder="es. 76 815 99 577"
-                    accept="number"
-                    autoFocus={true}
-                  />
-                </Col>
-              </Row>
-            </Form.Item>
-
-            {isCodeSent && (
-              <Form.Item label="Codice di Verifica">
-                <Input
-                  prefix={<LockOutlined />}
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Inserisci il codice"
-                />
-              </Form.Item>
-            )}
-
-            <Form.Item>
-              {!isCodeSent ? (
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Button
-                    type="primary"
-                    onClick={handleSendCode}
-                    block
-                    disabled={!isPhoneValid}
-                  >
-                    Invia Codice
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div whileTap={{ scale: 0.95 }}>
-                  <Button type="primary" onClick={handleVerifyCode} block>
-                    Verifica Codice
-                  </Button>
-                </motion.div>
-              )}
-            </Form.Item>
-          </Form>
+          <Space direction="vertical" size={16} style={{ width: '100%', textAlign: 'center' }}>
+            <motion.div
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <Avatar
+                src={`${process.env.PUBLIC_URL}/icon/logo_128x128.png`}
+                size={80}
+                style={{ boxShadow: 'var(--shadow-md)' }}
+              />
+            </motion.div>
+            <div>
+              <Title level={2} style={{ margin: 0, lineHeight: 1.2 }}>
+                Benvenuto
+              </Title>
+              <Paragraph type="secondary" style={{ margin: '8px 0 0', fontSize: 16 }}>
+                Comunica con semplicità: testi e pittogrammi insieme.
+              </Paragraph>
+            </div>
+          </Space>
         </motion.div>
-      </Content>
-    </Layout>
+
+        <Divider />
+
+        {/* Form card animated */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          <Card
+            bordered={false}
+            style={{
+              boxShadow: 'var(--shadow-md)',
+              borderRadius: 16
+            }}
+          >
+            <Form layout="vertical" size="large">
+              <AnimatePresence mode="wait">
+                {!isCodeSent ? (
+                  <motion.div
+                    key="phone-step"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Form.Item label={<Text strong style={{ fontSize: 16 }}>Numero di telefono</Text>}>
+                      <Row gutter={8} wrap={false}>
+                        <Col flex="120px">
+                          <Input
+                            prefix={<PhoneOutlined />}
+                            value={phonePrefix}
+                            onChange={(e) => setPhonePrefix(e.target.value)}
+                            placeholder="+41"
+                            size="large"
+                            style={{ height: 48, fontSize: 17 }}
+                          />
+                        </Col>
+                        <Col flex="auto">
+                          <Input
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder="767 159 957"
+                            autoFocus={true}
+                            size="large"
+                            style={{ height: 48, fontSize: 17 }}
+                          />
+                        </Col>
+                      </Row>
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 0 }}>
+                      <Button
+                        type="primary"
+                        onClick={handleSendCode}
+                        block
+                        disabled={!isPhoneValid}
+                        size="large"
+                        icon={<PhoneOutlined />}
+                        style={{ height: 52, fontSize: 17, fontWeight: 600 }}
+                      >
+                        Invia codice
+                      </Button>
+                    </Form.Item>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="code-step"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Space direction="vertical" size={16} style={{ width: '100%' }}>
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      >
+                        <CheckCircleFilled style={{ fontSize: 48, color: '#52c41a' }} />
+                      </motion.div>
+
+                      <div>
+                        <Title level={4} style={{ margin: 0 }}>Codice inviato!</Title>
+                        <Paragraph type="secondary" style={{ margin: '4px 0 0' }}>
+                          Controlla il tuo telefono o l'app Telegram
+                        </Paragraph>
+                      </div>
+
+                      <Form.Item label={<Text strong style={{ fontSize: 16 }}>Inserisci il codice</Text>} style={{ marginBottom: 12 }}>
+                        <Input.OTP
+                          length={5}
+                          value={code}
+                          onChange={(v) => setCode(v)}
+                          size="large"
+                        />
+                      </Form.Item>
+
+                      <Form.Item style={{ marginBottom: 0 }}>
+                        <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                          <Button
+                            type="primary"
+                            onClick={handleVerifyCode}
+                            block
+                            size="large"
+                            icon={<LockOutlined />}
+                            style={{ height: 52, fontSize: 17, fontWeight: 600 }}
+                          >
+                            Verifica e accedi
+                          </Button>
+                          <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                            <Button type="link" onClick={handleSendCode}>
+                              Reinvia codice
+                            </Button>
+                            <Button type="link" onClick={handleChangeNumber}>
+                              Cambia numero
+                            </Button>
+                          </Space>
+                        </Space>
+                      </Form.Item>
+                    </Space>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Form>
+          </Card>
+        </motion.div>
+
+        {/* Footer animated */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+          style={{ textAlign: 'center', marginTop: 16 }}
+        >
+          <Text type="secondary" style={{ fontSize: 14 }}>
+            Accedendo, accetti le nostre linee guida di utilizzo.
+          </Text>
+        </motion.div>
+      </div>
+    </PageLayout>
   );
 };
 

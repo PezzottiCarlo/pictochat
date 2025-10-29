@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { List, Input, Skeleton, Button, Space, Tabs, Typography, message, Flex, Layout } from 'antd';
-import { EyeOutlined, EyeInvisibleOutlined, MessageOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import React, { useEffect, useState, useMemo } from 'react';
+import { List, Input, Skeleton, Button, Space, Tooltip, message } from 'antd';
+import { EyeOutlined, EyeInvisibleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dialog } from 'telegram/tl/custom/dialog';
 import DialogItem from '../components/DialogItem/DialogItem';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Controller } from '../lib/Controller';
-import { router } from './AppRoutes';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
+import PageLayout from '../components/Other/PageLayout';
 import { updateManager } from '../MyApp';
-import { Api } from 'telegram/tl/api';
 
-const { Search } = Input;
-const { Title } = Typography;
+// No local Title usage here because PageLayout renders it
 
 const Contacts: React.FC = () => {
     const [contactsData, setContactsData] = useState<Dialog[]>([]);
@@ -21,6 +19,13 @@ const Contacts: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [showGroups, setShowGroups] = useState<boolean>(true);
 
+    const baseFiltered = useMemo(() => {
+        const q = searchQuery.toLowerCase();
+        return contactsData.filter(contact => {
+            const name = (contact.name as string | undefined)?.toLowerCase() || '';
+            return name.includes(q) && (showGroups || !contact.isGroup);
+        });
+    }, [contactsData, searchQuery, showGroups]);
 
     useEffect(() => {
         updateManager.set("contacts", (update, type) => {
@@ -34,7 +39,6 @@ const Contacts: React.FC = () => {
         let isMounted = true;
         const fetchContacts = async () => {
             try {
-
                 setLoading(true);
                 let dialogs = await Controller.getDialogs((dialogs) => {
                     setContactsData(dialogs);
@@ -60,89 +64,95 @@ const Contacts: React.FC = () => {
     }, []);
 
     const loadMoreData = () => {
-        const filtered = contactsData.filter(contact =>
-            (contact.name as string).toLowerCase().includes(searchQuery.toLowerCase()) &&
-            (showGroups || !contact.isGroup)
-        );
-
-        if (filteredContacts.length >= filtered.length) {
+        const start = filteredContacts.length;
+        const nextChunk = baseFiltered.slice(start, start + 10);
+        if (nextChunk.length === 0) {
             setHasMore(false);
             return;
         }
-
-        setFilteredContacts(prev => [
-            ...prev,
-            ...filtered.slice(prev.length, prev.length + 10)
-        ]);
+        setFilteredContacts(prev => [...prev, ...nextChunk]);
+        if (start + nextChunk.length >= baseFiltered.length) {
+            setHasMore(false);
+        }
     };
 
     useEffect(() => {
-        const filtered = contactsData.filter(contact =>
-            (contact.name as string).toLowerCase().includes(searchQuery.toLowerCase()) &&
-            (showGroups || !contact.isGroup)
-        );
+        setFilteredContacts(baseFiltered.slice(0, 10));
+        setHasMore(baseFiltered.length > 10);
+    }, [baseFiltered]);
 
-        setFilteredContacts(filtered.slice(0, 10));
-        setHasMore(filtered.length > 10);
-    }, [searchQuery, contactsData, showGroups]);
-
-    const handleSearch = (value: string) => {
-        setSearchQuery(value);
-    };
-
-    const toggleShowGroups = () => {
-        setShowGroups(prev => !prev);
-    };
+    const handleSearch = (value: string) => setSearchQuery(value);
+    const toggleShowGroups = () => setShowGroups(prev => !prev);
 
     return (
-        <Layout style={{ height: '100vh', display: "flex", flexDirection: 'column' }}>
-            <div
-                id="scrollableDiv"
-                style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    padding: '0 16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <div style={{ textAlign: 'left' }}>
-                    <Title level={2}>Chats</Title>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Search
-                        placeholder="Search contacts"
-                        enterButton
-                        onSearch={handleSearch}
+        <PageLayout title="Contatti" footer={<CustomFooter activeTab={1} />} fullWidth>
+            <div style={{ padding: 0 }}>
+                <Space size={12} align="center" style={{ display: 'flex', width: '100%', marginBottom: 8 }}>
+                    <Input
+                        allowClear
+                        prefix={<SearchOutlined style={{ fontSize: 18, color: 'var(--ios-text-secondary)' }} />}
+                        placeholder="Cerca contatti..."
+                        value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        style={{ marginRight: '10px', flex: 1 }}
+                        size="large"
+                        style={{ 
+                            flex: 1, 
+                            height: 48, 
+                            fontSize: 17,
+                            borderRadius: 12,
+                            background: 'var(--surface)'
+                        }}
                     />
-                    <Button
-                        type="default"
-                        onClick={toggleShowGroups}
-                        icon={showGroups ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                        shape="circle"
-                    />
-                </div>
+                    <Tooltip title={showGroups ? 'Nascondi gruppi' : 'Mostra tutti'}>
+                        <Button
+                            type="default"
+                            onClick={toggleShowGroups}
+                            icon={showGroups ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                            size="large"
+                            style={{ 
+                                width: 48, 
+                                height: 48, 
+                                fontSize: 20,
+                                borderRadius: 12
+                            }}
+                            aria-label={showGroups ? 'Nascondi gruppi' : 'Mostra tutti'}
+                        />
+                    </Tooltip>
+                </Space>
 
                 <InfiniteScroll
+                    key={`${searchQuery}-${showGroups}-${contactsData.length}`}
                     dataLength={filteredContacts.length}
                     next={loadMoreData}
                     hasMore={hasMore}
                     loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
                     scrollableTarget="scrollableDiv"
+                    scrollThreshold={0.9}
                 >
                     <List
                         itemLayout="horizontal"
                         dataSource={filteredContacts}
-                        renderItem={(item) => <DialogItem key={item.id?.toString()} dialog={item} />}
+                        renderItem={(item) => (
+                            <DialogItem
+                                key={item.id?.toString()}
+                                dialog={item}
+                                avatarSize={64}
+                                titleSize={18}
+                                descSize={15}
+                                timeSize={14}
+                            />
+                        )}
                         loading={loading}
+                        style={{ 
+                            background: 'transparent', 
+                            borderRadius: 0, 
+                            padding: 0, 
+                            boxShadow: 'none' 
+                        }}
                     />
                 </InfiniteScroll>
             </div>
-            <CustomFooter activeTab={1} />
-        </Layout >
+        </PageLayout>
     );
 };
 

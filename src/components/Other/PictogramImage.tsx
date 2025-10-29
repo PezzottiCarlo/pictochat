@@ -24,7 +24,9 @@ export const PictogramImage: React.FC<PictogramProps> = ({ picto, style={objectF
                 width={width || 200}
                 height={height || 200}
                 preview={false}
-                style={style}
+                // @ts-ignore: loading is forwarded to underlying img
+                loading="lazy"
+                style={{ contentVisibility: 'auto', containIntrinsicSize: `${height || 200}px ${width || 200}px`, ...style }}
             />
             {text && <span style={{ fontSize: '.7rem' }}>{picto.word}</span>}
         </div>

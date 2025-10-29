@@ -1,13 +1,12 @@
-import "../styles/Profile.css";
-
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Avatar, Button, Typography, Skeleton, Space, Divider,
-    Row, Col, Layout, message
+    Avatar, Button, Typography, Skeleton, Space, Card, message
 } from 'antd';
 import { UserOutlined, PhoneOutlined, LogoutOutlined } from '@ant-design/icons';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { CustomFooter } from '../components/CustomFooter/CustomFooter';
+import PageLayout from '../components/Other/PageLayout';
 import { Controller, Settings } from '../lib/Controller';
 import { Api } from 'telegram/tl/api';
 import DialogAvatar from '../components/DialogItem/DialogAvatar';
@@ -105,76 +104,181 @@ const Profile: React.FC = () => {
 
     if (loading) {
         return (
-            <Layout>
-                <Skeleton avatar paragraph={{ rows: 3 }} active />
-            </Layout>
+            <PageLayout title="Profilo" footer={<CustomFooter activeTab={2} />}>
+                <Space direction="vertical" size="large" style={{ width: '100%' }}>
+                    <Card style={{ background: 'var(--surface)', borderRadius: 16, padding: 16 }}>
+                        <Skeleton avatar={{ size: 150 }} paragraph={{ rows: 2 }} active />
+                    </Card>
+                    <Card style={{ background: 'var(--surface)', borderRadius: 16, padding: 16 }}>
+                        <Skeleton paragraph={{ rows: 3 }} active />
+                    </Card>
+                </Space>
+            </PageLayout>
         );
     }
 
     return (
-        <Layout>
-            <div className="profile-container">
-                <div className="profile-header">
-                    <Title level={2} style={{ margin: 0 }}>Profilo</Title>
-                    <LogoutOutlined
-                        style={{ fontSize: '24px', cursor: 'pointer' }}
-                        onClick={() => navigate('/logout')}
-                    />
-                </div>
+        <PageLayout
+            title="Profilo"
+            headerExtra={(
+                <Button
+                    type="text"
+                    size="large"
+                    icon={<LogoutOutlined style={{ fontSize: '24px' }} />}
+                    onClick={() => navigate('/logout')}
+                    aria-label="Esci"
+                />
+            )}
+            footer={<CustomFooter activeTab={2} />}
+        >
+            <Space direction="vertical" size="large" style={{ display: 'flex', width: '100%' }}>
+                {/* User Info Card */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
+                    <Card 
+                        style={{ 
+                            background: 'var(--surface)', 
+                            borderRadius: 16, 
+                            boxShadow: 'var(--shadow-md)',
+                            border: 'none'
+                        }}
+                    >
+                        <Space direction="vertical" size="middle" style={{ width: '100%', textAlign: 'center' }}>
+                            <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-around', 
+                                alignItems: 'center',
+                                gap: 16,
+                                flexWrap: 'wrap',
+                                padding: '8px 0'
+                            }}>
+                                {avatar}
+                                <DialogAvatar
+                                    imageBuffer={null}
+                                    name={user?.username || ''}
+                                    size={100}
+                                    badge={false}
+                                    unreadedMessages={0}
+                                    aac={true}
+                                    hairColor={settings?.hairColor}
+                                    skinColor={settings?.skinColor}
+                                />
+                            </div>
+                            <div>
+                                <Title level={3} style={{ margin: '8px 0 4px', fontSize: 24, fontWeight: 600 }}>
+                                    {user?.firstName} {user?.lastName}
+                                </Title>
+                                <Text type="secondary" style={{ fontSize: 16, display: 'block', marginBottom: 4 }}>
+                                    @{user?.username}
+                                </Text>
+                                <Text type="secondary" style={{ fontSize: 15 }}>
+                                    <PhoneOutlined /> {user?.phone}
+                                </Text>
+                            </div>
+                        </Space>
+                    </Card>
+                </motion.div>
 
-                <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
-                    <Row gutter={24}>
-                        <Col className="profile-avatar-container"  xs={24} sm={8} md={6} lg={4}>
-                            {avatar}
-                            <DialogAvatar
-                                imageBuffer={null}
-                                name={user?.username || ''}
-                                size={150}
-                                badge={false}
-                                unreadedMessages={0}
-                                aac={true}
-                                hairColor={settings?.hairColor}
-                                skinColor={settings?.skinColor}
-                            />
-                        </Col>
-                        <Divider />
-                        <Col xs={24} sm={16} md={18} lg={20}>
-                            <Title level={3} style={{ margin: 0 }}>
-                                {user?.firstName} {user?.lastName}
-                            </Title>
-                            <Text type="secondary">@{user?.username}</Text>
-                            <br />
-                            <Text type="secondary">
-                                <PhoneOutlined /> {user?.phone}
-                            </Text>
-                        </Col>
-                    </Row>
-                    <Divider />
-                    <Title level={3}>Impostazioni</Title>
-                    <CharacterManager
-                        callback={handleCharacter}
-                        currentHairColor={settings?.hairColor}
-                        currentSkinColor={settings?.skinColor}
-                    />
-                    <Divider />
-                    <HintsManager
-                        callback={handleHints}
-                        currentHints={Controller.getHints() || []}
-                    />
-                    <Divider />
-                    <FontManager
-                        callback={handleFontSize}
-                        currentFontSize={settings?.fontSize || 14}
-                    />
-                    <Divider />
-                    <ThemeManager
-                        callback={handleTheme}
-                        currentTheme={settings?.theme || 'light'}
-                    />
-                </Space>
-            </div>
-            <CustomFooter activeTab={2} />
-        </Layout>
+                {/* Settings Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                >
+                    <Title level={4} style={{ fontSize: 20, fontWeight: 600, marginBottom: 16, marginLeft: 4 }}>
+                        Impostazioni
+                    </Title>
+                </motion.div>
+
+                {/* Character Manager */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.15 }}
+                >
+                    <Card 
+                        style={{ 
+                            background: 'var(--surface)', 
+                            borderRadius: 16, 
+                            boxShadow: 'var(--shadow-sm)',
+                            border: 'none'
+                        }}
+                    >
+                        <CharacterManager
+                            callback={handleCharacter}
+                            currentHairColor={settings?.hairColor}
+                            currentSkinColor={settings?.skinColor}
+                        />
+                    </Card>
+                </motion.div>
+
+                {/* Hints Manager */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                >
+                    <Card 
+                        style={{ 
+                            background: 'var(--surface)', 
+                            borderRadius: 16, 
+                            boxShadow: 'var(--shadow-sm)',
+                            border: 'none'
+                        }}
+                    >
+                        <HintsManager
+                            callback={handleHints}
+                            currentHints={Controller.getHints() || []}
+                        />
+                    </Card>
+                </motion.div>
+
+                {/* Font Manager */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.25 }}
+                >
+                    <Card 
+                        style={{ 
+                            background: 'var(--surface)', 
+                            borderRadius: 16, 
+                            boxShadow: 'var(--shadow-sm)',
+                            border: 'none'
+                        }}
+                    >
+                        <FontManager
+                            callback={handleFontSize}
+                            currentFontSize={settings?.fontSize || 14}
+                        />
+                    </Card>
+                </motion.div>
+
+                {/* Theme Manager */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3 }}
+                >
+                    <Card 
+                        style={{ 
+                            background: 'var(--surface)', 
+                            borderRadius: 16, 
+                            boxShadow: 'var(--shadow-sm)',
+                            border: 'none'
+                        }}
+                    >
+                        <ThemeManager
+                            callback={handleTheme}
+                            currentTheme={settings?.theme || 'light'}
+                        />
+                    </Card>
+                </motion.div>
+            </Space>
+        </PageLayout>
     );
 };
 

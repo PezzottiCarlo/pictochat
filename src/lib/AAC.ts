@@ -66,10 +66,14 @@ export interface Pictogram {
     url: string;
     created: string;
 }
-
+ 
 export class AAC {
     language: string;
     static pictograms: Pictogram[] = allPictrograms as Pictogram[];
+    private static infoCache: Map<number, Pictogram> = new Map();
+    private static imageCache: Map<string, Pictogram> = new Map(); // key `${id}:${color}:${skin}:${hair}`
+    private static searchCache: Map<string, Pictogram[]> = new Map(); // key `${lang}:${normal}:${keyword}`
+    private static LRU_LIMIT = 200;
 
     /**
      * Constructs an instance of AAC.
@@ -192,7 +196,9 @@ export class AAC {
      */
     searchKeyword: (keyword: string, normal: boolean) => Promise<Pictogram[]> = async (keyword = '', normal = true) => {
         if (keyword === '') return [];
-        let res = await fetch(`https://api.arasaac.org/api/pictograms/${this.language}/${(normal)?"search":"bestsearch"}/${keyword}`, {
+        const cacheKey = `${this.language}:${normal}:${keyword.toLowerCase().trim()}`;
+        if (AAC.searchCache.has(cacheKey)) return AAC.searchCache.get(cacheKey) as Pictogram[];
+        let res = await fetch(`https://api.arasaac.org/api/pictograms/${this.language}/${(normal) ? "search" : "bestsearch"}/${keyword}`, {
             "headers": {
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             },
@@ -209,6 +215,8 @@ export class AAC {
                 keywords: pictogram.keywords
             }
         });
+        if (AAC.searchCache.size > AAC.LRU_LIMIT) AAC.searchCache.clear();
+        AAC.searchCache.set(cacheKey, result);
         return result;
     }
 
@@ -218,6 +226,7 @@ export class AAC {
      * @returns A promise that resolves to a pictogram.
      */
     getInfoFromId: (id: number) => Promise<Pictogram> = async (id = 0) => {
+        if (AAC.infoCache.has(id)) return AAC.infoCache.get(id) as Pictogram;
         let res = await fetch(`https://api.arasaac.org/api/pictograms/${this.language}/${id}`, {
             "headers": {
                 "Accept": "*/*",
@@ -225,7 +234,10 @@ export class AAC {
             "method": "GET",
         })
         let data = await res.json();
-        return data as Pictogram;
+        const pic = data as Pictogram;
+        if (AAC.infoCache.size > AAC.LRU_LIMIT) AAC.infoCache.clear();
+        AAC.infoCache.set(id, pic);
+        return pic;
     }
 
     /**
@@ -237,6 +249,8 @@ export class AAC {
      * @returns A promise that resolves to a pictogram with the image URL.
      */
     getImageFromId: (id: number, color: boolean, skin: SkinColor, hair: HairColor) => Promise<Pictogram> = async (id = 0, color = true, skin = SkinColor.ASSIAN, hair = HairColor.RED) => {
+        const key = `${id}:${color}:${skin}:${hair}`;
+        if (AAC.imageCache.has(key)) return AAC.imageCache.get(key) as Pictogram;
         let res = await fetch(`https://api.arasaac.org/v1/pictograms/${id}?plural=false&color=${color}&skin=${skin.toString()}&hair=${hair.toString()}&url=true&download=false`, {
             "headers": {
                 "Accept": "*/*",
@@ -246,6 +260,8 @@ export class AAC {
         let imageUrl = (await res.json()).image;
         let pictogram: Pictogram = await this.getInfoFromId(id);
         pictogram.url = imageUrl;
+        if (AAC.imageCache.size > AAC.LRU_LIMIT) AAC.imageCache.clear();
+        AAC.imageCache.set(key, pictogram);
         return pictogram;
     }
 

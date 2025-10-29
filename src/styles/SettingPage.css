@@ -1,90 +1,66 @@
-/* Stile generale per la pagina delle impostazioni */
+/* Settings & Welcome pages - iOS style */
 .settings-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	background: var(--ios-gray-bg);
+	padding: 20px;
 }
 
 .settings-content {
-    width: 90%;
-    /* Usare il 90% della larghezza dello schermo per contenere il contenuto */
-    max-width: 400px;
-    /* Limite massimo di larghezza */
-    text-align: center;
+	width: 90%;
+	max-width: 500px;
+	text-align: center;
 }
 
-h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
+.ok-content,
+.welcome-content {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	gap: 20px;
 }
 
-.ok-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .checkmark-container {
-    width: 100px;
-    height: 100px;
-    background-color: #52c41a; /* Verde */
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    animation: popIn 0.5s ease-out; /* Animazione di apparizione */
-  }
+.checkmark-container {
+	width: 120px;
+	height: 120px;
+	background: var(--ios-green);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: var(--shadow-lg);
+	animation: popIn 0.5s ease-out;
+}
 
-  .welcome-content{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .checkmark {
-    font-size: 60px;
-    color: white;
-    animation: scaleUp 0.3s ease-in-out; /* Animazione del simbolo */
-  }
-  
-  h2 {
-    font-size: 32px;
-    margin-top: 10px;
-  }
-  
-  p {
-    font-size: 18px;
-    color: #555;
-    margin-top: 10px;
-  }
-  
-  /* Animazione di apparizione */
-  @keyframes popIn {
-    0% {
-      transform: scale(0.5);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
-  /* Animazione di ingrandimento del segno di spunta */
-  @keyframes scaleUp {
-    0% {
-      transform: scale(0.5);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
+.checkmark {
+	font-size: 70px;
+	color: white;
+	animation: scaleUp 0.3s ease-in-out;
+}
+
+@keyframes popIn {
+	0% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+@keyframes scaleUp {
+	0% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}

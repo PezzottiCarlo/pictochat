@@ -10,21 +10,27 @@ interface FooterProps {
 export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
     return (
         <Tabs
+            className="footer-tabs"
             defaultActiveKey={activeTab.toString()}
             centered
             tabBarStyle={{
                 position: 'fixed',
-                paddingBottom: "1rem",
-                bottom: -17,
-                width: '100%',
+                padding: "8px 0 calc(8px + env(safe-area-inset-bottom))",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                width: '100vw',
                 zIndex: 1000,
-                backdropFilter: 'blur(10px)'
+                backdropFilter: 'blur(10px)',
+                backgroundColor: 'rgba(255, 255, 255, 0.35)',
+                borderTop: '1px solid rgba(0,0,0,0.06)',
+                boxShadow: '0 -4px 20px rgba(0,0,0,0.08)'
             }}
             items={[
                 {
                     key: '1',
                     label: (
-                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
+                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px', color: activeTab === 1 ? 'var(--ios-blue)' : 'var(--ios-text-secondary)' }}>
                             <MessageOutlined />
                         </Space>
                     ),
@@ -32,7 +38,7 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                 {
                     key: '2',
                     label: (
-                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
+                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px', color: activeTab === 2 ? 'var(--ios-blue)' : 'var(--ios-text-secondary)' }}>
                             <UserOutlined />
                         </Space>
                     ),
@@ -40,7 +46,7 @@ export const CustomFooter: React.FC<FooterProps> = ({ activeTab }) => {
                 {
                     key: '3',
                     label: (
-                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px' }}>
+                        <Space direction="vertical" align="center" style={{ fontSize: '24px', margin: '0 20px', color: activeTab === 3 ? 'var(--ios-blue)' : 'var(--ios-text-secondary)' }}>
                             <TranslationOutlined />
                         </Space>
                     ),

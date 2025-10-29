@@ -8,7 +8,7 @@ import { Controller } from '../lib/Controller';
 interface SessionContextProps {
     session: StringSession | null;
     setSession: (session: StringSession | null) => void;
-    logout: () => void; 
+    logout: () => void;
 }
 
 /**
@@ -37,6 +37,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSession(null);
         await Controller.dropDatabase();
         localStorage.removeItem('stringSession');
+        localStorage.removeItem('welcomeCompleted');
     };
 
     return (
@@ -74,15 +75,15 @@ export const useIsSetting = (): boolean => {
 export const useIsAuthenticated = (): boolean => {
     const { session } = useSession();
     if (session === null) {
-      return false;
+        return false;
     }
-  
+
     const savedSession = localStorage.getItem('stringSession') as string;
     try {
-      StringSession.decode(savedSession);
-      new StringSession(savedSession);
+        StringSession.decode(savedSession);
+        new StringSession(savedSession);
     } catch (error) {
-      return false;
+        return false;
     }
     return true;
-  };
+};

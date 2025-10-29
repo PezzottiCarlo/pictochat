@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from 'react';
-import { Layout, Input, Button, List, Skeleton, Popover, Row, Col, Empty } from 'antd';
-import { BulbFilled, PlusOutlined, SendOutlined } from '@ant-design/icons';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Layout, Input, Button, List, Skeleton, Popover, Empty } from 'antd';
+import { BulbFilled, SendOutlined } from '@ant-design/icons';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useParams } from 'react-router-dom';
 import bigInt from 'big-integer';
-import { motion } from 'framer-motion';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ChatBubble from '../components/ChatBubble/ChatBubble';
 import ChatHeader from '../components/Chat/ChatHeader';
 import ChatHints from '../components/Chat/ChatHintsText';
 import ChatHintsPicto from '../components/Chat/ChatHintsPicto';
 import { Api } from 'telegram';
-import { Pictogram, HairColor, SkinColor } from '../lib/AAC';
+import { Pictogram } from '../lib/AAC';
 import "../styles/Chat.css";
 import { Controller } from '../lib/Controller';
 import ChatCustomMessage from '../components/Chat/ChatCustomMessagge';
@@ -42,7 +42,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     const [pictoHints, setPictoHints] = useState<Map<number, Pictogram>>(new Map());
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(true);
-    const [prevScrollTop, setPrevScrollTop] = useState(0);
+    const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [media, setMedia] = useState<File>();
 
     
@@ -62,95 +62,151 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     }, []);
 
     useEffect(() => {
+        const isSameDialog = (m: Api.Message) => {
+            const peer: any = (m as any).peerId || {};
+            const did = dialog.id as bigInt.BigInteger;
+            const uid: bigInt.BigInteger | undefined = peer.userId;
+            const cid: bigInt.BigInteger | undefined = peer.channelId;
+            const chatId: bigInt.BigInteger | undefined = peer.chatId;
+            return (
+                (uid && (uid as any).equals?.(did)) ||
+                (cid && (cid as any).equals?.(did)) ||
+                (chatId && (chatId as any).equals?.(did))
+            );
+        };
+
         updateManager.set("chat", (update, type) => {
-            let mes = update.message as Api.Message;
-            if (!mes || !mes.fromId) return;
-            if (((mes.fromId as any).userId as bigInt.BigInteger).equals(dialog.id as bigInt.BigInteger)) {
-                setMessages((prevMessages) => [...prevMessages, mes]);
+            const mes = update.message as Api.Message;
+            if (!mes || (mes as any).className !== 'Message') return;
+            if (!isSameDialog(mes)) return;
+
+            setMessages(prev => {
+                const exists = prev.some(p => (p as any).id === (mes as any).id);
+                if (exists) return prev;
+                const next = [...prev, mes].sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+                return next;
+            });
+            // cache the incoming message
+            try { Controller.storage.addMessage(mes); } catch {}
+            // auto-scroll only if user is near bottom
+            const container = contentRef.current;
+            if (container) {
+                const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+                if (nearBottom) requestAnimationFrame(scrollToBottom);
             }
             fetchPictogramsHints([mes]);
         });
-    }, [messages, dialog, fetchPictogramsHints]);
+        // only depend on dialog id and callback reference
+    }, [dialog.id, fetchPictogramsHints]);
 
     useEffect(() => {
+        // load cache-first immediately
         fetchMessages().then(scrollToBottom);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatId, fetchPictogramsHints]);
 
     const fetchMessages = async () => {
+        // Cache-first: use Controller to get cached messages immediately, then it refreshes in background
+        setLoading(true);
         try {
-            let fetchedMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
-            fetchedMessages = fetchedMessages.filter((message) => message.className === "Message");
-            
-            //aggiunta setting via messaggio 
-            fetchedMessages.forEach((message) => {
-                let somethingNew = Controller.readPersonalPictogram(message)
-                if (somethingNew) {
-                    fetchPictogramsHints(messages);
-                }
-                
+            const fetched = await Controller.getMessages(chatId, messageBatchSize);
+            const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
+            // Ensure ascending by id for consistent rendering with inverse scroll
+            const sortedAsc = [...onlyMessages].sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+
+            // process potential personal pictograms
+            sortedAsc.forEach((message) => {
+                const somethingNew = Controller.readPersonalPictogram(message);
+                if (somethingNew) fetchPictogramsHints(sortedAsc);
             });
 
-            if (fetchedMessages.length < messageBatchSize) {
-                setHasMore(false);
-            }
-            setMessages(fetchedMessages.reverse());
+            // Do not prematurely disable hasMore based on cache size; older messages might still exist remotely
+            setMessages(sortedAsc);
             setLoading(false);
-            fetchPictogramsHints(fetchedMessages);
+            fetchPictogramsHints(sortedAsc);
+
+            // One-time immediate sync from network to avoid stale state on first entry
+            // This complements Controller's background refresh (which updates DB) by updating UI state now
+            (async () => {
+                try {
+                    const fresh = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize });
+                    const freshOnly = fresh.filter((m: any) => m.className === 'Message');
+                    const freshAsc = [...freshOnly].sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+                    setHasMore(freshOnly.length >= messageBatchSize);
+                    setMessages(prev => {
+                        const existing = new Set(prev.map((p: any) => p.id));
+                        const merged = [...prev, ...freshAsc.filter((m: any) => !existing.has(m.id))];
+                        return merged.sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+                    });
+                } catch {}
+            })();
         } catch (error) {
             console.error('Failed to fetch messages:', error);
+            setLoading(false);
         }
     };
 
     const fetchMoreMessages = useCallback(async () => {
         if (!messages.length || !contentRef.current) return;
-        setPrevScrollTop(contentRef.current.scrollTop);
+        
+        const container = contentRef.current;
+        const oldScrollHeight = container.scrollHeight;
+        const oldScrollTop = container.scrollTop;
+        
         const lastMessageId = messages[0]?.id;
         try {
-            const moreMessages = await Controller.tgApi.getMessages(chatId, { limit: messageBatchSize, max_id: lastMessageId });
-            setMessages(prevMessages => [...moreMessages.reverse(), ...prevMessages]);
+            setLoadingMore(true);
+            // cache-first older page
+            const onlyMessages = await Controller.getOlderMessages(chatId, lastMessageId, messageBatchSize);
+            if (onlyMessages.length === 0) {
+                setHasMore(false);
+                return;
+            }
+            const sortedAsc = [...onlyMessages].sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+            setMessages(prevMessages => {
+                const existing = new Set(prevMessages.map((p: any) => p.id));
+                const toAdd = sortedAsc.filter((m: any) => !existing.has(m.id));
+                return [...toAdd, ...prevMessages];
+            });
+            
+            // Mantieni la posizione di scroll dopo il caricamento
             setTimeout(() => {
-                if (contentRef.current) {
-                    contentRef.current.scrollTop = prevScrollTop;
-                    console.log('Scrolling to:', prevScrollTop);
+                if (container) {
+                    const newScrollHeight = container.scrollHeight;
+                    const scrollDiff = newScrollHeight - oldScrollHeight;
+                    container.scrollTop = oldScrollTop + scrollDiff;
                 }
-            }, 0);
+            }, 100);
         } catch (error) {
             console.error('Failed to fetch more messages:', error);
+        } finally {
+            setLoadingMore(false);
         }
-    }, [messages, chatId, prevScrollTop]);
+    }, [messages, chatId]);
 
 
 
     const handleSend = async () => {
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() && !media) return;
 
-        if (media) {
-            Controller.sendMedia(chatId, media, inputValue).then((update) => {
-                fetchMessages();
-            });
-        }
-
-        const tempMessage: Api.Message = {
-            id: Math.random(),
-            message: inputValue,
-            date: Math.floor(Date.now() / 1000),
-            out: true,
-            fromId: { userId: 1 },
-            peerId: { channelId: 1 },
-
-        } as unknown as Api.Message;
-
-        setMessages(prevMessages => [...prevMessages, tempMessage]);
-        scrollToBottom();
+        const textToSend = inputValue;
         setInputValue('');
 
-        if (media) {
-            setMedia(undefined)
-            return;
-        }
-
         try {
-            await Controller.tgApi.sendMessage(chatId, inputValue);
+            if (media) {
+                await Controller.sendMedia(chatId, media, textToSend);
+                setMedia(undefined);
+                // Refresh messages after media upload
+                setTimeout(() => {
+                    fetchMessages().then(scrollToBottom);
+                }, 500);
+            } else {
+                const sent = await Controller.tgApi.sendMessage(chatId, textToSend);
+                if (sent) {
+                    setMessages((prev) => [...prev, sent]);
+                    requestAnimationFrame(scrollToBottom);
+                }
+            }
         } catch (error) {
             console.error('Failed to send message:', error);
         }
@@ -182,11 +238,9 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     }
 
     const scrollToBottom = () => {
-        setTimeout(() => {
-            if (contentRef.current) {
-                contentRef.current.scrollTop = contentRef.current.scrollHeight;
-            }
-        }, 0);
+        if (contentRef.current) {
+            contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
     };
 
 
@@ -197,16 +251,18 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
     }
 
     return (
-        <Layout style={{ height: '100vh' }}>
+        <Layout style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--ios-gray-bg)' }}>
             <ChatHeader id={chatId} />
             <Content
                 id="scrollableDiv"
                 style={{
-                    padding: '0.5rem',
-                    overflowY: 'scroll',
+                    padding: '12px 8px',
+                    overflowY: 'auto',
                     overflowX: 'hidden',
                     display: 'flex',
-                    flexDirection: 'column-reverse',
+                    flexDirection: 'column',
+                    background: 'var(--ios-gray-bg)',
+                    flex: 1,
                 }}
                 ref={contentRef}
             >
@@ -214,72 +270,138 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                     dataLength={messages.length}
                     next={fetchMoreMessages}
                     hasMore={hasMore}
-                    inverse={true}
-                    loader={
-                        !loading &&
-                        <Skeleton paragraph={{ rows: 0 }} active round />
-                    }
+                    inverse={false}
+                    loader={loadingMore ? <Skeleton paragraph={{ rows: 1 }} active /> : undefined}
                     scrollableTarget="scrollableDiv"
                     style={{
                         display: 'flex',
-                        flexDirection: 'column-reverse',
+                        flexDirection: 'column',
+                        overflow: 'visible',
                     }}
                 >
-                    <List
-                        loading={loading}
-                        itemLayout="horizontal"
-                        locale={{
-                            emptyText: <Empty description={null} image={null} />
-                        }}
-                        dataSource={messages}
-                        renderItem={item => <ChatBubble message={item} name={getName(item)} chatWith={dialog.id as bigInt.BigInteger} />}
-                        className='chat-list'
-                    />
+                    {loading && messages.length === 0 ? (
+                        <div style={{ padding: '8px 12px' }}>
+                            <Skeleton active paragraph={{ rows: 2 }} title={false} />
+                        </div>
+                    ) : (
+                        <List
+                            itemLayout="horizontal"
+                            locale={{
+                                emptyText: <Empty description="Nessun messaggio" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                            }}
+                            dataSource={messages}
+                            renderItem={item => (
+                                <ChatBubble
+                                    key={(item as any).id}
+                                    message={item}
+                                    name={getName(item)}
+                                    chatWith={dialog.id as bigInt.BigInteger}
+                                />
+                            )}
+                            className='chat-list'
+                            style={{ background: 'transparent', border: 0 }}
+                        />
+                    )}
                 </InfiniteScroll>
             </Content>
 
-            <Footer style={{ padding: '0.5rem', paddingBottom: '1.5rem' }}>
-                <Row justify="center" align="middle" style={{ marginBottom: '0.5rem' }}>
+            <Footer 
+                style={{ 
+                    padding: '16px', 
+                    paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', 
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(10px)',
+                    boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
+                    borderTop: '1px solid rgba(0,0,0,0.06)'
+                }}
+            >
+                {/* Pictogram Hints Section */}
+                <AnimatePresence mode="wait">
                     {pictoHints.size === 0 ? (
-                        <div style={{ display: 'flex', gap: '1rem' }}>
-                            <Popover
-                                open={showHints}
-                                content={<ChatHints onHintClick={handleHints} hints={Controller.getHints()} />}
-                                placement="top"
-                                trigger="click"
-                                onOpenChange={setShowHints}
-                            >
-                                <motion.div whileTap={{ scale: 0.9 }} className="motion-div">
-                                    <BulbFilled style={{ fontSize: '2rem', color: 'var(--ant-color-primary)' }} />
-                                </motion.div>
-                            </Popover>
-                            <ChatPictograms callback={function (pictogram: Pictogram): void {
-                                setInputValue(inputValue +" "+ pictogram.word);
-                            }} />
-                        </div>
+                        <motion.div
+                            key="quick-actions"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            style={{ marginBottom: '12px' }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+                                <Popover
+                                    open={showHints}
+                                    content={<ChatHints onHintClick={handleHints} hints={Controller.getHints()} />}
+                                    placement="top"
+                                    trigger="click"
+                                    onOpenChange={setShowHints}
+                                >
+                                    <motion.div whileTap={{ scale: 0.9 }}>
+                                        <Button
+                                            type="text"
+                                            size="large"
+                                            icon={<BulbFilled style={{ fontSize: '28px', color: 'var(--ios-orange)' }} />}
+                                            aria-label="Suggerimenti rapidi"
+                                            style={{ 
+                                                height: 48, 
+                                                width: 48,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        />
+                                    </motion.div>
+                                </Popover>
+                                <ChatPictograms callback={function (pictogram: Pictogram): void {
+                                    setInputValue(inputValue + " " + pictogram.word);
+                                }} />
+                            </div>
+                        </motion.div>
                     ) : (
-                        <ChatHintsPicto pictos={Array.from(pictoHints.values())} onPictoClick={handleHintsPicto} />
+                        <motion.div
+                            key="picto-hints"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            style={{ marginBottom: '12px' }}
+                        >
+                            <div style={{ 
+                                overflowX: 'auto', 
+                                overflowY: 'hidden', 
+                                width: '100%',
+                                background: 'var(--ios-gray-bg)',
+                                borderRadius: 12,
+                                padding: '8px 4px'
+                            }}>
+                                <ChatHintsPicto pictos={Array.from(pictoHints.values())} onPictoClick={handleHintsPicto} />
+                            </div>
+                        </motion.div>
                     )}
-                </Row>
+                </AnimatePresence>
 
-                <Row justify="space-between" align="middle" gutter={2} style={{ whiteSpace: 'nowrap', flexWrap: 'nowrap' }}>
-                    <Col span={16} style={{ marginRight: '2px' }}>
-                        <Input.Group compact>
-                            <ChatCustomMessage callback={handleCustomMessage} />
-                            <Input
-                                style={{ width: 'calc(100% - 35px)' }}
-                                value={inputValue}
-                                onChange={e => setInputValue(e.target.value)}
-                                onPressEnter={handleSend}
-                                placeholder="Type a message"
-                            />
-                            <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
-                        </Input.Group>
-                    </Col>
-                    <Col span={3} style={{ marginRight: '.5rem' }}>
-                        <ChatSendMedia media={media} setMedia={setMedia} />
-                    </Col>
-                </Row>
+                {/* Input Section */}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+                    <ChatCustomMessage callback={handleCustomMessage} />
+                    <Input
+                        className="chat-input"
+                        style={{ flex: 1 }}
+                        value={inputValue}
+                        onChange={e => setInputValue(e.target.value)}
+                        onPressEnter={handleSend}
+                        placeholder="Scrivi un messaggio..."
+                        aria-label="Campo messaggio"
+                    />
+                    <ChatSendMedia media={media} setMedia={setMedia} />
+                    <motion.div whileTap={{ scale: 0.9 }}>
+                        <Button 
+                            aria-label="Invia messaggio" 
+                            type="primary" 
+                            icon={<SendOutlined />} 
+                            onClick={handleSend} 
+                            size="large"
+                            className="chat-send-btn"
+                        />
+                    </motion.div>
+                </div>
             </Footer>
         </Layout>
     );

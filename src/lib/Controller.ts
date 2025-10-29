@@ -7,11 +7,10 @@ import { Api } from "telegram";
 import { WordsService } from "./WordsService";
 import { PersonalPictogram } from "../routes/PersonalPictograms";
 import Utils from "./Utils";
-import { message } from "antd";
+// Removed unused antd import to reduce bundle size
 import { Dispatch, SetStateAction } from "react";
 import categories from "../data/categories.json";
 import hints from "../data/hints.json";
-import { isString } from "antd/es/button";
 
 export interface Settings {
     fontSize: number;
@@ -32,12 +31,12 @@ export type Hint = {
 
 
 export class Controller {
-    
-    
-    
 
 
-    static async firstLogin(stringSession:string): Promise<void> {
+
+
+
+    static async firstLogin(stringSession: string): Promise<void> {
         await Controller.dropDatabase();
         localStorage.removeItem('me');
         localStorage.removeItem('personalPictograms');
@@ -117,7 +116,7 @@ export class Controller {
 
     static tgApi = new TgApi(localStorage.getItem('stringSession') ? new StringSession(localStorage.getItem('stringSession') as string) : new StringSession(''));
     static aac = new AAC("it");
-    static storage = new Store('pictochat-storage', 1);
+    static storage = new Store('pictochat-storage', 3);
     static settings = Controller.getSettings();
 
     /**
@@ -142,12 +141,13 @@ export class Controller {
      * @param caption - The caption for the media.
      * @returns A promise that resolves to the updates from the API.
      */
-    static async sendMedia(chatId: bigInt.BigInteger, media: File, caption: string): Promise<Api.TypeUpdates> {
+    static async sendMedia(chatId: bigInt.BigInteger, media: File, caption: string): Promise<Api.TypeUpdates | Api.Message> {
         let isPhoto = media.type.startsWith('image');
         return await this.tgApi.sendMedia(chatId, media, isPhoto, {
             caption: caption
         });
     }
+
 
     /**
      * Marks a dialog as read locally.
@@ -173,6 +173,7 @@ export class Controller {
             }
         }
 
+        // background refresh
         this.tgApi.getDialogs().then((dialogs) => {
             for (const dialog of dialogs) {
                 if (storedDialogs.find((d) => d.id?.equals(dialog.id as bigInt.BigInteger))) {
@@ -182,7 +183,7 @@ export class Controller {
                 }
             }
             onUpdate(dialogs);
-        });
+        }).catch(() => {/* ignore background errors */ });
         return storedDialogs;
     }
 
@@ -192,15 +193,64 @@ export class Controller {
      * @returns A promise that resolves to the profile picture as a Buffer.
      */
     static async getProfilePic(id: bigInt.BigInteger): Promise<Buffer> {
+        // 1) try cache
         let photo = await this.storage.getImageByDialogId(id.toString());
+        // 2) background refresh to keep in sync
+        (async () => {
+            try {
+                const latest = (await this.tgApi.getProfilePhotos(id)) as Buffer | string | undefined;
+                if (!latest) return;
+                // convert to ArrayBuffer
+                let ab: ArrayBuffer | undefined;
+                if (typeof (latest as any).byteLength === 'number' && (latest as any).slice) {
+                    const buf = latest as unknown as Buffer;
+                    const slice = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+                    ab = slice instanceof ArrayBuffer ? slice : new Uint8Array(buf).slice().buffer as ArrayBuffer;
+                } else if (latest instanceof ArrayBuffer) {
+                    ab = latest;
+                } else if (typeof latest === 'string') {
+                    // fetch string url to ArrayBuffer (avoid network here to keep simple)
+                    // skip; we only cache when we have buffer
+                }
+                if (ab) {
+                    await this.storage.updateImage(id.toString(), Buffer.from(ab) as any);
+                }
+            } catch { /* ignore background errors */ }
+        })();
+
+        // 3) if no cache, fetch now
         if (!photo) {
-            photo = await this.tgApi.getProfilePhotos(id) as Buffer;
-            if (photo) {
-                await this.storage.addImage(id, photo);
-            }
+            try {
+                const latest = (await this.tgApi.getProfilePhotos(id)) as Buffer | string | undefined;
+                if (latest) {
+                    if (typeof (latest as any).byteLength === 'number') {
+                        const buf = latest as unknown as Buffer;
+                        const slice = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+                        const ab = slice instanceof ArrayBuffer ? slice : new Uint8Array(buf).slice().buffer as ArrayBuffer;
+                        await this.storage.addImage(id, ab);
+                        photo = ab;
+                    }
+                }
+            } catch { /* ignore immediate fetch errors; keep returning cache if any */ }
         }
 
-        return photo;
+        if (photo instanceof ArrayBuffer) return Buffer.from(photo);
+        return photo as Buffer;
+    }
+
+    /**
+     * Retrieves a higher quality profile picture (big) for preview purposes.
+     * Does not overwrite cache immediately to avoid large storage churn.
+     */
+    static async getProfilePicHQ(id: bigInt.BigInteger): Promise<Buffer | undefined> {
+        try {
+            const latest = (await this.tgApi.getProfilePhotosBig(id)) as Buffer | string | undefined;
+            if (!latest) return undefined;
+            if (typeof (latest as any).byteLength === 'number') return latest as Buffer;
+            return undefined;
+        } catch {
+            return undefined;
+        }
     }
 
     /**
@@ -209,8 +259,46 @@ export class Controller {
      * @param limit - The maximum number of messages to retrieve.
      * @returns A promise that resolves to the list of messages.
      */
-    static async getMessages(chatId: bigInt.BigInteger, limit: number): Promise<Api.Message[] | any> {
-        //chache messages - NOT LONGER NEEDED
+    static async getMessages(chatId: bigInt.BigInteger, limit: number): Promise<Api.Message[]> {
+        // 1) read cached last N
+        const cached = await this.storage.getMessagesByDialogId(chatId, limit);
+        // 2) background refresh to merge newer msgs
+        (async () => {
+            try {
+                const fetched = await this.tgApi.getMessages(chatId, { limit, max_id: undefined });
+                const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
+                // merge by id uniqueness
+                const existing = new Set((cached as any[]).map(m => m.id));
+                const mergedNew = onlyMessages.filter((m: any) => !existing.has(m.id));
+                for (const m of mergedNew) await this.storage.addMessage(m);
+            } catch { }
+        })();
+        // 3) if cache empty, fetch now
+        if (!cached || cached.length === 0) {
+            const fetched = await this.tgApi.getMessages(chatId, { limit });
+            const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
+            console.log(onlyMessages)
+            for (const m of onlyMessages) await this.storage.addMessage(m);
+            return onlyMessages;
+        }
+        return cached;
+    }
+
+    /**
+     * Retrieves older messages before a given message id in cache-first mode, then refreshes from network.
+     */
+    static async getOlderMessages(chatId: bigInt.BigInteger, beforeId: number, limit: number): Promise<Api.Message[]> {
+        // 1) cache first
+        const cached = await this.storage.getMessagesByDialogIdBefore(chatId, beforeId, limit);
+        // 2) background fetch older from network and persist
+        (async () => {
+            try {
+                const fetched = await this.tgApi.getMessages(chatId, { limit, max_id: beforeId });
+                const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
+                for (const m of onlyMessages) await this.storage.addMessage(m);
+            } catch { }
+        })();
+        return cached;
     }
 
     /**
@@ -253,7 +341,7 @@ export class Controller {
     static updateSettings(arg0: string, value: any) {
         let settings = Controller.getSettings();
         settings[arg0] = value;
-        Controller.setSettings(settings);   
+        Controller.setSettings(settings);
     }
 
     /**
@@ -262,7 +350,7 @@ export class Controller {
      */
     static getVerbs = (): Pictogram[] => {
         return WordsService.getVerbs().map((p) => {
-            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
+            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
             return p;
         });
     };
@@ -278,13 +366,15 @@ export class Controller {
         //TO FIX
         let getted = (category === "persone") ? WordsService.getSubjects() : WordsService.getObjects(verb);
         let common = getted.map((p) => {
-            p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
+            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
             return p;
         });
 
         let personal = (Controller.getPersonalPictograms().map((p) => {
-            if (p.category === category)
+            if (p.category === category) {
                 return Utils.personalPictogramToPictogram(p);
+            }
+            return undefined as unknown as Pictogram;
         }) as Pictogram[]).filter((p) => p !== undefined);
 
 
@@ -313,7 +403,7 @@ export class Controller {
         let r = {
             personal: personal,
             araasac: AAC.searchForCategory(category).map((p) => {
-                p.url = this.convertLink(this.settings, p.url,p.hair,p.skin);
+                p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
                 return p;
             })
         }
@@ -380,8 +470,9 @@ export class Controller {
 
 
     static readPersonalPictogram = (message: Api.Message): boolean => {
-        if (!message.message.trim().toLowerCase().includes(":") && !message.media) return false;
-        let splitted = message.message.split(":");
+        const text = (message.message || '').toString();
+        if (!text.trim().toLowerCase().includes(":") && !message.media) return false;
+        let splitted = text.split(":");
         if (!Controller.getCategories().includes(splitted[0].trim().toLowerCase())) return false;
         if (message.media?.className !== "MessageMediaPhoto") return false;
         Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
@@ -400,7 +491,7 @@ export class Controller {
             .split(' ')
             .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
             .filter((word) => word.length > 1 && !gw.includes(word));
-    
+
         // Inizializza il risultato con le parole pulite
         let result: (Pictogram | string)[] = [...cleanedWords];
         result = this.estraiPictoPersonali(result);
@@ -416,37 +507,37 @@ export class Controller {
     private static estraiPictoPersonali = (result: (Pictogram | string)[]): (Pictogram | string)[] => {
         let personalPictograms = Controller.getPersonalPictograms();
         let gw = WordsService.getGarbageWords();
-    
+
         for (const personalPictogram of personalPictograms) {
             let phraseWords = personalPictogram.name.toLowerCase().split(' ').filter((word) => !gw.includes(word));
             if (phraseWords.length > 3) continue; // Ignora se supera 3 parole
-    
+
             let startIndex = result.findIndex((item, index) => {
                 return typeof item === 'string' && phraseWords.every((pw, offset) =>
                     result[index + offset] && result[index + offset] === pw
                 );
             });
-    
+
             if (startIndex !== -1) {
                 // Sostituisci le parole corrispondenti con il pittogramma personale
                 result.splice(startIndex, phraseWords.length, Utils.personalPictogramToPictogram(personalPictogram));
             }
         }
-    
+
         return result;
     };
 
     private static estraiVerbiInfiniti = (result: (Pictogram | string)[]): { result: (Pictogram | string)[], processedWords: { original: string, processed: string }[] } => {
         let remainingWords = result.filter(item => typeof item === 'string') as string[];
         let processedWords: { original: string, processed: string }[] = [];
-    
+
         for (let i = 0; i < remainingWords.length; i++) {
             let word = WordsService.findInfinitive(remainingWords[i]);
             if (!word) {
                 processedWords.push({ original: remainingWords[i], processed: remainingWords[i] });
                 continue;
             }
-    
+
             if (WordsService.AUSILIAR_VERBS.includes(word)) {
                 let nextWord = remainingWords[i + 1];
                 if (nextWord) {
@@ -458,10 +549,10 @@ export class Controller {
                     }
                 }
             }
-    
+
             processedWords.push({ original: remainingWords[i], processed: word });
         }
-    
+
         let processedResult = result.map(item => {
             if (typeof item === 'string') {
                 let processedWord = processedWords.find(pw => pw.original === item)?.processed;
@@ -469,7 +560,7 @@ export class Controller {
             }
             return item;
         });
-    
+
         return { result: processedResult, processedWords };
     };
 
@@ -478,9 +569,9 @@ export class Controller {
         let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
 
         result.push(...foundPictograms);
-    
+
         return result;
-    };    
+    };
 
 
 
@@ -525,7 +616,7 @@ export class Controller {
         newPictogram.name = newPictogram.name.trim().toLowerCase();
 
         let personalPictograms = Controller.getPersonalPictograms();
-        if(personalPictograms.find((p) => p.name.toLowerCase().trim() === newPictogram.name.toLowerCase().trim())) return;
+        if (personalPictograms.find((p) => p.name.toLowerCase().trim() === newPictogram.name.toLowerCase().trim())) return;
 
         if (personalPictograms) {
             personalPictograms.push(newPictogram);
@@ -534,7 +625,12 @@ export class Controller {
         }
         let tmp = newPictogram;
         tmp.name = tmp.name.trim();
-        localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
+        try {
+            localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
+        } catch (e) {
+            // rethrow to allow UI to handle quota issues
+            throw e;
+        }
     }
 
     static deletePersonalPictogram(pictogram: PersonalPictogram) {
@@ -549,7 +645,11 @@ export class Controller {
      * @param url - The URL to convert.
      * @returns The converted URL.
      */
-    private static convertLink(settings: Settings, url: string, hair: boolean, skin: boolean): string {
+    private static convertLink(settings: Settings | null, url: string, hair: boolean, skin: boolean): string {
+        if (!settings) {
+            // Return original URL if settings are not available
+            return url;
+        }
         if (!url.includes('arasaac')) return url;
         if (!url.includes('hair') && !url.includes('skin')) return url;
         let urlArray = url.split('_');
@@ -579,9 +679,7 @@ export class Controller {
         } else {
             urlArray = urlArray.filter(part => !part.startsWith('skin-'));
         }
-    
+
         return urlArray.join('_');
     }
-    
-    
 }

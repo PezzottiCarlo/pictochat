@@ -33,7 +33,7 @@ export const router = createHashRouter([
     children: [
       {
         path: 'welcomePage',
-        element: <WelcomePage />, // Welcome page component
+        element: <WelcomePage />, // Welcome page component, NOT protected (accessed after login)
       },
       {
         path: 'login',

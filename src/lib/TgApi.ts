@@ -15,6 +15,9 @@ const apiHash = "aac13796c816fee0e9557169aecbc071";
 export class TgApi {
     client: TelegramClient;
     session: StringSession;
+    // Ensures we don't attempt multiple concurrent connections
+    private connecting?: Promise<void>;
+    private lastConnectFailAt?: number;
 
     /**
      * @param {StringSession} stringSession - The session string for the Telegram client.
@@ -49,6 +52,7 @@ export class TgApi {
         }
         this.session = stringSession;
         this.client = this.createClient(stringSession);
+        this.connecting = undefined; // reset connecting state when client changes
     }
 
     /**
@@ -56,11 +60,33 @@ export class TgApi {
      */
     async connect() {
         if (this.client.connected) return;
-        try {
-            await this.client.connect();
-            console.log("Connesso a Telegram");
-        } catch (error) {
+        if (this.connecting) {
+            // Another call is already establishing the connection
+            try { await this.connecting; } catch { /* ignore, next calls will retry */ }
+            return;
         }
+        this.connecting = (async () => {
+            try {
+                // simple backoff to avoid storms when a previous attempt just failed
+                if (this.lastConnectFailAt) {
+                    const elapsed = Date.now() - this.lastConnectFailAt;
+                    const waitMs = Math.max(0, 1200 - elapsed);
+                    if (waitMs > 0) await new Promise(res => setTimeout(res, waitMs));
+                }
+                await this.client.connect();
+                console.log("Connesso a Telegram");
+                this.lastConnectFailAt = undefined;
+            } catch (error) {
+                // Surface minimal info once to avoid noisy logs
+                console.warn("Telegram connect failed:", (error as Error)?.message || error);
+                this.lastConnectFailAt = Date.now();
+                throw error;
+            } finally {
+                // Always clear connecting so future calls can retry if needed
+                this.connecting = undefined;
+            }
+        })();
+        return this.connecting;
     }
 
     /**
@@ -81,7 +107,8 @@ export class TgApi {
      */
     async sendMessage(chatId: bigInt.BigInteger, message: string): Promise<Api.Message> {
         await this.connect();
-        return await this.client.sendMessage(chatId, { message });
+        const peer = await this.client.getInputEntity(chatId);
+        return await this.client.sendMessage(peer, { message });
     }
 
     /**
@@ -95,9 +122,11 @@ export class TgApi {
     async getMessages(chatId: bigInt.BigInteger, options?: { limit?: number, max_id?: number }): Promise<TotalList<Api.Message>> {
         await this.connect();
         const { limit, max_id } = options || {};
-        await this.client.markAsRead(chatId);
-        return await this.client.getMessages(chatId, { limit, maxId: max_id });
+        const peer = await this.client.getInputEntity(chatId);
+        await this.client.markAsRead(peer);
+        return await this.client.getMessages(peer, { limit, maxId: max_id });
     }
+
 
     /**
      * Retrieves the profile photo of a user.
@@ -107,6 +136,14 @@ export class TgApi {
     async getProfilePhotos(userId: bigInt.BigInteger): Promise<string | Buffer | undefined> {
         await this.connect();
         return await this.client.downloadProfilePhoto(userId, { isBig: false }) as string | Buffer | undefined;
+    }
+
+    /**
+     * Retrieves the high-quality (big) profile photo of a user.
+     */
+    async getProfilePhotosBig(userId: bigInt.BigInteger): Promise<string | Buffer | undefined> {
+        await this.connect();
+        return await this.client.downloadProfilePhoto(userId, { isBig: true }) as string | Buffer | undefined;
     }
 
     /**
@@ -126,11 +163,22 @@ export class TgApi {
      * @param {number} quality - The quality of the media.
      * @returns {Promise<any>} - The downloaded media.
      */
-    async downloadMedia(media: Api.TypeMessageMedia, quality: number): Promise<any> {
+    async downloadMedia(media: Api.Message | Api.TypeMessageMedia, quality: number): Promise<any> {
         try {
             await this.connect();
             return await this.client.downloadMedia(media, { thumb: quality });
         } catch (error){return}
+    }
+
+
+    /**
+     * Downloads the original media (no thumbnail), useful for document previews like PDFs.
+     */
+    async downloadOriginalMedia(media: Api.TypeMessageMedia): Promise<any> {
+        try {
+            await this.connect();
+            return await this.client.downloadMedia(media);
+        } catch (error){ return }
     }
 
     /**
@@ -167,13 +215,21 @@ export class TgApi {
      * @param {function} callback - The callback function to handle updates.
      * @param {EventBuilder} [event] - Optional event builder for specific events.
      */
-    async handleUpdates(callback: (update: Api.Updates) => void, event?: EventBuilder) {
+    async handleUpdates(callback: (update: Api.Updates) => void, event?: EventBuilder): Promise<() => void> {
         await this.connect();
         if (event) {
             this.client.addEventHandler(callback, event);
         } else {
             this.client.addEventHandler(callback);
         }
+        // Return a disposer to remove the handler and avoid leaks
+        if (event) {
+            return () => {
+                try { this.client.removeEventHandler(callback, event); } catch {}
+            };
+        }
+        // For global handler without an event builder, we cannot safely remove; return no-op
+        return () => {};
     }
 
     /**
@@ -195,7 +251,7 @@ export class TgApi {
      */
     async signIn(phone: string, code: string, phoneCodeHash: string): Promise<string> {
         await this.connect();
-        const result = await this.client.invoke(
+        await this.client.invoke(
             new Api.auth.SignIn({
                 phoneNumber: phone,
                 phoneCodeHash,
@@ -215,33 +271,16 @@ export class TgApi {
      * @param {ParseInterface} [options.parseMode] - The parse mode for the caption.
      * @returns {Promise<Api.TypeUpdates>} - The updates after sending the media.
      */
-    async sendMedia(chatId: bigInt.BigInteger, file: File, isPhoto: boolean, options?: { caption?: string; parseMode?: ParseInterface }): Promise<Api.TypeUpdates> {
+    async sendMedia(chatId: bigInt.BigInteger, file: File, isPhoto: boolean, options?: { caption?: string; parseMode?: ParseInterface }): Promise<Api.Message | Api.TypeUpdates> {
         await this.connect();
-        let entities = undefined;
-        const { caption, parseMode } = options || {};
-        const message = await this.client.invoke(
-            new Api.messages.SendMedia({
-                peer: chatId,
-                media: (isPhoto ? new Api.InputMediaUploadedPhoto({
-                    file: await this.client.uploadFile({
-                        file: file,
-                        workers: 1,
-                    }),
-                }) : new Api.InputMediaUploadedDocument({
-                    file: await this.client.uploadFile({
-                        file: file,
-                        workers: 1,
-                    }),
-                    mimeType: file.type,
-                    attributes: [new Api.DocumentAttributeFilename({ fileName: file.name })],
-                })),
-                message: caption,
-                entities: entities,
-                randomId: bigInt.randBetween(0, 1000000000),
-                invertMedia: isPhoto
-            })
-        );
-        return message;
+        const { caption } = options || {};
+        // Resolve peer and use high-level helper to avoid TL constructor issues
+        const peer = await this.client.getInputEntity(chatId);
+        return await this.client.sendFile(peer, {
+            file,
+            caption,
+            forceDocument: !isPhoto,
+        });
     }
 
 }

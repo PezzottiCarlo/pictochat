@@ -1,13 +1,86 @@
+/* Chat layout refinements */
 
 .chat-list .ant-list-item {
-    border: none !important;
-    padding: 0 0.5rem;
+  border: none !important;
+  padding: 0 0.4rem;
+  background: transparent;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 #scrollableDiv {
-    padding: 0.5rem;
+  padding: 12px 8px;
+  background: var(--ios-gray-bg);
 }
 
 footer {
-    padding: 10px 0;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+/* Modern input styling for chat */
+.chat-input {
+	height: 48px !important;
+	font-size: 17px !important;
+	border-radius: 16px !important;
+	background: rgba(255, 255, 255, 0.95) !important;
+	border: 1px solid rgba(0, 0, 0, 0.08) !important;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+	transition: all 0.2s ease !important;
+	padding: 0 16px !important;
+}
+
+.chat-input:hover {
+	border-color: rgba(0, 199, 190, 0.3) !important;
+	box-shadow: 0 4px 16px rgba(0, 199, 190, 0.1) !important;
+}
+
+.chat-input:focus {
+	border-color: var(--accent) !important;
+	box-shadow: 0 0 0 3px rgba(0, 199, 190, 0.15) !important;
+}
+
+.chat-send-btn {
+	height: 48px !important;
+	min-width: 48px !important;
+	border-radius: 16px !important;
+	background: linear-gradient(135deg, var(--accent) 0%, #00b8aa 100%) !important;
+	border: none !important;
+	box-shadow: 0 4px 12px rgba(0, 199, 190, 0.3) !important;
+	transition: all 0.2s ease !important;
+}
+
+.chat-send-btn:hover {
+	box-shadow: 0 6px 16px rgba(0, 199, 190, 0.4) !important;
+	transform: translateY(-1px);
+}
+
+.chat-send-btn:active {
+	transform: translateY(0);
+}
+
+/* Smooth scrolling */
+#scrollableDiv {
+	scroll-behavior: smooth;
+}
+
+/* Empty state styling */
+.ant-empty-description {
+	color: var(--ios-text-secondary);
+	font-size: 15px;
 }

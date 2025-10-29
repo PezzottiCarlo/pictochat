@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { List, Input, Button, Space, message } from 'antd';
+import React, { useState } from 'react';
+import { List, Input, Button, Space, message, Typography } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+
+const { Title } = Typography;
 
 interface HintsManagerProps {
     callback: (hints: { text: string; icon: string }[]) => void;
@@ -29,38 +32,52 @@ const HintsManager: React.FC<HintsManagerProps> = ({ callback, currentHints }) =
     };
 
     return (
-        <div style={{ marginTop: '20px' }}>
-            <h3>Gestione Frasi Consigliate</h3>
+        <div>
+            <Title level={5} style={{ margin: '0 0 16px 0', fontSize: 18 }}>Gestione Frasi Consigliate</Title>
             <List
                 bordered
                 dataSource={hints}
                 renderItem={(item, index) => (
                     <List.Item
-                        actions={[<Button danger onClick={() => handleRemoveHint(index)}>Rimuovi</Button>]}
+                        actions={[
+                            <Button 
+                                danger 
+                                type="text"
+                                icon={<DeleteOutlined />}
+                                onClick={() => handleRemoveHint(index)}
+                                style={{ minWidth: 40 }}
+                            />
+                        ]}
+                        style={{ padding: '12px 16px' }}
                     >
                         <Space>
-                            <span>{item.icon}</span>
+                            <span style={{ fontSize: 20 }}>{item.icon}</span>
                             <span>{item.text}</span>
                         </Space>
                     </List.Item>
                 )}
+                style={{ marginBottom: 16 }}
             />
 
-            <div style={{ marginTop: '20px' }}>
-                <Space>
-                    <Input
-                        placeholder="Testo"
-                        value={newHint.text}
-                        onChange={(e) => setNewHint({ ...newHint, text: e.target.value })}
-                    />
-                    <Input
-                        placeholder="Icona"
-                        value={newHint.icon}
-                        onChange={(e) => setNewHint({ ...newHint, icon: e.target.value })}
-                    />
-                    <Button type="primary" onClick={handleAddHint}>Aggiungi</Button>
-                </Space>
-            </div>
+            <Space.Compact style={{ width: '100%' }}>
+                <Input
+                    placeholder="Testo"
+                    value={newHint.text}
+                    onChange={(e) => setNewHint({ ...newHint, text: e.target.value })}
+                    style={{ flex: 1 }}
+                />
+                <Input
+                    placeholder="Icona"
+                    value={newHint.icon}
+                    onChange={(e) => setNewHint({ ...newHint, icon: e.target.value })}
+                    style={{ width: 80 }}
+                />
+                <Button 
+                    type="primary" 
+                    icon={<PlusOutlined />}
+                    onClick={handleAddHint}
+                />
+            </Space.Compact>
         </div>
     );
 };

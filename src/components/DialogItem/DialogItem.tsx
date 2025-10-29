@@ -1,4 +1,4 @@
-import { List, Flex } from 'antd';
+import { List, Flex, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import DialogAvatar from './DialogAvatar';
 import { Dialog } from 'telegram/tl/custom/dialog';
@@ -9,9 +9,14 @@ import { router } from '../../routes/AppRoutes';
 
 interface DialogItemProps {
     dialog: Dialog;
+    // Accessibility/large UI tuning (optional)
+    avatarSize?: number; // default 100
+    titleSize?: number;  // px, default 18
+    descSize?: number;   // px, default 14
+    timeSize?: number;   // px, default 14
 }
 
-const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
+const DialogItem: React.FC<DialogItemProps> = ({ dialog, avatarSize = 100, titleSize = 18, descSize = 14, timeSize = 14 }) => {
 
     const [photo, setPhoto] = React.useState<Buffer>();
     const { id, name, date, message,entity } = dialog;
@@ -48,15 +53,60 @@ const DialogItem: React.FC<DialogItemProps> = ({ dialog }) => {
     }
 
     return (
-        <List.Item onClick={() => handleClick(id)}>
-            <Flex align="center" justify='center' style={{ width: '100%'}} >
+        <List.Item
+            onClick={() => handleClick(id)}
+            role="button"
+            tabIndex={0}
+            aria-label={`Apri chat con ${name}`}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(id); }}
+            style={{ 
+                padding: '12px 16px', 
+                cursor: 'pointer',
+                transition: 'background 0.2s',
+                borderRadius: 12,
+                margin: '4px 8px'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'var(--ios-gray-light)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+            <Flex align="center" justify='space-between' style={{ width: '100%', gap: 12 }} >
                 <List.Item.Meta
-                    style={{alignItems:"center" }}
-                    avatar={DialogAvatar({ unreadedMessages:dialog.unreadCount, name:dialog.name as string,imageBuffer: photo, badge:true,size:100,isOnline:status === 'UserStatusOnline' })}
-                    title={name}
-                    description={shortMessage(message)}
+                    style={{ alignItems:"center", minWidth: 0, flex: 1 }}
+                    avatar={DialogAvatar({ 
+                        unreadedMessages: dialog.unreadCount, 
+                        name: (dialog.name as string) || 'Chat',
+                        imageBuffer: photo, 
+                        badge: true,
+                        size: avatarSize,
+                        isOnline: status === 'UserStatusOnline' 
+                    })}
+                    title={
+                        <Typography.Text 
+                            strong 
+                            ellipsis 
+                            style={{ fontSize: titleSize, fontWeight: 600, color: 'var(--ios-text)' }}
+                        >
+                            {name || 'Chat'}
+                        </Typography.Text>
+                    }
+                    description={
+                        <Typography.Text 
+                            ellipsis 
+                            style={{ fontSize: descSize, color: 'var(--ios-text-secondary)' }}
+                        >
+                            {shortMessage(message)}
+                        </Typography.Text>
+                    }
                 />
-                <span>{formatDate(date)}</span>
+                <Typography.Text 
+                    style={{ 
+                        fontSize: timeSize, 
+                        color: 'var(--ios-text-secondary)',
+                        whiteSpace: 'nowrap'
+                    }}
+                >
+                    {formatDate(date)}
+                </Typography.Text>
             </Flex>
         </List.Item>
     );

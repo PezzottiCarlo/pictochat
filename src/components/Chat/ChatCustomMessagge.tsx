@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Popover, Card, Image, Modal } from 'antd';
 import { DeleteOutlined, TranslationOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
-import '../../styles/ChatCustomMessage.css';
+// styles migrated to AntD components
 import { Pictogram } from '../../lib/AAC';
 import { PictogramImage } from '../Other/PictogramImage';
 import { Controller } from '../../lib/Controller';
@@ -183,4 +183,4 @@ const ChatCustomMessage: React.FC<ChatCustomMessageProps> = ({ callback }) => {
     );
 };
 
-export default ChatCustomMessage;
+export default React.memo(ChatCustomMessage);

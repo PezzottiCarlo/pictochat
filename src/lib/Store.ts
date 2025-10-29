@@ -13,6 +13,7 @@ export class Store {
         this.db = new Database(dbName, version);
     }
 
+
     /**
      * Serializes a Dialog object to a SerializableDialog.
      * @param dialog - The Dialog object to serialize.
@@ -56,7 +57,9 @@ export class Store {
      * @param message - The message object to add.
      */
     public async addMessage(message: Api.Message): Promise<void> {
-        await this.db.addObject('messages', message);
+        const dialogId = ((message.fromId as any)?.userId || (message.peerId as any)?.userId || (message.peerId as any)?.channelId || (message.peerId as any)?.chatId)?.toString?.();
+        const payload = { ...message, dialogId } as any;
+        await this.db.addObject('messages', payload);
     }
 
     /**
@@ -85,8 +88,53 @@ export class Store {
      * @returns An array of messages.
      */
     public async getMessagesByDialogId(dialogId: bigInt.BigInteger, limit: number): Promise<Api.Message[]> {
-        const messages = (await this.db.getAllObjects<Api.Message>('messages')).slice(-limit);
-        return messages.filter((msg: Api.Message) => (msg.fromId as Api.PeerUser).userId === dialogId);
+        const db = (this as any).db as Database;
+        const database = await (db as any).openDB();
+        return new Promise<Api.Message[]>((resolve, reject) => {
+            try {
+                const tx = database.transaction('messages', 'readonly');
+                const store = tx.objectStore('messages');
+                const index = store.index('byDialogId');
+                const request = index.getAll(dialogId.toString());
+                request.onsuccess = () => {
+                    const all = (request.result as Api.Message[]) || [];
+                    // Return last N by id (best effort, Telegram ids grow)
+                    const sorted = all.sort((a: any, b: any) => (a.id || 0) - (b.id || 0));
+                    resolve(sorted.slice(-limit));
+                };
+                request.onerror = () => reject(request.error);
+            } catch (e) {
+                reject(e as any);
+            }
+        });
+    }
+
+    /**
+     * Retrieves up to `limit` messages older than `beforeId` for a dialog from cache.
+     */
+    public async getMessagesByDialogIdBefore(dialogId: bigInt.BigInteger, beforeId: number, limit: number): Promise<Api.Message[]> {
+        const db = (this as any).db as Database;
+        const database = await (db as any).openDB();
+        return new Promise<Api.Message[]>((resolve, reject) => {
+            try {
+                const tx = database.transaction('messages', 'readonly');
+                const store = tx.objectStore('messages');
+                const index = store.index('byDialogId');
+                const request = index.getAll(dialogId.toString());
+                request.onsuccess = () => {
+                    const all = (request.result as Api.Message[]) || [];
+                    const older = all.filter((m: any) => (m.id || 0) < beforeId);
+                    // Take the most recent among the older ones
+                    const desc = older.sort((a: any, b: any) => (b.id || 0) - (a.id || 0));
+                    const page = desc.slice(0, limit);
+                    // Return ascending for UI
+                    resolve(page.sort((a: any, b: any) => (a.id || 0) - (b.id || 0)));
+                };
+                request.onerror = () => reject(request.error);
+            } catch (e) {
+                reject(e as any);
+            }
+        });
     }
 
     /**
@@ -94,8 +142,8 @@ export class Store {
      * @param dialogId - The ID of the dialog.
      * @returns The image buffer or null if not found.
      */
-    public async getImageByDialogId(dialogId: string): Promise<Buffer|null> {
-        const image = await this.db.getObject<{ dialogId: string, buffer: Buffer }>('images', dialogId);
+    public async getImageByDialogId(dialogId: string): Promise<ArrayBuffer | Buffer | null> {
+        const image = await this.db.getObject<{ dialogId: string, buffer: ArrayBuffer | Buffer }>('images', dialogId);
         if (!image) {
             return null;
         }
@@ -134,7 +182,19 @@ export class Store {
      * @param message - The message object to update.
      */
     public async updateMessage(message: Api.Message): Promise<void> {
-        await this.db.updateObject<Api.Message>('messages', message);
+        const dialogId = ((message.fromId as any)?.userId || (message.peerId as any)?.userId || (message.peerId as any)?.channelId || (message.peerId as any)?.chatId)?.toString?.();
+        const payload = { ...message, dialogId } as any;
+        await this.db.updateObject<Api.Message>('messages', payload);
+    }
+
+    // --- Media cache helpers ---
+    public async addMedia(id: string, buffer: ArrayBuffer | Buffer): Promise<void> {
+        await this.db.addObject('media', { id, buffer });
+    }
+
+    public async getMedia(id: string): Promise<ArrayBuffer | Buffer | null> {
+        const item = await this.db.getObject<{ id: string, buffer: ArrayBuffer | Buffer }>('media', id);
+        return item ? item.buffer : null;
     }
 
     /**

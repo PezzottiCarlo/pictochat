@@ -10,17 +10,13 @@
   "lang": "it-IT",
   "icons": [
     {
-      "src": "icon/logo48.png",
+      "src": "icon/logo_48x48.png",
       "sizes": "48x48",
       "type": "image/png"
     },
     {
-      "src": "icon/logo256.ico",
+      "src": "icon/logo_256x256.png",
       "sizes": "256x256"
-    },
-    {
-      "src": "icon/logo.svg",
-      "sizes": "any"
     }
   ]
 }

@@ -1,7 +1,26 @@
-.custom-message-card .ant-card-body {
-    padding: 1px;
-}
+/* Custom message card - iOS style *//* Accessible custom message card */
 
-.custom-message-card img {
-    border-radius: 8px;
+.custom-message-card {.custom-message-card {
+
+	border-radius: 16px !important;    border-radius: 16px !important;
+
+	overflow: hidden;    overflow: hidden;
+
+	box-shadow: var(--shadow-sm) !important;}
+
+}.custom-message-card .ant-card-body {
+
+    padding: 6px;
+
+.custom-message-card .ant-card-body {}
+
+	padding: 8px;
+
+}.custom-message-card img {
+
+    border-radius: 10px;
+
+.custom-message-card img {}
+	border-radius: 12px;
+	object-fit: cover;
 }

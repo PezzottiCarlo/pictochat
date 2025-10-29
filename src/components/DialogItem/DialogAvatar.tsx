@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Badge, Spin } from 'antd';
+import { Avatar, Badge } from 'antd';
 import Utils from '../../lib/Utils';
 import { HairColor, SkinColor } from '../../lib/AAC';
 
@@ -19,11 +19,15 @@ const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, ima
     const renderAvatar = () => {
         const aacLink = `https://api.arasaac.org/v1/pictograms/31807?resolution=2500&skin=${skinColor}&hair=${hairColor}&download=false`;
         const avatarElement = (src?: string) => {
+            // Safe fallback for undefined/null name
+            const safeName = name || '?';
+            const firstChar = safeName.charAt(0).toUpperCase();
+            
             const avatar = src ? (
                 <Avatar src={src} size={size}/>
             ) : (
-                <Avatar style={{ backgroundColor: Utils.charToColor(name.charAt(0).toUpperCase()) }} size={size}>
-                    {name.charAt(0).toUpperCase()}
+                <Avatar style={{ backgroundColor: Utils.charToColor(firstChar) }} size={size}>
+                    {firstChar}
                 </Avatar>
             );
             
@@ -40,16 +44,34 @@ const DialogAvatar: React.FC<DialogAvatarProps> = ({ unreadedMessages, name, ima
             return avatarElement(aacLink);
         }
 
-        const base64String = imageBuffer ? Buffer.from(imageBuffer).toString('base64') : null;
-        const imageSrc = base64String ? `data:image/png;base64,${base64String}` : undefined;
+        // Normalize image buffer into a data URL if possible
+        let imageSrc: string | undefined;
+        try {
+            if (typeof imageBuffer === 'string') {
+                imageSrc = imageBuffer;
+            } else if (imageBuffer && (imageBuffer as any).byteLength !== undefined) {
+                // ArrayBuffer or Buffer
+                const ab: ArrayBuffer = (imageBuffer as any).buffer ?
+                    // Buffer-like
+                    (imageBuffer as any).buffer.slice((imageBuffer as any).byteOffset, (imageBuffer as any).byteOffset + (imageBuffer as any).byteLength)
+                    : (imageBuffer as ArrayBuffer);
+                const bytes = new Uint8Array(ab);
+                let binary = '';
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                imageSrc = `data:image/png;base64,${btoa(binary)}`;
+            }
+        } catch {}
 
-        if (imageBuffer && imageBuffer.data && imageBuffer.data.length === 0) {
+        if (imageBuffer && (imageBuffer as any).data && (imageBuffer as any).data.length === 0) {
             return avatarElement();
         }
 
-        return imageSrc ? avatarElement(imageSrc) : (
-            <Avatar src={<Spin />} size={size} />
-        );
+        // If imageBuffer is null/undefined or could not be parsed, show letter avatar
+        if (!imageBuffer || !imageSrc) {
+            return avatarElement();
+        }
+
+        return avatarElement(imageSrc);
     };
 
     return (

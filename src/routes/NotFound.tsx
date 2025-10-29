@@ -1,17 +1,20 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Button, Result } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import PageLayout from '../components/Other/PageLayout';
 
 const NotFound: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div style={{ textAlign: 'center', padding: '2rem' }}>
-            <h1>404 - Pagina non trovata</h1>
-            <Button type="primary" onClick={() => navigate('/')}>
-                Torna alla Home
-            </Button>
-        </div>
+        <PageLayout title="Pagina non trovata" footer={null} fullWidth>
+            <Result
+                status="404"
+                subTitle="La risorsa richiesta non esiste o è stata spostata."
+                extra={<Button type="primary" onClick={() => navigate('/')}>Torna alla Home</Button>}
+                style={{ paddingTop: 100 }}
+            />
+        </PageLayout>
     );
 };
 

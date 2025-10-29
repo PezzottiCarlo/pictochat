@@ -16,6 +16,7 @@ class Utils {
             entity: dialog.entity
         }
     }
+    
 
     /**
      * Formats a timestamp into a human-readable date string.

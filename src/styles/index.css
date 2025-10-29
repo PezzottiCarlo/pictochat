@@ -1,24 +1,85 @@
-@font-face {
-    font-family: 'open-dislexic';
-    src: url('../../public/fonts/OpenDyslexicMono-Regular.otf');
-}
+/* Global iOS-like, accessible design tokens and defaults */
+html, body, #root { height: 100%; margin: 0; padding: 0; }
 
-html {
-    min-height: calc(100% + env(safe-area-inset-top));
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+:root {
+  /* iOS-like color palette for accessibility */
+  --ios-blue: #0a84ff;
+  --ios-green: #34c759;
+  --ios-red: #ff3b30;
+  --ios-orange: #ff9f0a;
+  --ios-gray-bg: #f2f2f7;
+  --ios-gray-light: #e5e5ea;
+  --ios-gray-mid: #d1d1d6;
+  --ios-gray-title: #1c1c1e;
+  --ios-text: #000000;
+  --ios-text-secondary: #8e8e93;
+  --surface: #ffffff;
+  --accent: #00c7be; /* iOS mint */
+  
+  /* Chat bubbles - high contrast for accessibility */
+  --bubble-outgoing-bg: #0a84ff;
+  --bubble-outgoing-text: #ffffff;
+  --bubble-incoming-bg: #e9e9eb;
+  --bubble-incoming-text: #000000;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-size-base: 17px;
+  --line-height-base: 1.47;
+  --radius: 18px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
 }
 
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family);
+  background: var(--ios-gray-bg);
+  color: var(--ios-text);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  overflow-x: hidden;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-        monospace;
+/* High contrast focus for accessibility */
+:where(button, [role="button"], a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 3px solid var(--ios-blue);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
+
+html { scroll-behavior: smooth; }
+
+::selection { 
+  background: rgba(10, 132, 255, 0.3);
+  color: var(--ios-text);
+}
+
+/* Remove default ant design margins that conflict */
+.ant-layout {
+  background: var(--ios-gray-bg);
+}
+
+.ant-typography {
+  margin-bottom: 0;
+}
+
+/* Ensure footer tabs touch the bottom without gap */
+.footer-tabs .ant-tabs-nav {
+  margin: 0 !important;
+}
+.footer-tabs {
+  margin: 0 !important;
+}
+
+/* Consistent vertical spacing between sibling sections */
+.section-stack > * + * {
+  margin-top: 16px;
+}
+

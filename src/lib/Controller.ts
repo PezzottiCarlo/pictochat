@@ -1,685 +1,79 @@
-import { StringSession } from "telegram/sessions";
-import { AAC, HairColor, Pictogram, SkinColor } from "./AAC";
-import { Store } from "./Store";
-import { TgApi } from "./TgApi";
+// Removed unused antd import to reduce bundle size
 import { Dialog } from "telegram/tl/custom/dialog";
 import { Api } from "telegram";
-import { WordsService } from "./WordsService";
-import { PersonalPictogram } from "../routes/PersonalPictograms";
-import Utils from "./Utils";
-// Removed unused antd import to reduce bundle size
-import { Dispatch, SetStateAction } from "react";
-import categories from "../data/categories.json";
-import hints from "../data/hints.json";
+import { tgApi, aac, storage } from "./Container";
+import { SettingsService } from "./services/SettingsService";
+import type { Settings } from "./services/SettingsService";
+import { DialogService } from "./services/DialogService";
+import { ProfileService } from "./services/ProfileService";
+import { MessageService } from "./services/MessageService";
+import { PictogramService } from "./services/PictogramService";
+import { PersonalPictogramService } from "./services/PersonalPictogramService";
 
-export interface Settings {
-    fontSize: number;
-    hairColor: HairColor;
-    skinColor: SkinColor;
-    theme: string;
-}
+export interface PictogramContext { me: any; you: any }
 
-export interface PictogramContext {
-    me: any,
-    you: any
-}
-
-export type Hint = {
-    text: string;
-    icon: string;
-}
-
+export type Hint = { text: string; icon: string };
 
 export class Controller {
-
-
-
-
+    static tgApi = tgApi;
+    static aac = aac;
+    static storage = storage;
+    static settings = SettingsService.getSettings();
 
     static async firstLogin(stringSession: string): Promise<void> {
-        await Controller.dropDatabase();
-        localStorage.removeItem('me');
-        localStorage.removeItem('personalPictograms');
-        localStorage.removeItem('settings');
-
-        localStorage.setItem('stringSession', stringSession);
-        let me = await Controller.tgApi.getMe();
-        localStorage.setItem('me', JSON.stringify(me));
-        localStorage.setItem('hints', JSON.stringify(hints));
-        localStorage.setItem('settings', JSON.stringify({
-            fontSize: 14,
-            hairColor: HairColor.BLACK,
-            skinColor: SkinColor.WHITE,
-            theme: 'dark'
-        }));
+        return SettingsService.firstLogin(stringSession, DialogService.dropDatabase, async () => await Controller.tgApi.getMe());
     }
 
-    static getHints = (): Hint[] => {
-        return JSON.parse(localStorage.getItem('hints') as string);
+    static getHints(): Hint[] { return SettingsService.getHints(); }
+    static setHints(h: Hint[]) { SettingsService.setHints(h); }
+
+    static getCategories(): string[] { return SettingsService.getCategories(); }
+    static getCategoriesData() { return SettingsService.getCategoriesData(); }
+
+    static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: any, callback: (dialog: any, message: string) => void) {
+        return DialogService.handleContactUpdate(update, type, contactsData, setContactsData, callback);
     }
 
-    static setHints(hints: { text: string; icon: string; }[]) {
-        localStorage.setItem('hints', JSON.stringify(hints));
-    }
+    static async getDialog(id: any): Promise<Dialog | null> { return DialogService.getDialog(id); }
 
-    static getCategories = (): string[] => {
-        return Object.keys(categories);
-    }
+    static getMe(): Api.User { return JSON.parse(localStorage.getItem('me') as string) as Api.User; }
 
-    static getCategoriesData = (): { [key: string]: string[] } => {
-        return categories;
-    }
+    static async sendMedia(chatId: any, media: File, caption: string): Promise<Api.TypeUpdates | Api.Message> { return MessageService.sendMedia(chatId, media, caption); }
 
+    static async markAsReadLocal(id: any): Promise<void> { return DialogService.markAsReadLocal(id); }
 
-    static handleContactUpdate(update: any, type: number, contactsData: Dialog[], setContactsData: Dispatch<SetStateAction<Dialog[]>>, callback: (dialog: any, message: string) => void) {
-        if (type === 0) {
-            let shortMess = update.originalUpdate as Api.UpdateShortMessage;
-            let fromID = shortMess.userId;
-            if (!fromID) {
-                callback("Tu", (shortMess.message as any).message);
-                let me = Controller.getMe();
-                contactsData.forEach((dialog) => {
-                    if (dialog.id?.toString() === me.id.toString()) {
-                        dialog.message = shortMess.message as any as Api.Message;
-                        dialog.unreadCount++;
-                        contactsData.splice(contactsData.indexOf(dialog), 1);
-                        contactsData.unshift(dialog);
-                        setContactsData([...contactsData]);
-                    }
-                });
-            }
+    static async getDialogs(onUpdate: (dialogs: Dialog[]) => void): Promise<Dialog[]> { return DialogService.getDialogs(onUpdate); }
 
-            for (let dialog of contactsData) {
-                if (dialog.id?.toString() === fromID.toString()) {
-                    dialog.message = shortMess as any as Api.Message;
-                    dialog.unreadCount++;
-                    contactsData.splice(contactsData.indexOf(dialog), 1);
-                    contactsData.unshift(dialog);
-                    setContactsData([...contactsData]);
-                    callback(dialog.name, dialog.message.message);
-                    break;
-                }
-            }
-        } else if (type === 1) {
-            let userStatus = update as Api.UpdateUserStatus;
-            let fromID = userStatus.userId;
-            for (let dialog of contactsData) {
-                if (dialog.id?.toString() === fromID.toString()) {
-                    if (dialog.entity) {
-                        (dialog.entity as any).status = userStatus.status.className;
-                    }
-                    setContactsData([...contactsData]);
-                }
-            }
-        }
-    }
+    static async getProfilePic(id: any): Promise<Buffer> { return ProfileService.getProfilePic(id); }
+    static async getProfilePicHQ(id: any): Promise<Buffer | undefined> { return ProfileService.getProfilePicHQ(id); }
 
-    static tgApi = new TgApi(localStorage.getItem('stringSession') ? new StringSession(localStorage.getItem('stringSession') as string) : new StringSession(''));
-    static aac = new AAC("it");
-    static storage = new Store('pictochat-storage', 3);
-    static settings = Controller.getSettings();
+    static async getMessages(chatId: any, limit: number) { return MessageService.getMessages(chatId, limit); }
+    static async getOlderMessages(chatId: any, beforeId: number, limit: number) { return MessageService.getOlderMessages(chatId, beforeId, limit); }
 
-    /**
-     * Retrieves a dialog by its ID.
-     * @param id - The ID of the dialog.
-     * @returns A promise that resolves to the dialog or null if not found.
-     */
-    static async getDialog(id: bigInt.BigInteger): Promise<Dialog | null> {
-        let dialog = await this.storage.getDialog(id.toString());
-        return dialog;
-    }
+    static async dropDatabase(): Promise<void> { return DialogService.dropDatabase(); }
 
-    static getMe(): Api.User {
-        let tmp = localStorage.getItem('me') as string;
-        return JSON.parse(tmp) as Api.User;
-    }
+    static setSettings(s: any) { SettingsService.setSettings(s); Controller.settings = s; }
+    static getSettings() { return SettingsService.getSettings(); }
+    static updateSettings(k: keyof Settings, v: any) { SettingsService.updateSetting(k as any as string, v); Controller.settings = SettingsService.getSettings(); }
+    static getVerbs() { return PictogramService.getVerbs(); }
+    static getWords(category: string, verb?: string) { return PictogramService.getWords(category, verb); }
+    static extractChoices(sentence: string) { return PictogramService.extractChoices(sentence); }
+    static searchForCategory(category: string) { return PictogramService.searchForCategory(category); }
+    static getAllCategories() { return PictogramService.getAllCategories(); }
+    static searchPictograms(word: string, limit: number) { return PictogramService.searchPictograms(word, limit); }
+    static searchPictogram(keyword: string, normal: boolean) { return PictogramService.searchPictogram(keyword, normal); }
+    static extractSuggestedPictograms(sentence: string) { return PictogramService.extractSuggestedPictograms(sentence); }
+    static extractPictograms(sentence: string, context?: PictogramContext) { return PictogramService.extractPictograms(sentence, context); }
 
-    /**
-     * Sends media to a specified chat.
-     * @param chatId - The ID of the chat.
-     * @param media - The media file to send.
-     * @param caption - The caption for the media.
-     * @returns A promise that resolves to the updates from the API.
-     */
-    static async sendMedia(chatId: bigInt.BigInteger, media: File, caption: string): Promise<Api.TypeUpdates | Api.Message> {
-        let isPhoto = media.type.startsWith('image');
-        return await this.tgApi.sendMedia(chatId, media, isPhoto, {
-            caption: caption
-        });
-    }
+    static readPersonalPictogram(message: Api.Message) { return MessageService.readPersonalPictogram(message); }
+    static importPersonalPictogramFromMessage(type: string, name: string, message: Api.Message) { return MessageService.importPersonalPictogramFromMessage(type, name, message); }
 
+    static textToSpeech(text: string) { return MessageService.textToSpeech(text); }
 
-    /**
-     * Marks a dialog as read locally.
-     * @param id - The ID of the dialog.
-     * @returns A promise that resolves when the operation is complete.
-     */
-    static async markAsReadLocal(id: bigInt.BigInteger): Promise<void> {
-        await this.storage.markAsRead(id.toString());
-    }
-
-    /**
-     * Retrieves dialogs and updates them.
-     * @param onUpdate - Callback function to handle updated dialogs.
-     * @returns A promise that resolves to the list of dialogs.
-     */
-    static async getDialogs(onUpdate: (dialogs: Dialog[]) => void): Promise<Dialog[]> {
-        let storedDialogs = await this.storage.getDialogs();
-
-        if (storedDialogs.length === 0) {
-            storedDialogs = await this.tgApi.getDialogs();
-            for (const dialog of storedDialogs) {
-                await this.storage.addDialog(dialog);
-            }
-        }
-
-        // background refresh
-        this.tgApi.getDialogs().then((dialogs) => {
-            for (const dialog of dialogs) {
-                if (storedDialogs.find((d) => d.id?.equals(dialog.id as bigInt.BigInteger))) {
-                    this.storage.updateDialog(dialog);
-                } else {
-                    this.storage.addDialog(dialog);
-                }
-            }
-            onUpdate(dialogs);
-        }).catch(() => {/* ignore background errors */ });
-        return storedDialogs;
-    }
-
-    /**
-     * Retrieves the profile picture of a user by their ID.
-     * @param id - The ID of the user.
-     * @returns A promise that resolves to the profile picture as a Buffer.
-     */
-    static async getProfilePic(id: bigInt.BigInteger): Promise<Buffer> {
-        // 1) try cache
-        let photo = await this.storage.getImageByDialogId(id.toString());
-        // 2) background refresh to keep in sync
-        (async () => {
-            try {
-                const latest = (await this.tgApi.getProfilePhotos(id)) as Buffer | string | undefined;
-                if (!latest) return;
-                // convert to ArrayBuffer
-                let ab: ArrayBuffer | undefined;
-                if (typeof (latest as any).byteLength === 'number' && (latest as any).slice) {
-                    const buf = latest as unknown as Buffer;
-                    const slice = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-                    ab = slice instanceof ArrayBuffer ? slice : new Uint8Array(buf).slice().buffer as ArrayBuffer;
-                } else if (latest instanceof ArrayBuffer) {
-                    ab = latest;
-                } else if (typeof latest === 'string') {
-                    // fetch string url to ArrayBuffer (avoid network here to keep simple)
-                    // skip; we only cache when we have buffer
-                }
-                if (ab) {
-                    await this.storage.updateImage(id.toString(), Buffer.from(ab) as any);
-                }
-            } catch { /* ignore background errors */ }
-        })();
-
-        // 3) if no cache, fetch now
-        if (!photo) {
-            try {
-                const latest = (await this.tgApi.getProfilePhotos(id)) as Buffer | string | undefined;
-                if (latest) {
-                    if (typeof (latest as any).byteLength === 'number') {
-                        const buf = latest as unknown as Buffer;
-                        const slice = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-                        const ab = slice instanceof ArrayBuffer ? slice : new Uint8Array(buf).slice().buffer as ArrayBuffer;
-                        await this.storage.addImage(id, ab);
-                        photo = ab;
-                    }
-                }
-            } catch { /* ignore immediate fetch errors; keep returning cache if any */ }
-        }
-
-        if (photo instanceof ArrayBuffer) return Buffer.from(photo);
-        return photo as Buffer;
-    }
-
-    /**
-     * Retrieves a higher quality profile picture (big) for preview purposes.
-     * Does not overwrite cache immediately to avoid large storage churn.
-     */
-    static async getProfilePicHQ(id: bigInt.BigInteger): Promise<Buffer | undefined> {
-        try {
-            const latest = (await this.tgApi.getProfilePhotosBig(id)) as Buffer | string | undefined;
-            if (!latest) return undefined;
-            if (typeof (latest as any).byteLength === 'number') return latest as Buffer;
-            return undefined;
-        } catch {
-            return undefined;
-        }
-    }
-
-    /**
-     * Retrieves messages from a chat.
-     * @param chatId - The ID of the chat.
-     * @param limit - The maximum number of messages to retrieve.
-     * @returns A promise that resolves to the list of messages.
-     */
-    static async getMessages(chatId: bigInt.BigInteger, limit: number): Promise<Api.Message[]> {
-        // 1) read cached last N
-        const cached = await this.storage.getMessagesByDialogId(chatId, limit);
-        // 2) background refresh to merge newer msgs
-        (async () => {
-            try {
-                const fetched = await this.tgApi.getMessages(chatId, { limit, max_id: undefined });
-                const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
-                // merge by id uniqueness
-                const existing = new Set((cached as any[]).map(m => m.id));
-                const mergedNew = onlyMessages.filter((m: any) => !existing.has(m.id));
-                for (const m of mergedNew) await this.storage.addMessage(m);
-            } catch { }
-        })();
-        // 3) if cache empty, fetch now
-        if (!cached || cached.length === 0) {
-            const fetched = await this.tgApi.getMessages(chatId, { limit });
-            const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
-            console.log(onlyMessages)
-            for (const m of onlyMessages) await this.storage.addMessage(m);
-            return onlyMessages;
-        }
-        return cached;
-    }
-
-    /**
-     * Retrieves older messages before a given message id in cache-first mode, then refreshes from network.
-     */
-    static async getOlderMessages(chatId: bigInt.BigInteger, beforeId: number, limit: number): Promise<Api.Message[]> {
-        // 1) cache first
-        const cached = await this.storage.getMessagesByDialogIdBefore(chatId, beforeId, limit);
-        // 2) background fetch older from network and persist
-        (async () => {
-            try {
-                const fetched = await this.tgApi.getMessages(chatId, { limit, max_id: beforeId });
-                const onlyMessages = fetched.filter((m: any) => m.className === 'Message');
-                for (const m of onlyMessages) await this.storage.addMessage(m);
-            } catch { }
-        })();
-        return cached;
-    }
-
-    /**
-     * Drops the local database.
-     * @returns A promise that resolves when the operation is complete.
-     */
-    static async dropDatabase(): Promise<void> {
-        await this.storage.dropDatabase();
-    }
-
-    /**
-     * Sets the application settings.
-     * @param settings - The settings to apply.
-     */
-    static setSettings(settings: Settings): void {
-        localStorage.setItem('settings', JSON.stringify(settings));
-        this.settings = settings;
-    }
-
-    /**
-     * Retrieves the application settings.
-     * @returns The current settings.
-     */
-    static getSettings(): Settings | any {
-        let settings = localStorage.getItem('settings');
-        let defaultSettings = {
-            fontSize: 14,
-            hairColor: HairColor.BLACK,
-            skinColor: SkinColor.WHITE,
-            theme: 'light'
-        } as Settings;
-        let res = settings ? JSON.parse(settings) : null;
-        if (res === null) {
-            Controller.setSettings(defaultSettings);
-            return null;
-        }
-        return res;
-    }
-
-    static updateSettings(arg0: string, value: any) {
-        let settings = Controller.getSettings();
-        settings[arg0] = value;
-        Controller.setSettings(settings);
-    }
-
-    /**
-     * Retrieves a list of verb pictograms.
-     * @returns The list of verb pictograms.
-     */
-    static getVerbs = (): Pictogram[] => {
-        return WordsService.getVerbs().map((p) => {
-            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
-            return p;
-        });
-    };
-
-
-    /**
-     * Retrieves a list of subject pictograms.
-     * @param category - The category of the subject pictograms.
-     * @param verb - The verb to filter subjects by.
-     * @returns The list of subject pictograms.
-     */
-    static getWords = (category: string, verb?: string): Pictogram[] => {
-        //TO FIX
-        let getted = (category === "persone") ? WordsService.getSubjects() : WordsService.getObjects(verb);
-        let common = getted.map((p) => {
-            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
-            return p;
-        });
-
-        let personal = (Controller.getPersonalPictograms().map((p) => {
-            if (p.category === category) {
-                return Utils.personalPictogramToPictogram(p);
-            }
-            return undefined as unknown as Pictogram;
-        }) as Pictogram[]).filter((p) => p !== undefined);
-
-
-        //before return remove common pictograms that are already in personal
-        personal.forEach((p) => {
-            common = common.filter((c) => c.word !== p.word);
-        });
-
-        return personal.concat(common).filter((p) => p !== undefined);
-    }
-
-    /**
-     * Extracts choices from a sentence.
-     * @param sentence - The sentence to extract choices from.
-     * @returns The list of choices.
-     */
-    static extractChoices = (sentence: string): string[] => {
-        return WordsService.extractChoices(sentence)
-    };
-
-    static searchForCategory = (category: string): { personal: Pictogram[], araasac: Pictogram[] } => {
-        let personal = Controller.getPersonalPictograms()
-            .filter((p) => (p.category).trim().toLocaleLowerCase() === category.trim().toLocaleLowerCase())
-            .map(Utils.personalPictogramToPictogram);
-
-        let r = {
-            personal: personal,
-            araasac: AAC.searchForCategory(category).map((p) => {
-                p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
-                return p;
-            })
-        }
-        return r;
-    }
-
-    static getAllCategories = (): string[] => {
-        let categories = new Set<string>();
-        for (let p of AAC.pictograms) {
-            if (p.tags) {
-                for (let tag of p.tags) {
-                    categories.add(tag);
-                }
-            }
-        }
-        return Array.from(categories);
-    }
-
-    static searchPictograms = async (word: string, limit: number): Promise<Pictogram[] | null> => {
-        let pictos = (await Controller.aac.searchKeyword(word, true));
-        if (pictos.length === 0) return [];
-        let result = [];
-        let i = 0;
-        for (let p of pictos) {
-            if (i >= limit) break;
-            const tmp = await Controller.aac.getImageFromId(p._id, true, Controller.settings.skinColor, Controller.settings.hairColor);
-            if ((tmp as any).keywords && (tmp as any).keywords.length > 0 && (tmp as any).keywords[0].keyword)
-                tmp.word = ((tmp as any).keywords[0]).keyword;
-            else
-                tmp.word = word;
-            result.push(tmp);
-            i++;
-        }
-        return result;
-    }
-
-    /**
-     * Searches for a pictogram by keyword.
-     * @param keyword - The keyword to search for.
-     * @param normal - Whether to perform a normal search.
-     * @returns A promise that resolves to the found pictogram or null if not found.
-     */
-    static searchPictogram = async (keyword: string, normal: boolean): Promise<Pictogram | null> => {
-        let pictos = (await Controller.aac.searchKeyword(keyword, normal));
-        if (pictos.length === 0) return null;
-        let picto = pictos[0];
-        const p = await Controller.aac.getImageFromId(picto._id, true, Controller.settings.skinColor, Controller.settings.hairColor);
-        p.word = keyword;
-        return p;
-    }
-
-    /**
-     * Extracts suggested pictograms from a sentence.
-     * @param sentence - The sentence to extract pictograms from.
-     * @returns A promise that resolves to the list of suggested pictograms or null if not found.
-     */
-    static extractSuggestedPictograms = async (sentence: string): Promise<Pictogram[] | null> => {
-        let o = WordsService.extractSuggestedPictograms(sentence);
-        let result = Controller.extractPictograms(o.join(' '));
-        if (result === null) return null;
-        if (o.length === result.length) return result;
-        return result;
-    };
-
-
-    static readPersonalPictogram = (message: Api.Message): boolean => {
-        const text = (message.message || '').toString();
-        if (!text.trim().toLowerCase().includes(":") && !message.media) return false;
-        let splitted = text.split(":");
-        if (!Controller.getCategories().includes(splitted[0].trim().toLowerCase())) return false;
-        if (message.media?.className !== "MessageMediaPhoto") return false;
-        Controller.importPersonalPictogramFromMessage(splitted[0].trim(), splitted[1].trim(), message);
-        return true;
-    }
-
-    /**
-     * Extracts pictograms from a sentence.
-     * @param sentence - The sentence to extract pictograms from.
-     * @returns A promise that resolves to the list of pictograms or null if not found.
-     */
-    static extractPictograms = (sentence: string, context?: PictogramContext): Pictogram[] | null => {
-        // Pulizia iniziale della frase
-        let gw = WordsService.getGarbageWords();
-        let cleanedWords = sentence
-            .split(' ')
-            .map((word) => word.replace(/[.,!?;:()]/g, "").toLowerCase())
-            .filter((word) => word.length > 1 && !gw.includes(word));
-
-        // Inizializza il risultato con le parole pulite
-        let result: (Pictogram | string)[] = [...cleanedWords];
-        result = this.estraiPictoPersonali(result);
-        let { result: processedResult, processedWords } = this.estraiVerbiInfiniti(result);
-
-        result = this.estraiPicto(processedResult, processedWords);
-        return (result.filter((item) => item !== null && typeof item !== "string") as Pictogram[]).map((p) => {
-            p.url = this.convertLink(this.settings, p.url, p.hair, p.skin);
-            return p;
-        });
-    };
-
-    private static estraiPictoPersonali = (result: (Pictogram | string)[]): (Pictogram | string)[] => {
-        let personalPictograms = Controller.getPersonalPictograms();
-        let gw = WordsService.getGarbageWords();
-
-        for (const personalPictogram of personalPictograms) {
-            let phraseWords = personalPictogram.name.toLowerCase().split(' ').filter((word) => !gw.includes(word));
-            if (phraseWords.length > 3) continue; // Ignora se supera 3 parole
-
-            let startIndex = result.findIndex((item, index) => {
-                return typeof item === 'string' && phraseWords.every((pw, offset) =>
-                    result[index + offset] && result[index + offset] === pw
-                );
-            });
-
-            if (startIndex !== -1) {
-                // Sostituisci le parole corrispondenti con il pittogramma personale
-                result.splice(startIndex, phraseWords.length, Utils.personalPictogramToPictogram(personalPictogram));
-            }
-        }
-
-        return result;
-    };
-
-    private static estraiVerbiInfiniti = (result: (Pictogram | string)[]): { result: (Pictogram | string)[], processedWords: { original: string, processed: string }[] } => {
-        let remainingWords = result.filter(item => typeof item === 'string') as string[];
-        let processedWords: { original: string, processed: string }[] = [];
-
-        for (let i = 0; i < remainingWords.length; i++) {
-            let word = WordsService.findInfinitive(remainingWords[i]);
-            if (!word) {
-                processedWords.push({ original: remainingWords[i], processed: remainingWords[i] });
-                continue;
-            }
-
-            if (WordsService.AUSILIAR_VERBS.includes(word)) {
-                let nextWord = remainingWords[i + 1];
-                if (nextWord) {
-                    let combinedInfinitive = WordsService.findInfinitive(`${remainingWords[i]} ${nextWord}`);
-                    if (combinedInfinitive) {
-                        processedWords.push({ original: `${remainingWords[i]} ${nextWord}`, processed: combinedInfinitive });
-                        i++;
-                        continue;
-                    }
-                }
-            }
-
-            processedWords.push({ original: remainingWords[i], processed: word });
-        }
-
-        let processedResult = result.map(item => {
-            if (typeof item === 'string') {
-                let processedWord = processedWords.find(pw => pw.original === item)?.processed;
-                return processedWord || item;
-            }
-            return item;
-        });
-
-        return { result: processedResult, processedWords };
-    };
-
-    private static estraiPicto = (result: (Pictogram | string)[], processedWords: { original: string, processed: string }[]): (Pictogram | string)[] => {
-        let processedSentence = processedWords.map(w => w.processed).join(' ');
-        let foundPictograms = AAC.searchPictograms(processedSentence) as Pictogram[];
-
-        result.push(...foundPictograms);
-
-        return result;
-    };
-
-
-
-    static importPersonalPictogramFromMessage = (type: string, name: string, message: Api.Message): void => {
-        let pp = this.getPersonalPictograms();
-        if (pp.find((p) => p.name.toLowerCase().trim() === name.toLowerCase().trim())) return;
-
-        this.tgApi.downloadMedia(message.media as Api.TypeMessageMedia, 1).then((result) => {
-            let pictogram = {
-                name: name,
-                category: type,
-                photoUrl: `data:image/jpeg;base64,${Buffer.from(result).toString('base64')}`
-            } as PersonalPictogram;
-            Controller.addPersonalPictogram(pictogram);
-        });
-    }
-
-    /**
-     * Converts text to speech.
-     * @param text - The text to convert to speech.
-     */
-    static textToSpeech = (text: string): void => {
-        WordsService.textToSpeech(text);
-    }
-
-    /**
-     * Retrieves personal pictograms from local storage.
-     * @returns The list of personal pictograms.
-     */
-    static getPersonalPictograms(): PersonalPictogram[] {
-        let personalPictograms = localStorage.getItem('personalPictograms');
-        return personalPictograms ? JSON.parse(personalPictograms) : [];
-    }
-
-    /**
-     * Adds a new personal pictogram to local storage.
-     * @param newPictogram - The new personal pictogram to add.
-     */
-    static addPersonalPictogram(newPictogram: PersonalPictogram) {
-
-        newPictogram.category = newPictogram.category.trim().toLowerCase();
-        newPictogram.name = newPictogram.name.trim().toLowerCase();
-
-        let personalPictograms = Controller.getPersonalPictograms();
-        if (personalPictograms.find((p) => p.name.toLowerCase().trim() === newPictogram.name.toLowerCase().trim())) return;
-
-        if (personalPictograms) {
-            personalPictograms.push(newPictogram);
-        } else {
-            personalPictograms = [newPictogram];
-        }
-        let tmp = newPictogram;
-        tmp.name = tmp.name.trim();
-        try {
-            localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
-        } catch (e) {
-            // rethrow to allow UI to handle quota issues
-            throw e;
-        }
-    }
-
-    static deletePersonalPictogram(pictogram: PersonalPictogram) {
-        let personalPictograms = Controller.getPersonalPictograms();
-        personalPictograms = personalPictograms.filter((p) => p.name !== pictogram.name);
-        localStorage.setItem('personalPictograms', JSON.stringify(personalPictograms));
-    }
-
-    /**
-     * Converts a link based on settings.
-     * @param settings - The settings to use for conversion.
-     * @param url - The URL to convert.
-     * @returns The converted URL.
-     */
-    private static convertLink(settings: Settings | null, url: string, hair: boolean, skin: boolean): string {
-        if (!settings) {
-            // Return original URL if settings are not available
-            return url;
-        }
-        if (!url.includes('arasaac')) return url;
-        if (!url.includes('hair') && !url.includes('skin')) return url;
-        let urlArray = url.split('_');
-        if (hair) {
-            let h = AAC.hairColorToHex(settings.hairColor);
-            let hairIndex = urlArray.findIndex(part => part.startsWith('hair-'));
-            if (hairIndex !== -1) {
-                urlArray[hairIndex] = `hair-${h}`;
-            } else {
-                urlArray.splice(1, 0, `hair-${h}`);
-            }
-        } else {
-            urlArray = urlArray.filter(part => !part.startsWith('hair-'));
-        }
-        if (skin) {
-            let s = AAC.skinColorToHex(settings.skinColor);
-            let skinIndex = urlArray.findIndex(part => part.startsWith('skin-'));
-            if (skinIndex !== -1) {
-                urlArray[skinIndex] = `skin-${s}`;
-            } else {
-                if (urlArray.length > 1) {
-                    urlArray.splice(2, 0, `skin-${s}`);
-                } else {
-                    urlArray.splice(1, 0, `skin-${s}`);
-                }
-            }
-        } else {
-            urlArray = urlArray.filter(part => !part.startsWith('skin-'));
-        }
-
-        return urlArray.join('_');
-    }
+    static getPersonalPictograms() { return PersonalPictogramService.getPersonalPictograms(); }
+    static addPersonalPictogram(p: any) { return PersonalPictogramService.addPersonalPictogram(p); }
+    static deletePersonalPictogram(p: any) { return PersonalPictogramService.deletePersonalPictogram(p); }
 }
+
+// Re-export Settings type for consumers that import it from Controller
+export type { Settings };

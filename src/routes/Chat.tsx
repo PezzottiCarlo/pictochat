@@ -309,7 +309,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                 style={{ 
                     padding: '16px', 
                     paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', 
-                    background: 'rgba(255, 255, 255, 0.95)',
+                    
                     backdropFilter: 'blur(10px)',
                     boxShadow: '0 -4px 20px rgba(0,0,0,0.08)',
                     borderTop: '1px solid rgba(0,0,0,0.06)'
@@ -326,7 +326,7 @@ export const Chat: React.FC<ChatProps> = ({ chatId }) => {
                             transition={{ duration: 0.2 }}
                             style={{ marginBottom: '12px' }}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 30 }}>
                                 <Popover
                                     open={showHints}
                                     content={<ChatHints onHintClick={handleHints} hints={Controller.getHints()} />}

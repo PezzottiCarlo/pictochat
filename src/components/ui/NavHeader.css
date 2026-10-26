@@ -1,0 +1,86 @@
+.pc-nav__main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: start;
+}
+.pc-nav__main--button {
+  border-radius: var(--radius-md);
+  padding-inline: var(--space-1);
+}
+.pc-nav__main--button:active {
+  opacity: 0.7;
+}
+
+.pc-nav__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pc-nav__title {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-heavy);
+  line-height: var(--lh-tight);
+  /* Two lines max: big text and STAMPATELLO must not push actions off screen. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+/* Titles grow with the text setting but are capped: they are already the biggest text on screen. */
+.pc-nav__title {
+  font-size: min(var(--fs-lg), 32px);
+}
+/* The large title has the full width: shrink it (not below 22px) until its longest word fits.
+   +0.04: the heading letter-spacing cap from base.css. */
+.pc-nav--large .pc-nav__main {
+  container-type: inline-size;
+}
+.pc-nav--large .pc-nav__title {
+  font-size: max(22px, min(var(--fs-xxl), 40px, calc(100cqi / (var(--title-word, 8) * (var(--char-w) + 0.04)))));
+}
+
+.pc-nav__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-tight);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Large title: actions on the first row, the title gets the full width below (iOS style). */
+.pc-nav--large {
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+.pc-nav--large .pc-nav__main {
+  order: 2;
+  flex-basis: 100%;
+  padding-inline: var(--space-2);
+}
+.pc-nav--large .pc-nav__trailing {
+  margin-inline-start: auto;
+}
+.pc-nav--large:not(:has(.pc-nav__trailing, .pc-icon-btn)) .pc-nav__main {
+  padding-top: var(--space-2);
+}
+
+.pc-nav__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+

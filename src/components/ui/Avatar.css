@@ -1,0 +1,43 @@
+.pc-avatar {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+  /* Pastel fill + deep same-hue text: ≥ 7:1 for every hue. */
+  background: hsl(var(--avatar-hue) 70% 85%);
+  color: hsl(var(--avatar-hue) 60% 20%);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+:root[data-theme='high-contrast'] .pc-avatar {
+  box-shadow: 0 0 0 2px var(--border);
+}
+
+.pc-avatar__img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.pc-avatar__initials {
+  font-family: var(--font-sans);
+  font-size: calc(var(--avatar-size) * 0.4);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pc-avatar__presence {
+  position: absolute;
+  right: 2%;
+  bottom: 2%;
+  width: max(12px, calc(var(--avatar-size) * 0.26));
+  height: max(12px, calc(var(--avatar-size) * 0.26));
+  border-radius: 50%;
+  background: #22b357;
+  box-shadow: 0 0 0 3px var(--bg-solid);
+}

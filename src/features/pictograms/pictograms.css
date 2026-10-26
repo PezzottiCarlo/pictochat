@@ -1,0 +1,218 @@
+/* Pictograms page. Only design-system tokens (src/theme/README.md). */
+
+.pg-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pg-search.ant-input-affix-wrapper {
+  min-height: var(--tap-min);
+  border-radius: var(--radius-pill);
+}
+
+.pg-hint {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+.pg-error {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  color: var(--danger);
+}
+.pg-label {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+}
+
+/* ---- category chips ------------------------------------------------ */
+.pg-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.pg-cats--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin-inline: calc(var(--gutter, var(--space-4)) * -1);
+  padding: 4px var(--gutter, var(--space-4));
+  scroll-padding-inline: var(--gutter, var(--space-4));
+  scrollbar-width: thin;
+}
+.pg-cat {
+  --cat: var(--accent);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--separator);
+  border-left: 6px solid var(--cat);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+}
+.pg-cat[aria-pressed='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  border-left-color: var(--cat);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.pg-cat__icon {
+  font-size: var(--fs-lg);
+  text-transform: none;
+}
+
+/* ---- grids --------------------------------------------------------- */
+.pg-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tap-gap);
+}
+
+.pg-group {
+  --cat: var(--accent);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 5px solid var(--cat);
+}
+.pg-group__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-heavy);
+  line-height: var(--lh-tight);
+}
+.pg-group__count {
+  min-width: 1.8em;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--bg-sunken);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-align: center;
+}
+
+/* ---- library dock -------------------------------------------------- */
+.pg-dock {
+  position: sticky;
+  bottom: var(--space-3);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--bg-elevated);
+  border: var(--border-width, 1px) solid var(--separator);
+  box-shadow: var(--shadow-2);
+}
+:root[data-glass='true'] .pg-dock {
+  background: var(--glass-overlay);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+}
+.pg-dock__word {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-heavy);
+  overflow-wrap: anywhere;
+}
+.pg-dock__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tap-gap);
+}
+
+/* ---- editor -------------------------------------------------------- */
+.pg-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.pg-image {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+.pg-image__preview {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  min-width: 140px;
+  min-height: 140px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-sunken);
+  border: 2px dashed var(--border);
+}
+.pg-image__empty {
+  padding: var(--space-3);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  text-align: center;
+}
+.pg-image__actions {
+  flex: 1 1 12em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tap-gap);
+}
+.pg-back {
+  align-self: flex-start;
+}
+
+/* ---- actions sheet ------------------------------------------------- */
+.pg-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tap-gap);
+}
+.pg-actions__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+}
+
+/* ---- undo ---------------------------------------------------------- */
+.pg-undo-slot {
+  position: sticky;
+  bottom: var(--space-3);
+  z-index: 3;
+}
+.pg-undo-slot:empty {
+  display: none;
+}
+.pg-undo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--text);
+  color: var(--bg-solid);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-strong);
+  box-shadow: var(--shadow-2);
+}

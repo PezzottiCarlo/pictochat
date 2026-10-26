@@ -1,0 +1,105 @@
+/*
+ * Theme-independent tokens. Colors live in the per-theme blocks generated from
+ * src/theme/palettes.ts; the provider writes the user's preferences as
+ * data-attributes on <html>, which tune the tokens below.
+ */
+:root {
+  /* type */
+  --font-sans: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-dyslexic: 'OpenDyslexic', 'Comic Sans MS', var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-scale: 1;
+  --fs-xs: calc(14px * var(--font-scale));
+  --fs-sm: calc(16px * var(--font-scale));
+  --fs-md: calc(18px * var(--font-scale));
+  --fs-lg: calc(21px * var(--font-scale));
+  --fs-xl: calc(25px * var(--font-scale));
+  --fs-xxl: calc(31px * var(--font-scale));
+  --fw-body: 400;
+  --fw-strong: 700;
+  --fw-heavy: 800;
+  /* Average glyph advance in em (measured on the app fonts + ~5% margin), used by
+     components that shrink a label to fit instead of breaking words. */
+  --char-w: 0.56;
+  --lh-body: 1.5;
+  --lh-tight: 1.25;
+  --ls: 0em;
+  --ws: 0em;
+
+  /* space: 4-pt scale; --tap-gap separates neighbouring touch targets */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --gutter: var(--space-4);
+
+  /* touch */
+  --tap-min: 56px;
+  --tap-gap: 10px;
+  --icon-size: calc(var(--tap-min) * 0.44);
+
+  /* shape */
+  --radius-pill: 999px;
+  --tile-bg: #ffffff;
+  --tile-text: #15232d;
+  --tile-border: rgba(21, 35, 45, 0.12);
+
+  /* motion */
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-med: 280ms;
+  --dur-slow: 480ms;
+
+  /* safe area */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* layering */
+  --z-bar: 20;
+  --z-sheet: 1000;
+}
+
+:root[data-font='dyslexic'] {
+  --font-body: var(--font-dyslexic);
+  /* OpenDyslexic is wide and tall: give lines a bit more air */
+  --lh-body: 1.6;
+}
+
+:root[data-uppercase='true'] { --char-w: 0.68; }
+:root[data-font='dyslexic'] { --char-w: 0.77; }
+
+:root[data-leading='normal'] { --lh-body: 1.4; --lh-tight: 1.2; }
+:root[data-leading='relaxed'] { --lh-body: 1.55; --lh-tight: 1.3; }
+:root[data-leading='loose'] { --lh-body: 1.8; --lh-tight: 1.45; }
+
+/* WCAG 1.4.12 text spacing: letter ≥ 0.12em and word ≥ 0.16em at the top step */
+:root[data-spacing='wide'] { --ls: 0.05em; --ws: 0.08em; }
+:root[data-spacing='wider'] { --ls: 0.12em; --ws: 0.16em; }
+
+:root[data-bold='true'] {
+  --fw-body: 700;
+  --fw-strong: 800;
+  --fw-heavy: 800;
+}
+
+:root[data-touch='comfortable'] { --tap-min: 48px; --tap-gap: 8px; }
+:root[data-touch='large'] { --tap-min: 56px; --tap-gap: 10px; }
+:root[data-touch='xl'] { --tap-min: 68px; --tap-gap: 14px; }
+
+:root[data-motion='reduce'] {
+  --dur-fast: 1ms;
+  --dur-med: 1ms;
+  --dur-slow: 1ms;
+  --ease-spring: linear;
+}
+
+:root[data-theme='high-contrast'] {
+  --tile-border: #ffffff;
+}

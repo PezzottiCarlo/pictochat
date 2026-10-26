@@ -1,0 +1,29 @@
+.pc-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0;
+  /* Room for the selection ring and check badge, which sit outside the tile. */
+  padding: 12px 12px 14px;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 12px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.pc-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.pc-strip--wrap {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.pc-strip__item {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}

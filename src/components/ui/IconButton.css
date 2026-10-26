@@ -1,0 +1,102 @@
+.pc-icon-btn {
+  --btn-size: var(--tap-min);
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--btn-size);
+  height: var(--btn-size);
+  padding: 0;
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--accent-text);
+  font-size: calc(var(--btn-size) * 0.44);
+  line-height: 1;
+  text-transform: none;
+  transition:
+    transform var(--dur-fast) var(--ease-spring),
+    background-color var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
+  touch-action: manipulation;
+}
+.pc-icon-btn--lg {
+  --btn-size: calc(var(--tap-min) * 1.25);
+}
+
+.pc-icon-btn__icon {
+  display: inline-grid;
+  place-items: center;
+}
+.pc-icon-btn__icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.pc-icon-btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+.pc-icon-btn:active:not(:disabled) {
+  transform: scale(0.9);
+}
+.pc-icon-btn:disabled {
+  opacity: 0.45;
+}
+
+.pc-icon-btn--tinted {
+  background: var(--accent-soft);
+}
+.pc-icon-btn--filled {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+.pc-icon-btn--filled:hover:not(:disabled) {
+  background: var(--accent-strong);
+}
+.pc-icon-btn--glass {
+  background: var(--accent-glass);
+  color: var(--text-on-accent-glass);
+}
+.pc-icon-btn--glass:hover:not(:disabled) {
+  background: var(--accent-glass);
+  filter: brightness(1.06);
+}
+.pc-icon-btn--danger {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.pc-icon-btn--danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+:root[data-theme='high-contrast'] .pc-icon-btn--plain,
+:root[data-theme='high-contrast'] .pc-icon-btn--tinted {
+  border-color: var(--border);
+}
+
+.pc-icon-btn__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 22px;
+  letter-spacing: 0;
+  box-shadow: 0 0 0 2px var(--bg-solid);
+}
+:root[data-mode='dark'] .pc-icon-btn__badge {
+  color: #1a0503;
+}
+.pc-icon-btn__badge--dot {
+  min-width: 14px;
+  height: 14px;
+  padding: 0;
+  top: 6px;
+  right: 6px;
+}

@@ -1,0 +1,387 @@
+/* Composer. Only design-system tokens (src/theme/README.md). */
+
+.ch-composer.pc-bar {
+  flex-direction: column;
+  align-items: stretch;
+  /* Never a scroll-anchoring candidate: its growth must not move the conversation. */
+  overflow-anchor: none;
+}
+/* Never taller than the screen minus the header and a glimpse of the conversation. */
+.ch-composer__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-height: calc(100dvh - var(--safe-top) - var(--tap-min) - 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.ch-composer__body > * {
+  flex-shrink: 0;
+}
+.ch-composer__overlay {
+  position: absolute;
+  right: calc(var(--safe-right) + var(--space-3));
+  bottom: calc(100% + var(--space-3));
+}
+
+/* Horizontal scrollers (suggestions, quick phrases, categories). */
+.ch-suggest,
+.ch-chips,
+.ch-picker__tabs,
+.ch-picker__cats {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 2px 2px 4px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.ch-suggest::-webkit-scrollbar,
+.ch-chips::-webkit-scrollbar,
+.ch-picker__tabs::-webkit-scrollbar,
+.ch-picker__cats::-webkit-scrollbar {
+  display: none;
+}
+.ch-suggest > li,
+.ch-chips > li {
+  flex-shrink: 0;
+}
+
+.ch-suggest__chip,
+.ch-chip,
+.ch-step,
+.ch-cat {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  max-width: 18em;
+  padding: var(--space-1) var(--space-3);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  line-height: var(--lh-tight);
+  text-align: start;
+  cursor: pointer;
+}
+.ch-suggest__chip {
+  padding-left: var(--space-1);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  background: var(--accent-soft);
+}
+.ch-suggest__pictos {
+  display: flex;
+  gap: var(--space-1);
+}
+.ch-suggest__pictos .pc-tile {
+  --tile-img: 36px !important;
+  border-width: 2px;
+  box-shadow: none;
+}
+.ch-chip__img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: var(--tile-bg);
+}
+
+/* ---- pictogram composer ------------------------------------------------- */
+.ch-pc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ch-pc__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ch-pc__send {
+  flex-shrink: 0;
+}
+
+/* The sentence strip: a sunken rail where chosen cards sit in order, empty slots dashed. */
+.ch-rail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border: var(--border-width) solid var(--separator);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sunken);
+}
+.ch-rail::-webkit-scrollbar {
+  display: none;
+}
+.ch-rail__item {
+  display: flex;
+  flex-shrink: 0;
+}
+.ch-rail__tile {
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.ch-slot {
+  display: grid;
+  place-items: center;
+  min-width: calc(var(--rail-img) * 1.12 + 14px);
+  min-height: calc(var(--rail-img) + var(--space-5));
+  padding: var(--space-1);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  line-height: var(--lh-tight);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) ease,
+    border-color var(--dur-fast) ease;
+}
+.ch-slot.is-active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+:root[data-category-colors='true'] .ch-slot {
+  border-bottom-style: solid;
+  border-bottom-width: 6px;
+}
+:root[data-category-colors='true'] [data-step='chi'] {
+  border-bottom-color: var(--cat-person);
+}
+:root[data-category-colors='true'] [data-step='azione'] {
+  border-bottom-color: var(--cat-verb);
+}
+:root[data-category-colors='true'] [data-step='cosa'] {
+  border-bottom-color: var(--cat-noun);
+}
+
+.ch-preview {
+  margin: 0;
+  padding: 0 var(--space-1);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-strong);
+  line-height: var(--lh-tight);
+  overflow-wrap: anywhere;
+}
+.ch-preview__hint {
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-body);
+}
+
+.ch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tap-gap);
+}
+.ch-actions__toggle {
+  margin-inline-start: auto;
+}
+
+.ch-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--separator);
+}
+.ch-step {
+  padding-inline: var(--space-2) var(--space-3);
+}
+.ch-step--aux {
+  padding-inline: var(--space-3);
+}
+.ch-step__n {
+  display: grid;
+  place-items: center;
+  min-width: 1.7em;
+  height: 1.7em;
+  border-radius: 50%;
+  background: var(--bg-sunken);
+  font-size: var(--fs-xs);
+}
+:root[data-category-colors='true'] .ch-step[data-step] {
+  border-bottom-width: 4px;
+}
+.ch-step.is-active,
+.ch-cat.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+.ch-step.is-active .ch-step__n {
+  background: color-mix(in srgb, currentColor 22%, transparent);
+}
+.ch-cat {
+  border-left: 6px solid var(--chip-edge, var(--border));
+}
+.ch-cat.is-active {
+  border-left-color: var(--chip-edge, var(--accent));
+}
+
+.ch-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+.ch-search:focus-within {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.ch-search input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-md);
+}
+
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, calc(var(--grid-img) * 1.12 + 6px));
+  justify-content: space-evenly;
+  align-items: start;
+  gap: var(--tap-gap);
+  /* Leaves the last messages visible above the composer on small phones. */
+  max-height: clamp(140px, 100dvh - 560px, 460px);
+  padding: var(--space-2) 6px var(--space-3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ch-grid__note {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+
+/* ---- keyboard composer ---------------------------------------------------- */
+.ch-kb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.ch-kb__preview {
+  margin: calc(-1 * var(--space-2)) 0;
+}
+.ch-kb__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--tap-gap);
+}
+.ch-kb__tools {
+  display: flex;
+  gap: var(--tap-gap);
+}
+/* Field and send button stay together; the tools wrap above them on narrow screens. */
+.ch-kb__entry {
+  display: flex;
+  flex: 1 1 13rem;
+  align-items: flex-end;
+  gap: var(--tap-gap);
+  min-width: 0;
+}
+.ch-kb__field {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+.ch-kb__field textarea {
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: calc(var(--tap-min) / 2);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-md);
+  line-height: 1.4;
+  resize: none;
+}
+.ch-kb__field textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+/* ---- sheets --------------------------------------------------------------- */
+.ch-attach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+.ch-attach__img {
+  align-self: center;
+  max-width: 100%;
+  max-height: 40dvh;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+.ch-attach__file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--fs-md);
+}
+
+.ch-confirm__text {
+  margin: var(--space-3) 0;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-strong);
+  line-height: var(--lh-tight);
+}
+.ch-confirm__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tap-gap);
+}
+.ch-confirm__actions > .ant-btn {
+  flex: 1 1 8em;
+  height: auto;
+  min-height: var(--tap-min);
+  white-space: normal;
+}

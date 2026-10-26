@@ -1,0 +1,185 @@
+/* Help page (/aiuto). Tokens and primitives only: see src/theme/README.md. */
+
+.hp-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.hp-lead {
+  font-size: var(--fs-lg);
+}
+.hp-h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-3);
+}
+.hp-h2 .anticon {
+  color: var(--accent-text);
+}
+.hp-btn.ant-btn {
+  height: auto;
+  min-height: calc(var(--tap-min) + var(--space-1));
+  white-space: normal;
+  font-weight: var(--fw-strong);
+}
+
+/* Guide cards: pictogram on a white tile, text beside it (stacks when narrow). */
+.hp-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.hp-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.hp-card__picto {
+  flex: 0 0 auto;
+  width: calc(var(--tap-min) * 1.7);
+  height: calc(var(--tap-min) * 1.7);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  background: var(--tile-bg);
+  border: 1px solid var(--tile-border);
+}
+.hp-card__picto img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.hp-card__body {
+  flex: 1 1 11rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.hp-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.hp-card__head > button {
+  flex-shrink: 0;
+}
+.hp-card__title {
+  min-width: 0;
+  font-size: var(--fs-lg);
+  padding-top: var(--space-2);
+}
+
+.hp-redo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.hp-redo .hp-h2 {
+  margin-bottom: 0;
+}
+
+/* FAQ: native disclosure, keyboard and screen-reader friendly. */
+.hp-faq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.hp-faq__item {
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.hp-faq__q {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+  list-style: none;
+}
+.hp-faq__q::-webkit-details-marker {
+  display: none;
+}
+.hp-faq__q::after {
+  content: '';
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  width: 10px;
+  height: 10px;
+  border-right: 3px solid var(--text-secondary);
+  border-bottom: 3px solid var(--text-secondary);
+  transform: rotate(45deg);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.hp-faq__item[open] > .hp-faq__q::after {
+  transform: rotate(-135deg);
+}
+.hp-faq__a {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: 0 var(--space-4) var(--space-4);
+}
+.hp-faq__a > p {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hp-faq__a > button {
+  flex-shrink: 0;
+}
+
+.hp-tips {
+  margin: 0;
+  padding-inline-start: 1.4em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.hp-tips li::marker {
+  font-weight: var(--fw-heavy);
+  color: var(--accent-text);
+}
+
+.hp-credits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+.hp-credits .hp-h2 {
+  color: var(--text);
+}
+.hp-credits a {
+  color: var(--accent-text);
+  font-weight: var(--fw-strong);
+}
+.hp-version {
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-pin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.hp-pin__label {
+  font-weight: var(--fw-strong);
+}
+.hp-error {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  border-inline-start: 4px solid var(--danger);
+  font-weight: var(--fw-strong);
+}

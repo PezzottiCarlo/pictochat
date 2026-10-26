@@ -1,0 +1,31 @@
+/* Atkinson Hyperlegible Next (Braille Institute, OFL-1.1): letterforms designed to be
+   told apart easily (I/l/1, O/0, b/d). Bundled so it works offline in the PWA. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('./fonts/atkinson-hyperlegible-next-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('./fonts/atkinson-hyperlegible-next-latin-700.woff2') format('woff2');
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  src: url('./fonts/atkinson-hyperlegible-next-latin-800.woff2') format('woff2');
+  font-weight: 800 900;
+  font-style: normal;
+  font-display: swap;
+}
+/* OpenDyslexic ships one weight; bold is synthesized by the browser. */
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('/fonts/OpenDyslexicMono-Regular.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

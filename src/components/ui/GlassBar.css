@@ -1,0 +1,50 @@
+.pc-bar {
+  position: sticky;
+  z-index: var(--z-bar);
+  display: flex;
+  align-items: center;
+  gap: var(--tap-gap);
+  flex-shrink: 0;
+  min-height: calc(var(--tap-min) + var(--space-3));
+  color: var(--text);
+}
+
+/* Full-width bars: flat edges, a hairline toward the content. */
+.pc-bar--top:not(.pc-bar--floating) {
+  top: 0;
+  padding: calc(var(--safe-top) + var(--space-2)) calc(var(--safe-right) + var(--space-3)) var(--space-2)
+    calc(var(--safe-left) + var(--space-3));
+  border-width: 0 0 var(--border-width);
+  border-color: var(--separator);
+}
+
+.pc-bar--bottom:not(.pc-bar--floating) {
+  bottom: 0;
+  padding: var(--space-2) calc(var(--safe-right) + var(--space-3)) calc(var(--safe-bottom) + var(--space-2))
+    calc(var(--safe-left) + var(--space-3));
+  border-width: var(--border-width) 0 0;
+  border-color: var(--separator);
+}
+
+:root[data-glass='true'] .pc-bar:not(.pc-bar--floating) {
+  box-shadow: none;
+}
+:root[data-glass='true'] .pc-bar:not(.pc-bar--floating)::before {
+  display: none;
+}
+
+/* Floating capsule. */
+.pc-bar--floating {
+  margin-inline: calc(var(--safe-left) + var(--space-3)) calc(var(--safe-right) + var(--space-3));
+  padding: var(--space-1) var(--space-2);
+  border-radius: calc(var(--tap-min) / 2 + var(--space-2));
+  box-shadow: var(--shadow-2);
+}
+.pc-bar--floating.pc-bar--top {
+  top: calc(var(--safe-top) + var(--space-2));
+  margin-top: calc(var(--safe-top) + var(--space-2));
+}
+.pc-bar--floating.pc-bar--bottom {
+  bottom: calc(var(--safe-bottom) + var(--space-3));
+  margin-bottom: calc(var(--safe-bottom) + var(--space-3));
+}

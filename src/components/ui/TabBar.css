@@ -1,0 +1,116 @@
+.pc-tabbar {
+  padding: var(--space-1);
+}
+
+.pc-tabbar__list {
+  container-type: inline-size;
+  display: flex;
+  gap: var(--space-1);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pc-tabbar__cell {
+  /* Content-sized: a long label ("Impostazioni") takes more room than a short one. */
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+
+.pc-tabbar__item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  min-height: calc(var(--tap-min) + var(--space-2));
+  padding: var(--space-1) 4px;
+  border: 0;
+  border-radius: calc(var(--tap-min) / 2 + var(--space-1));
+  background: transparent;
+  color: var(--text-secondary);
+  transition: color var(--dur-fast) ease;
+  touch-action: manipulation;
+  isolation: isolate;
+}
+.pc-tabbar__item:active .pc-tabbar__icon {
+  transform: scale(0.88);
+}
+.pc-tabbar__item.is-active {
+  color: var(--text-on-accent-glass);
+}
+
+/* Selected pill: tinted glass in glass themes, solid accent elsewhere. */
+.pc-tabbar__indicator {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.pc-tabbar__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-size: calc(var(--tap-min) * 0.42);
+  line-height: 1;
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+
+/* Chrome labels never wrap: the size is capped, then shrunk so all labels together
+   (--tab-chars, set by TabBar) fit the bar's width minus each item's padding and the gaps.
+   Keeps "Impostazioni" whole on a 360px phone at fontScale 1.8 + STAMPATELLO or OpenDyslexic. */
+.pc-tabbar__label {
+  max-width: 100%;
+  font-size: max(
+    10px,
+    min(
+      var(--fs-xs),
+      15px,
+      calc((100cqi - var(--tab-count) * 16px - (var(--tab-count) - 1) * var(--space-1)) / (var(--tab-chars) * var(--char-w)))
+    )
+  );
+  letter-spacing: 0;
+  word-spacing: 0;
+  font-weight: var(--fw-strong);
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.pc-tabbar__badge {
+  position: absolute;
+  top: -6px;
+  left: 60%;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--bg-solid);
+}
+:root[data-mode='dark'] .pc-tabbar__badge {
+  color: #1a0503;
+}
+.pc-tabbar__badge--dot {
+  min-width: 12px;
+  height: 12px;
+  top: -2px;
+  padding: 0;
+}
+
+:root[data-theme='high-contrast'] .pc-tabbar__item.is-active {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}

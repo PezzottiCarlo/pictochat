@@ -1,0 +1,215 @@
+/* Telegram sign-in (page + onboarding). Tokens only: see src/theme/README.md. */
+
+.au-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.au-lead {
+  font-size: var(--fs-lg);
+}
+
+.au-flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.au-title {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-3);
+}
+
+.au-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.au-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.au-label {
+  font-weight: var(--fw-strong);
+  font-size: var(--fs-md);
+}
+
+.au-help,
+.au-intro {
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+.au-intro {
+  font-size: var(--fs-md);
+  color: var(--text);
+}
+
+.au-prefix {
+  font-weight: var(--fw-strong);
+  color: var(--text-secondary);
+  padding-inline-end: var(--space-1);
+}
+
+/* Native select: OS picker on phones, follows every reading preference. */
+.au-select {
+  appearance: none;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-2) calc(var(--space-6) + var(--space-2)) var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-elevated);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  color: var(--text);
+  font-size: var(--fs-md);
+  line-height: var(--lh-tight);
+  text-overflow: ellipsis;
+}
+.au-select:disabled {
+  opacity: 0.6;
+}
+
+.au-error {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  color: var(--text);
+  border-inline-start: 4px solid var(--danger);
+  font-weight: var(--fw-strong);
+}
+
+.au-submit.ant-btn {
+  min-height: var(--tap-min);
+  height: auto;
+  white-space: normal;
+  font-weight: var(--fw-strong);
+}
+.au-resend.ant-btn,
+.au-link.ant-btn {
+  height: auto;
+  min-height: var(--tap-min);
+  white-space: normal;
+  color: var(--accent-text);
+}
+.au-link.ant-btn {
+  padding-inline: var(--space-2);
+}
+
+.au-sent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.au-sent__phone {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  font-weight: var(--fw-strong);
+}
+
+/* --- Code boxes ------------------------------------------------------------ */
+
+.au-otp {
+  position: relative;
+  border-radius: var(--radius-md);
+}
+.au-otp:focus-within:has(.au-otp__input:focus-visible) {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+.au-otp__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: max(16px, var(--fs-md)); /* ≥16px: no iOS zoom on focus */
+  letter-spacing: 0;
+  outline: none;
+}
+.au-otp__input::selection {
+  background: transparent;
+}
+.au-otp__slots {
+  display: flex;
+  gap: var(--space-2);
+}
+.au-otp__slot {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: calc(var(--tap-min) * 1.4);
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  font-size: var(--fs-xxl);
+  font-weight: var(--fw-heavy);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
+}
+.au-otp__slot.is-filled {
+  border-color: var(--accent);
+}
+.au-otp__slot.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  transform: translateY(-2px);
+}
+.au-otp__slot.is-active:not(.is-filled)::after {
+  content: '';
+  width: 2px;
+  height: 45%;
+  background: var(--accent);
+  animation: au-blink 1s steps(1) infinite;
+}
+.au-otp.is-invalid .au-otp__slot {
+  border-color: var(--danger);
+}
+.au-otp.is-disabled .au-otp__slot {
+  opacity: 0.6;
+}
+@keyframes au-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.au-privacy {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--text-secondary);
+  font-size: var(--fs-sm);
+}
+.au-privacy .anticon {
+  flex-shrink: 0;
+  margin-top: 0.2em;
+}

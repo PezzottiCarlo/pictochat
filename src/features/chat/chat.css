@@ -1,0 +1,209 @@
+/* Chat screen layout. Only design-system tokens (src/theme/README.md). */
+
+.ch-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header + connection banner stick together. */
+.ch-top {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-bar);
+  overflow-anchor: none;
+}
+.ch-typing {
+  color: var(--accent-text);
+  font-weight: var(--fw-strong);
+}
+.ch-conn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) calc(var(--safe-right) + var(--gutter)) var(--space-2) calc(var(--safe-left) + var(--gutter));
+  background: var(--bg-elevated);
+  border-bottom: var(--border-width) solid var(--separator);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-tight);
+}
+.ch-conn--offline {
+  background: var(--danger-soft);
+}
+.ch-conn > span {
+  min-width: 0;
+}
+
+/* ---- list ------------------------------------------------------------ */
+.ch-list {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-2) calc(var(--safe-right) + var(--space-3)) var(--space-4)
+    calc(var(--safe-left) + var(--space-3));
+}
+.ch-list__sentinel {
+  height: 1px;
+  flex-shrink: 0;
+}
+.ch-list__note {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  text-align: center;
+}
+
+/* Rows far from the viewport skip layout and paint (cheap long histories). */
+.ch-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 88px;
+}
+
+.ch-day,
+.ch-unread {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+  line-height: var(--lh-tight);
+  text-align: center;
+}
+.ch-day {
+  justify-content: center;
+}
+.ch-day > span {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--bg-elevated);
+  border: var(--border-width) solid var(--separator);
+  color: var(--text-secondary);
+}
+.ch-unread {
+  color: var(--accent-text);
+}
+.ch-unread::before,
+.ch-unread::after {
+  content: '';
+  flex: 1;
+  border-top: 2px solid var(--accent);
+}
+
+.ch-service {
+  display: flex;
+  justify-content: center;
+  margin: var(--space-2) 0;
+}
+.ch-service > p {
+  max-width: 34em;
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  text-align: center;
+}
+
+.ch-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-block: var(--space-4);
+}
+.ch-skeleton__bubble {
+  display: block;
+  width: 62%;
+  height: calc(var(--fs-md) * 3);
+  border-radius: var(--radius-lg);
+  background: var(--skeleton);
+}
+.ch-skeleton__bubble:nth-child(2) {
+  width: 44%;
+}
+.ch-skeleton__bubble--out {
+  align-self: flex-end;
+}
+
+/* ---- jump to bottom (sits just above the composer) ------------------- */
+.ch-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--bg-elevated);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-2);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  cursor: pointer;
+}
+
+/* ---- overlays ---------------------------------------------------------- */
+.ch-picto-sheet {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-3) 0 var(--space-4);
+}
+
+.ch-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: calc(var(--safe-top) + var(--space-3)) var(--space-3) calc(var(--safe-bottom) + var(--space-3));
+  background: var(--scrim);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.ch-viewer__bar {
+  position: absolute;
+  top: calc(var(--safe-top) + var(--space-3));
+  right: calc(var(--safe-right) + var(--space-3));
+  display: flex;
+  gap: var(--tap-gap);
+}
+.ch-viewer__save {
+  display: grid;
+  place-items: center;
+  width: var(--tap-min);
+  height: var(--tap-min);
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: var(--icon-size);
+}
+.ch-viewer__img {
+  max-width: 100%;
+  max-height: calc(100dvh - 2 * var(--tap-min) - var(--space-7));
+  object-fit: contain;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+}
+.ch-viewer__caption {
+  max-width: 34em;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: var(--fs-md);
+}

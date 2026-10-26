@@ -131,3 +131,7 @@ dist
 .pnp.*
 
 .DS_Store
+
+# Vite
+dist
+*.local

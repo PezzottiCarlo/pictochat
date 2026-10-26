@@ -1,0 +1,103 @@
+.pc-sheet-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pc-sheet-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+}
+:root[data-glass='true'] .pc-sheet-scrim {
+  background: rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.pc-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  max-height: calc(100dvh - var(--safe-top) - var(--space-5));
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  border-bottom-width: 0 !important;
+  color: var(--text);
+  outline: none;
+  box-shadow: var(--shadow-2);
+}
+:root[data-glass='false'] .pc-sheet {
+  background: var(--bg-elevated);
+}
+/* Floating glass card with all corners rounded, like iOS 26 sheets. */
+:root[data-glass='true'] .pc-sheet {
+  width: calc(100% - 2 * var(--space-2));
+  margin-bottom: calc(var(--safe-bottom) + var(--space-2));
+  border-radius: var(--radius-xl);
+  border-bottom-width: 1px !important;
+}
+
+.pc-sheet--full {
+  height: calc(100dvh - var(--safe-top) - var(--space-5));
+}
+
+.pc-sheet__grabber {
+  flex-shrink: 0;
+  height: 28px;
+  cursor: grab;
+  touch-action: none;
+}
+.pc-sheet__grabber::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 6px;
+  margin: 10px auto 0;
+  border-radius: 3px;
+  background: var(--text-tertiary);
+  opacity: 0.6;
+}
+.pc-sheet__grabber.is-static {
+  cursor: default;
+}
+
+.pc-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-3) var(--space-2) var(--space-5);
+  touch-action: none;
+}
+
+.pc-sheet__title {
+  font-size: var(--fs-xl);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pc-sheet__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2) var(--space-5) var(--space-5);
+}
+
+.pc-sheet__footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tap-gap);
+  padding: var(--space-3) var(--space-5) calc(var(--safe-bottom) + var(--space-4));
+  border-top: var(--border-width) solid var(--separator);
+}
+:root[data-glass='true'] .pc-sheet__footer {
+  padding-bottom: var(--space-4);
+}

@@ -1,0 +1,198 @@
+/* Message bubbles. Only design-system tokens (src/theme/README.md). */
+
+.ch-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.ch-row--out {
+  align-items: flex-end;
+}
+.ch-row.is-first {
+  margin-top: var(--space-3);
+}
+.ch-row__sender {
+  margin: 0 0 2px var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-strong);
+}
+.ch-row__line {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
+  max-width: 100%;
+  min-width: 0;
+}
+.ch-row--out .ch-row__line {
+  flex-direction: row-reverse;
+}
+.ch-row__speak {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.ch-bubble {
+  position: relative;
+  min-width: 0;
+  max-width: min(36em, calc(100vw - var(--tap-min) - var(--space-6)));
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--bubble-in-bg);
+  color: var(--bubble-in-text);
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+  overflow-wrap: anywhere;
+}
+.ch-row--out .ch-bubble {
+  background: var(--bubble-out-bg);
+  color: var(--bubble-out-text);
+}
+/* Grouped bubbles: the corners facing the neighbours tighten, like one continuous voice. */
+.ch-row--in:not(.is-first) .ch-bubble {
+  border-top-left-radius: var(--radius-sm);
+}
+.ch-row--in:not(.is-last) .ch-bubble {
+  border-bottom-left-radius: var(--radius-sm);
+}
+.ch-row--out:not(.is-first) .ch-bubble {
+  border-top-right-radius: var(--radius-sm);
+}
+.ch-row--out:not(.is-last) .ch-bubble {
+  border-bottom-right-radius: var(--radius-sm);
+}
+.ch-bubble--media {
+  padding: var(--space-1);
+}
+.ch-bubble--media .ch-bubble__meta {
+  padding: 0 var(--space-2) var(--space-1);
+}
+.ch-row .ch-bubble--bare {
+  padding: 0;
+  background: transparent;
+  color: var(--text);
+}
+
+.ch-bubble__text {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.ch-bubble--media .ch-bubble__text {
+  padding: var(--space-1) var(--space-2) 0;
+}
+.ch-bubble__text a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ch-bubble__text--emoji {
+  font-size: calc(var(--fs-xxl) * 1.5);
+  line-height: 1.15;
+}
+
+.ch-bubble__strip {
+  margin-inline: calc(-1 * var(--space-2));
+}
+.ch-bubble__more {
+  display: block;
+  min-height: var(--tap-min);
+  margin-top: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-decoration: underline;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ch-bubble__meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-tight);
+}
+.ch-bubble--bare .ch-bubble__meta {
+  color: var(--text-secondary);
+}
+
+.ch-status {
+  display: inline-flex;
+  align-items: center;
+}
+.ch-status__second {
+  margin-left: -0.55em;
+}
+
+.ch-retry {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap-min);
+  margin-top: var(--space-1);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--danger-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-strong);
+  text-align: start;
+  cursor: pointer;
+}
+.ch-retry .anticon {
+  color: var(--danger);
+}
+
+/* ---- personal pictogram share ------------------------------------------ */
+.ch-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2);
+}
+.ch-share__text {
+  flex: 1 1 10em;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+.ch-share__text p {
+  margin: 0;
+}
+.ch-share__title {
+  font-size: var(--fs-sm);
+}
+.ch-share__word {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-heavy);
+  line-height: var(--lh-tight);
+}
+.ch-share__detail {
+  font-size: var(--fs-xs);
+}
+.ch-share__done {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--fw-strong);
+}
+.ch-share .ant-btn {
+  height: auto;
+  min-height: var(--tap-min);
+  margin-top: var(--space-1);
+  white-space: normal;
+  text-align: start;
+}

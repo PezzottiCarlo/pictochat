@@ -1,0 +1,28 @@
+.pc-surface {
+  position: relative;
+  padding: var(--surface-pad);
+  border-radius: var(--surface-radius);
+  color: var(--text);
+  min-width: 0;
+}
+
+.pc-surface--plain {
+  background: var(--surface);
+  border: var(--border-width) solid var(--separator);
+  box-shadow: var(--shadow-1);
+}
+
+.pc-surface--inset {
+  background: var(--bg-sunken);
+  border: var(--border-width) solid transparent;
+}
+
+:root[data-theme='high-contrast'] .pc-surface--inset {
+  border-color: var(--border);
+}
+
+/* Lists inside surfaces: reset bullets. */
+ul.pc-surface {
+  list-style: none;
+  margin: 0;
+}

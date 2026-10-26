@@ -1,0 +1,136 @@
+/*
+ * The pictogram card. Always white with dark text whatever the theme (ARASAAC art is drawn on
+ * white); the theme only shows through the category frame and the selection ring.
+ */
+.pc-tile {
+  --tile-edge: var(--tile-border);
+  --tile-pad: max(4px, calc(var(--tile-img) * 0.06));
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 2px;
+  width: calc(var(--tile-img) + 2 * var(--tile-pad) + 6px);
+  padding: var(--tile-pad) var(--tile-pad) calc(var(--tile-pad) + 1px);
+  border: 3px solid var(--tile-edge);
+  border-radius: var(--radius-md);
+  background: var(--tile-bg);
+  color: var(--tile-text);
+  box-shadow: var(--shadow-1);
+  font: inherit;
+  text-align: center;
+  vertical-align: top;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Category frame: thicker bottom edge, like the colored strip on a printed AAC card. */
+.pc-tile.has-edge {
+  border-bottom-width: 7px;
+}
+
+button.pc-tile:disabled {
+  opacity: 0.45;
+}
+
+.pc-tile.is-selected {
+  box-shadow:
+    0 0 0 3px var(--bg-solid),
+    0 0 0 7px var(--accent),
+    var(--shadow-2);
+}
+
+/* Keyboard focus ring sits outside the selection ring. */
+.pc-tile:focus-visible {
+  outline-offset: 6px;
+  border-radius: var(--radius-md);
+}
+
+.pc-tile__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--tile-img);
+  height: var(--tile-img);
+}
+
+.pc-tile__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity var(--dur-med) ease;
+  pointer-events: none;
+}
+.pc-tile__img.is-loaded {
+  opacity: 1;
+}
+
+.pc-tile__skeleton {
+  position: absolute;
+  inset: 6%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(100deg, #eef1f4 30%, #f8f9fb 50%, #eef1f4 70%) 0 0 / 200% 100%;
+  animation: pc-shimmer 1.4s linear infinite;
+}
+
+/* Fallback when the image fails (or no url): the word itself, big. */
+.pc-tile__word {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  font-size: max(14px, min(var(--fs-lg), calc(var(--tile-img) * 0.18)));
+  font-weight: var(--fw-heavy);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.pc-tile__label {
+  max-width: 100%;
+  /* Shrink (down to 11px) so a long word like "mangiare" stays whole; hyphenate only past that. */
+  font-size: max(
+    11px,
+    min(
+      max(14px, min(var(--fs-sm), calc(var(--tile-img) * 0.2))),
+      calc(var(--tile-img) / (var(--tile-word, 6) * var(--char-w)))
+    )
+  );
+  font-weight: var(--fw-strong);
+  line-height: 1.15;
+  letter-spacing: min(var(--ls), 0.02em);
+  word-spacing: min(var(--ws), 0.04em);
+  overflow-wrap: break-word;
+  hyphens: auto;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.pc-tile__check {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: 15px;
+  box-shadow: 0 0 0 3px var(--bg-solid);
+}
+
+.pc-tile__adornment {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  line-height: 1;
+}
